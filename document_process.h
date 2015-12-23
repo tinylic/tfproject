@@ -6,7 +6,7 @@ using namespace std;
 
 typedef pair<u32string, int> word_count;
 
-vector<word_count> document_processing(vector<u32string> doc) {
+vector<word_count> document_processing(vector<u32string> &doc) {
 	int cnt[vocab_hash_size];
 	vector<word_count> result;
 	int i, j;
