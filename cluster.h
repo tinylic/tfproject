@@ -66,4 +66,4 @@ struct cluster{
 	// for (a = 0; a < vec_size; a++) fprintf(fo, "%s %d\n", vocab[a].word, cl[a]);
 	}
 	}
-};
+}Cluster;
