@@ -15,9 +15,28 @@ public:
 		double *embedding;
 	};
 	
+	WordEmbedding() {
+		vocab = (struct embed_word *)calloc(vocab_max_size, sizeof(struct embed_word));
+	}
 	WordEmbedding(const string & fn, bool isBinary){
 		//read in from a word embedding file 
-		
+		Char word[MAX_STRING];
+		FILE *fin = fopen(fn, "rb");
+		if (fin == NULL) {
+			printf("ERROR: training data file not found!\n");
+			exit(1);
+		}
+
+		while (1) {
+			ReadWord(word, fin);
+			if (feof(fin)) break;
+			i = SearchVocab(word);
+			if (i == -1) {
+				a = AddWordToVocab(word);
+				vocab[a].cn = 1;
+			} else vocab[i].cn++;
+		}
+				
 	}
 	
 	int getEmbedding(const u32string& word, double* embedding){
