@@ -1,0 +1,5 @@
+*.o
+bin/Debug/tfproject.exe
+*.cbp
+/bin
+/obj
