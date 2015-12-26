@@ -1,16 +1,20 @@
 #include <cstdio>
 #include <algorithm>
-#include "head.h"
-#include "dictionary.h"
-#include "document_process/h"
+
+#include "document_process.h"
 
 using namespace std;
-
+struct embed_word {
+		Char *word;
+		double *embedding;
+		int cn;
+		int word_id;
+	};
 class WordEmbedding {
 private:
 	unsigned nDim;  //the dimensionality of word embedding
 	embed_word* mWordEmbeds;
-	
+
 	int * word_hash;
 	int word_size;
 
@@ -35,14 +39,9 @@ private:
 		word[a] = 0;
 	}
 
-	
+
 public:
-	struct embed_word {
-		Char *word, 
-		double *embedding;
-		int cn;
-		int word_id;
-	};
+
 	int GetWordHash(Char *word) {
 		unsigned long long a, hash = 0;
 		int len = strlen(word);
@@ -62,17 +61,17 @@ public:
 		}
 		return -1;
 	}
-	
+
 	Char* GetWord(unsigned int hash) {
 		if (word_hash[hash] == -1) return NULL;
 		return mWordEmbeds[word_hash[hash]].word;
 	}
-	
+
 	double* GetEmbedding(unsigned int hash) {
 		if (word_hash[hash] == -1) return NULL;
 		return mWordEmbeds[word_hash[hash]].embedding;
 	}
-	
+
 	int AddWordToVocab(Char *word) {
 		unsigned int hash, length = strlen(word) + 1;
 		if (length > MAX_STRING) length = MAX_STRING;
@@ -88,26 +87,26 @@ public:
 		return vocab_size - 1;
 	}
 
-	
+
 	WordEmbedding() {
 		mWordEmbeds = (struct embed_word *)calloc(vocab_max_size, sizeof(struct embed_word));
-		word_hash = (int *)calloc(vocab_hash_size, sizeof(int));		
+		word_hash = (int *)calloc(vocab_hash_size, sizeof(int));
 		word_size = 0;
 	}
-	
+
 	~WordEmbedding() {
 		free(mWordEmbeds);
 		free(word_hash);
 		word_size = 0;
 	}
-	
-	
-	WordEmbedding(const string & fn, bool isBinary){
-		// read in from a word embedding file 
+
+
+	WordEmbedding(const char *fn, bool isBinary){
+		// read in from a word embedding file
 		// in the form of word array[embedding]
 		Char word[MAX_STRING];
 		unsigned index, i;
-		double embedding[layer1size + 10];
+		double embedding[layer1_size + 10];
 		FILE *fin = fopen(fn, "rb");
 		if (fin == NULL) {
 			printf("ERROR: training data file not found!\n");
@@ -117,25 +116,25 @@ public:
 		while (1) {
 			ReadWord(word, fin);
 			if (feof(fin)) break;
-			for (i = 0; i < layer1size; i++) {
+			for (i = 0; i < layer1_size; i++) {
 				fscanf(fin, "%lf", &embedding[i]);
 			}
-			index = GetEmbedding(word, embedding);
-			vocab[index].cn++;
+			index = getEmbedding(word, embedding);
+			mWordEmbeds[index].cn++;
 		}
-				
+
 	}
-	
-	int getEmbedding(const Char* word, double* embedding){
+
+	int getEmbedding(Char* word, double* embedding){
 		int index = SearchVocab(word);
 		if (index == -1)
 			index = AddWordToVocab(word);
-		mWordEmbeds[index].embedding = (double *)calloc(layer1size, sizeof(double));
-		strcpy(mWordEmbeds[index].embedding, embedding);
+		mWordEmbeds[index].embedding = (double *)calloc(layer1_size, sizeof(double));
+		memcpy(mWordEmbeds[index].embedding, embedding, sizeof(double) * layer1_size);
 		return index;
 	}
-	
-	
+
+
 	vector<double *> getAllEmbedding() {
 		vector<double *> result;
 		result.clear();
@@ -149,5 +148,5 @@ public:
 		}
 		return result;
 	}
-	
+
 };

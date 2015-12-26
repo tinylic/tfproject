@@ -1,16 +1,28 @@
 #include <cstdio>
 #include <algorithm>
-#include "head.h"
+#include "heads.h"
 
 using namespace std;
 
 // Returns hash value of a word
+struct vocab_word {
+		Char *word;
+};
+
 class  Dictionary {
 private:
 	vocab_word *vocab;
 	int *vocab_hash;
 	int vocab_size;
-	void ReadWord(Char *word, FILE *fin) {
+
+public:
+
+	Dictionary(){
+		vocab = (struct vocab_word *)calloc(vocab_max_size, sizeof(struct vocab_word));
+		vocab_hash = (int *)calloc(vocab_hash_size, sizeof(int));
+		vocab_size = 0;
+	}
+    void ReadWord(Char *word, FILE *fin) {
 		int a = 0, ch;
 		while (!feof(fin)) {
 			ch = fgetc(fin);
@@ -30,18 +42,7 @@ private:
 		}
 		word[a] = 0;
 	}
-public:
-	struct vocab_word {
-		Char *word;
-	};
-	
-	Dictionary(){
-		vocab = (struct vocab_word *)calloc(vocab_max_size, sizeof(struct vocab_word));
-		vocab_hash = (int *)calloc(vocab_hash_size, sizeof(int));		
-		vocab_size = 0;
-	}
-	
-	Dictionary(const string & fn){
+	Dictionary(const char *fn){
 		// read in a dictionary from a file
 
 		Char word[MAX_STRING];
@@ -57,22 +58,21 @@ public:
 			if (feof(fin)) break;
 			index = SearchVocab(word);
 			if (index == -1) {
-				a = AddWordToVocab(word);
-				vocab[a].cn = 1;
-			} else vocab[index].cn++;
+				index = AddWordToVocab(word);
+			}
 		}
-		
+
 	}
-	
+
 	~Dictionary(){
 		free(vocab);
 		free(vocab_hash);
 		vocab_size = 0;
 	}
-	
+
 	int GetWordHash(Char *word) {
 		unsigned long long a, hash = 0;
-		int len = word.length();
+		int len = strlen(word);
 		for (a = 0; a < len; a++) hash = hash * 257 + word[a];
 		hash = hash % vocab_hash_size;
 		return hash;
@@ -89,7 +89,7 @@ public:
 		}
 		return -1;
 	}
-	
+
 	Char* GetWord(unsigned int hash) {
 		if (vocab_hash[hash] == -1) return NULL;
 		return vocab[vocab_hash[hash]].word;
@@ -99,7 +99,6 @@ public:
 		if (length > MAX_STRING) length = MAX_STRING;
 		vocab[vocab_size].word = (Char *)calloc(length, sizeof(Char));
 		strcpy(vocab[vocab_size].word, word);
-		vocab[vocab_size].cn = 0;
 		vocab_size++;
 		hash = GetWordHash(word);
 		while (vocab_hash[hash] != -1) hash = (hash + 1) % vocab_hash_size;

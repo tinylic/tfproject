@@ -1,10 +1,7 @@
 #include <cstdio>
 #include <cstring>
 #include <cmath>
-#include "heads.h"
-#include "dictionary.h"
-#include "document_process.h"
-#include "vector.h"
+#include "vectors.h"
 
 using namespace std;
 
@@ -21,15 +18,15 @@ public:
 	double *cent;
 	vector<double *> vectors;
 	cluster(){
-		mWordEmbedding = (WordEmbedding *)calloc(1, sizeof WordEmbedding);		
+		mWordEmbedding = (WordEmbedding *)calloc(1, sizeof(WordEmbedding));
 		vectors.clear();
 	}
-	
+
 	~cluster(){
 		free(mWordEmbedding);
 	}
-	
-	cluster(const string &fn) {
+
+	cluster(const char *fn) {
 		(*mWordEmbedding) = WordEmbedding(fn, true);
 	}
 	void Kmeans(int classes){
@@ -42,9 +39,10 @@ public:
 				// else for (b = 0; b < layer1_size; b++) fprintf(fo, "%lf ", syn0[a * layer1_size + b]);
 				// fprintf(fo, "\n");
 			// }
-		} 
+		}
 		else {
 			// Run K-means on the word vectors
+			int a, b, c, d;
 			clcn = classes, iter = 10;
 			vectors = (*mWordEmbedding).getAllEmbedding();
 			vec_size = (int)vectors.size();
@@ -87,26 +85,25 @@ public:
     // Save the K-means classes
 	// for (a = 0; a < vec_size; a++) fprintf(fo, "%s %d\n", vocab[a].word, cl[a]);
 		}
+	}
 		vector<real *> GetCentroid() {
 			vector<real *> result;
 			result.clear();
 			for (int i = 0; i < clcn; i++) {
-				real *centroid = (real *)calloc(layer1_size, sizeof real);
+				real *centroid = (real *)calloc(layer1_size, sizeof(real));
 				for (int j = 0; j < layer1_size; j++)
 					centroid[j] = cent[i * layer1_size + j];
 				result.push_back(centroid);
 			}
 			return result;
 		}
-	}
-	double *transform(const Document &doc){
+	// double *transform(const Document &doc){
 	// Documents are represented in word_id
-	int len = (int)doc.size();
-	int *ans = (int *)calloc(classes, sizeof(int));
-	memset(ans, 0, sizeof ans);
-	for (int i = 0; i < len; i++)
-		ans[cl[doc[i]]] ++;
-	for (int i = 0; i < classes; i++)
-		result[i] = (double)ans[i] / len;
-}
-}Cluster;
+	// int len = (int)doc.size();
+	// int *ans = (int *)calloc(classes, sizeof(int));
+	// memset(ans, 0, sizeof ans);
+	// for (int i = 0; i < len; i++)
+		// ans[cl[doc[i]]] ++;
+	// for (int i = 0; i < classes; i++)
+		// result[i] = (double)ans[i] / len;
+};
