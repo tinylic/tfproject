@@ -1,5 +1,11 @@
+<<<<<<< HEAD
 *.o
 bin/Debug/tfproject.exe
 *.cbp
 /bin
 /obj
+=======
+/bin
+/obj
+.cbp
+>>>>>>> origin/master
