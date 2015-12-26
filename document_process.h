@@ -2,6 +2,7 @@
 #include <vector>
 #include <cstring>
 #include <iterator>
+#include "head.h"
 #include "dictionary.h"
 
 using namespace std;
@@ -11,11 +12,10 @@ class Document {
 	Dictionary* mDict;
 	Umap mWordCount;
 private:
-	void ReadWord(Char *word, int &now) {
+	void ReadWord(Char *word, FILE *fin) {
 		int a = 0, ch;
-		int len = strlen(word);
-		while (now < len) {
-			ch = word[now];
+		while (!feof(fin)) {
+			ch = fgetc(fin);
 			if (ch == 13) continue;
 			if ((ch == ' ') || (ch == '\t') || (ch == '\n')) {
 				if (a > 0) {
@@ -32,9 +32,44 @@ private:
 		}
 		word[a] = 0;
 	}
+	void ReadFromCorpus(Char *document) {
+		//Read a document in the form of <w1, c1>
+		int a = 0, ch;
+		int len = strlen(word);
+		Char word[MAX_STRING];
+		for (int i = 0; ; ) {
+			//read the word
+			while (i < len && document[i] != '<') i++;
+			if (i == len) break;
+			memset(word, 0, sizeof word);
+			int n = 0; i ++;
+			for (; document[i] != ','; i++) {
+				word[n++] = document[i];
+			}
+			word[n] = 0;
+			
+			//read the count
+			while (!isdigit(document[i])) i++;
+			int cnt = 0;
+			for (; isdigit(document[i]); i++)
+				cnt = cnt * 10 + document[i] - '0';
+			
+			//add to dictionary
+			int index = SearchVocab(word);
+			if (index == -1) {
+				a = (*mDict).AddWordToVocab(word);
+				mWordCount[a] = cnt;
+			} else mWordCount[index] ++;	
+		}
+	}
 public:
 
 	Document(){
+		mDict = (Dictionary *)calloc(1, sizeof Dictionary);
+		mWordCount.clear();
+	}
+	~Document(){
+		free(mDict);
 		mWordCount.clear();
 	}
 	
@@ -98,7 +133,20 @@ public:
 		//read a corpus from a file
 		//each line represents a document in the format "<w1, c1>, ...."
 		if (mode != 0) return;
-
+		FILE *fin = fopen(fn, "rb");
+		if (fin == NULL) {
+			printf("ERROR: training data file not found!\n");
+			exit(1);
+		}
+		
+		Char Doc[MAX_STRING];
+		while (1) {
+			if (feof(fin)) break;
+			Document* NewDocument = (Document *)calloc(sizeof(Document));
+			fgets(Doc, fin);
+			(*NewDocument).ReadFromCorpus(Doc);
+			mCorpus.push_back(NewDocument);
+		}
 	}
 	
 	inline const Document* getDocument(unsigned i) {

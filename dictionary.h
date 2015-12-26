@@ -7,7 +7,7 @@ using namespace std;
 // Returns hash value of a word
 class  Dictionary {
 private:
-	struct vocab_word *vocab;
+	vocab_word *vocab;
 	int *vocab_hash;
 	int vocab_size;
 	void ReadWord(Char *word, FILE *fin) {
@@ -32,7 +32,7 @@ private:
 	}
 public:
 	struct vocab_word {
-		char *word;
+		Char *word;
 	};
 	
 	Dictionary(){
@@ -45,6 +45,7 @@ public:
 		// read in a dictionary from a file
 
 		Char word[MAX_STRING];
+		unsigned index;
 		FILE *fin = fopen(fn, "rb");
 		if (fin == NULL) {
 			printf("ERROR: training data file not found!\n");
@@ -54,11 +55,11 @@ public:
 		while (1) {
 			ReadWord(word, fin);
 			if (feof(fin)) break;
-			i = SearchVocab(word);
-			if (i == -1) {
+			index = SearchVocab(word);
+			if (index == -1) {
 				a = AddWordToVocab(word);
 				vocab[a].cn = 1;
-			} else vocab[i].cn++;
+			} else vocab[index].cn++;
 		}
 		
 	}
@@ -90,8 +91,8 @@ public:
 	}
 	
 	Char* GetWord(unsigned int hash) {
-		if (vocab_hash[hash] == -1) return -1;
-		return (u32string)vocab[vocab_hash[hash]].word;
+		if (vocab_hash[hash] == -1) return NULL;
+		return vocab[vocab_hash[hash]].word;
 	}
 	int AddWordToVocab(Char *word) {
 		unsigned int hash, length = strlen(word) + 1;

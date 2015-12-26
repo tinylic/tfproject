@@ -12,7 +12,7 @@
 
 const int vocab_hash_size = 30000000;  // Maximum 30 * 0.7 = 21M words in the vocabulary
 
-typedef float real;                    // Precision of float numbers
+typedef double real;                    // Precision of float numbers
 typedef char32_t Char;
 
 
