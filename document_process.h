@@ -4,6 +4,7 @@
 using namespace std;
 
 class Document {
+public:
 	Dictionary* mDict;
 	Umap mWordCount;
 private:

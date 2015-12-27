@@ -102,7 +102,7 @@ public:
 			}
 			return result;
 		}
-	real *transform(vector<Upair> doc){
+	real *Transform(vector<Upair> doc){
 		// Documents are represented in word_id
 		int len = (int)doc.size();
 		int *ans = (int *)calloc(classes, sizeof(int));
@@ -114,12 +114,20 @@ public:
 			result[i] = (real)ans[i] / len;
 		return result;
 	}
-	real *transform(Document *Doc) {
+	real *Transform(Document *Doc) {
 		// Read documents in the form of <w1, c1>
 		vector<Upair> All = Doc -> GetAllWord();
+		vector<Upair> NewAll;
+		NewAll.clear();
 		for (int i = 0; i < (int)All.size(); i++) {
-
+            Char *mWord = Doc -> mDict -> GetWord(All[i].first);
+            // Word in the document
+            int index = mWordEmbedding -> SearchVocab(mWord);
+            // Word ID in the Embedding
+            if (index != -1)
+                NewAll.push_back(make_pair(index, All[i].second));
 		}
+		return Transform(NewAll);
 	}
 	// double *transform(const Document &doc){
 	// Documents are represented in word_id

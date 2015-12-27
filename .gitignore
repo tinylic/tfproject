@@ -8,4 +8,6 @@ bin/Debug/tfproject.exe
 /bin
 /obj
 .cbp
+.depend
+.layout
 >>>>>>> origin/master
