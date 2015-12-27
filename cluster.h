@@ -11,13 +11,17 @@ private:
 
 public:
 	int clcn, iter, closeid;
+	// clcn : class number
+	// closeid : closest cluster
 	int vec_size;
 	int *centcn;
 	int *cl;
 	double closev,x;
 	double *cent;
+	// cent : coordinates of the cluster centroid
 	vector<double *> vectors;
 	cluster(){
+		// Initialization
 		mWordEmbedding = (WordEmbedding *)calloc(1, sizeof(WordEmbedding));
 		vectors.clear();
 	}
@@ -87,6 +91,7 @@ public:
 		}
 	}
 		vector<real *> GetCentroid() {
+			// Return the centroid coordinates
 			vector<real *> result;
 			result.clear();
 			for (int i = 0; i < clcn; i++) {
@@ -97,6 +102,25 @@ public:
 			}
 			return result;
 		}
+	real *transform(vector<Upair> doc){
+		// Documents are represented in word_id
+		int len = (int)doc.size();
+		int *ans = (int *)calloc(classes, sizeof(int));
+		real *result = (real *)calloc(clcn, sizeof(real));
+		memset(ans, 0, sizeof ans);
+		for (int i = 0; i < len; i++)
+			ans[cl[doc[i].first]] += doc[i].second;
+		for (int i = 0; i < classes; i++)
+			result[i] = (real)ans[i] / len;
+		return result;
+	}
+	real *transform(Document *Doc) {
+		// Read documents in the form of <w1, c1>
+		vector<Upair> All = Doc -> GetAllWord();
+		for (int i = 0; i < (int)All.size(); i++) {
+
+		}
+	}
 	// double *transform(const Document &doc){
 	// Documents are represented in word_id
 	// int len = (int)doc.size();

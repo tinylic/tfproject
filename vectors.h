@@ -63,11 +63,13 @@ public:
 	}
 
 	Char* GetWord(unsigned int hash) {
+		// Return the word in position hash
 		if (word_hash[hash] == -1) return NULL;
 		return mWordEmbeds[word_hash[hash]].word;
 	}
 
 	double* GetEmbedding(unsigned int hash) {
+		// Return the embedding in position hash
 		if (word_hash[hash] == -1) return NULL;
 		return mWordEmbeds[word_hash[hash]].embedding;
 	}
@@ -103,7 +105,7 @@ public:
 
 	WordEmbedding(const char *fn, bool isBinary){
 		// read in from a word embedding file
-		// in the form of word array[embedding]
+		// in the form of word array[embedding] separated in spaces
 		Char word[MAX_STRING];
 		unsigned index, i;
 		double embedding[layer1_size + 10];
@@ -126,6 +128,7 @@ public:
 	}
 
 	int getEmbedding(Char* word, double* embedding){
+		// Insert the embedding to the dict and return the index
 		int index = SearchVocab(word);
 		if (index == -1)
 			index = AddWordToVocab(word);

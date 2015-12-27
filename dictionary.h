@@ -18,6 +18,7 @@ private:
 public:
 
 	Dictionary(){
+		// Initialization
 		vocab = (struct vocab_word *)calloc(vocab_max_size, sizeof(struct vocab_word));
 		vocab_hash = (int *)calloc(vocab_hash_size, sizeof(int));
 		vocab_size = 0;
@@ -42,6 +43,7 @@ public:
 		}
 		word[a] = 0;
 	}
+	
 	Dictionary(const char *fn){
 		// read in a dictionary from a file
 
@@ -89,7 +91,7 @@ public:
 		}
 		return -1;
 	}
-
+	// Return the word in the position [hash]
 	Char* GetWord(unsigned int hash) {
 		if (vocab_hash[hash] == -1) return NULL;
 		return vocab[vocab_hash[hash]].word;

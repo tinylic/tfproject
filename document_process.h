@@ -3,7 +3,6 @@
 
 using namespace std;
 
-typedef map<unsigned, unsigned> Umap;
 class Document {
 	Dictionary* mDict;
 	Umap mWordCount;
@@ -32,6 +31,7 @@ private:
 public:
 
 	Document(){
+		// Initialization
 		mDict = (Dictionary *)calloc(1, sizeof(Dictionary));
 		mWordCount.clear();
 	}
@@ -120,7 +120,13 @@ void ReadFromCorpus(Char *document) {
 			wc[Uit -> first] = Uit -> second;
 	};
 */
-
+	vector<Upair> GetAllWord() {
+		vector<Upair> result;
+		result.clear();
+		for (Umap :: iterator Uit = mWordCount.begin(); Uit != mWordCount.end(); Uit++)
+			result.push_back(make_pair(Uit -> first, Uit -> second));
+		return result;
+	}
 };
 
 class Corpus {
