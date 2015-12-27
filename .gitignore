@@ -2,6 +2,8 @@
 *.o
 bin/Debug/tfproject.exe
 *.cbp
+*.depend
+*.layout
 /bin
 /obj
 =======
