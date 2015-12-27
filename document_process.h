@@ -87,7 +87,7 @@ void ReadFromCorpus(Char *document) {
 				cnt = cnt * 10 + document[i] - '0';
 
 			//add to dictionary
-			int index = (*mDict).SearchVocab(word);
+			int index = mDict -> SearchVocab(word);
 			if (index == -1) {
 				a = mDict -> AddWordToVocab(word);
 				mWordCount[a] = cnt;
@@ -109,9 +109,9 @@ void ReadFromCorpus(Char *document) {
 			if (feof(fin)) break;
 			mDict -> ReadWord(word, fin);
 			fscanf(fin, "%d", &cnt);
-			int index = mDict -> SearchVocab(word);
+			unsigned index = mDict -> SearchVocab(word);
 			if (index == -1) {
-				int a = mDict -> AddWordToVocab(word);
+				unsigned a = mDict -> AddWordToVocab(word);
 				mWordCount[a] = cnt;
 			} else mWordCount[index] += cnt;
 		}
@@ -134,6 +134,11 @@ class Corpus {
 private:
 	vector<Document*> mCorpus;
 public:
+	
+	Corpus() {
+		mCorpus.clear();
+	}
+	
 	Corpus(const char *fn, int mode) {
 		//read a corpus from a file
 		//each line represents a document in the format "<w1, c1>, ...."
@@ -149,7 +154,7 @@ public:
 			if (feof(fin)) break;
 			Document* NewDocument = (Document *)calloc(1, sizeof(Document));
 			fgets(Doc, vocab_hash_size, fin);
-			(*NewDocument).ReadFromCorpus(Doc);
+			NewDocument -> ReadFromCorpus(Doc);
 			mCorpus.push_back(NewDocument);
 		}
 	}
