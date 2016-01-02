@@ -19,37 +19,39 @@ public:
 
 	Dictionary(){
 		// Initialization
-		vocab = (struct vocab_word *)calloc(vocab_max_size, sizeof(struct vocab_word));
+		vocab = (struct vocab_word *)calloc(vocab_hash_size, sizeof(struct vocab_word));
 		vocab_hash = (int *)calloc(vocab_hash_size, sizeof(int));
+		for (unsigned i = 0; i < vocab_hash_size; i++)
+            vocab_hash[i] = -1;
 		vocab_size = 0;
 	}
-    void ReadWord(Char *word, FILE *fin) {
-		int a = 0, ch;
-		while (!feof(fin)) {
-			ch = fgetc(fin);
-			if (ch == 13) continue;
-			if ((ch == ' ') || (ch == '\t') || (ch == '\n')) {
-				if (a > 0) {
-					if (ch == '\n') ungetc(ch, fin);
-					break;
-				}
-				if (ch == '\n') {
-					strcpy(word, (char *)"</s>");
-					return;
-				} else continue;
-			}
-			word[a] = ch;
-			a++;
-		}
-		word[a] = 0;
+	void Init() {
+		vocab = (struct vocab_word *)calloc(vocab_hash_size, sizeof(struct vocab_word));
+		vocab_hash = (int *)calloc(vocab_hash_size, sizeof(int));
+		for (unsigned i = 0; i < vocab_hash_size; i++)
+            vocab_hash[i] = -1;
+		vocab_size = 0;
 	}
+	void ReadWord(Char *word, FILE *f) {
+			int a = 0;
+			while (1) {
+				word[a] = fgetc(f);
+				if (feof(f) || (word[a] == ' ')) break;
+							if ((a < max_w) && (word[a] != '\n')) a++;
+						}
+			word[a] = 0;
+		}
 	
 	Dictionary(const char *fn){
 		// read in a dictionary from a file
-
+		vocab = (struct vocab_word *)calloc(vocab_hash_size, sizeof(struct vocab_word));
+		vocab_hash = (int *)calloc(vocab_hash_size, sizeof(int));
+		for (unsigned i = 0; i < vocab_hash_size; i++)
+            vocab_hash[i] = -1;
+		vocab_size = 0;
 		Char word[MAX_STRING];
 		unsigned index;
-		FILE *fin = fopen(fn, "rb");
+		FILE *fin = fopen(fn, "r");
 		if (fin == NULL) {
 			printf("ERROR: training data file not found!\n");
 			exit(1);
@@ -93,6 +95,7 @@ public:
 	}
 	// Return the word in the position [hash]
 	Char* GetWord(unsigned int hash) {
+		cout << vocab_hash[hash] << endl;
 		if (vocab_hash[hash] == -1) return NULL;
 		return vocab[vocab_hash[hash]].word;
 	}
