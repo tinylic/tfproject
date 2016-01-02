@@ -16,10 +16,10 @@ public:
 	int vec_size;
 	int *centcn;
 	int *cl;
-	double closev,x;
-	double *cent;
+	real closev,x;
+	real *cent;
 	// cent : coordinates of the cluster centroid
-	vector<double *> vectors;
+	AllEmbeds vectors;
 	cluster(){
 		// Initialization
 		mWordEmbedding = (WordEmbedding *)calloc(1, sizeof(WordEmbedding));
@@ -30,8 +30,15 @@ public:
 		free(mWordEmbedding);
 	}
 
-	cluster(const char *fn) {
-		(*mWordEmbedding) = WordEmbedding(fn, true);
+	cluster(WordEmbedding *mEmbedding) {
+		mWordEmbedding = (WordEmbedding *)calloc(1, sizeof(WordEmbedding));
+		vectors.clear();
+		mWordEmbedding = mEmbedding;
+	}
+	cluster(const char *fn, bool IsBinary) {
+		mWordEmbedding = (WordEmbedding *)calloc(1, sizeof(WordEmbedding));
+		vectors.clear();
+		(*mWordEmbedding) = WordEmbedding(fn, IsBinary);
 	}
 	void Kmeans(int classes){
 		if (classes == 0) {
@@ -46,13 +53,14 @@ public:
 		}
 		else {
 			// Run K-means on the word vectors
-			int a, b, c, d;
+			unsigned a, b, c, d;
 			clcn = classes, iter = 10;
 			vectors = (*mWordEmbedding).getAllEmbedding();
 			vec_size = (int)vectors.size();
 			centcn = (int *)malloc(classes * sizeof(int));
 			cl = (int *)calloc(vec_size, sizeof(int));
 			cent = (real *)calloc(classes * layer1_size, sizeof(real));
+			if (cent == NULL) perror("Memory fail\n");
 			for (a = 0; a < vec_size; a++) cl[a] = a % clcn;
 			for (a = 0; a < iter; a++) {
 				for (b = 0; b < clcn * layer1_size; b++) cent[b] = 0;
@@ -105,6 +113,7 @@ public:
 	real *Transform(vector<Upair> doc){
 		// Documents are represented in word_id
 		int len = (int)doc.size();
+		//debug("len = %d\n", len);
 		int *ans = (int *)calloc(classes, sizeof(int));
 		real *result = (real *)calloc(clcn, sizeof(real));
 		memset(ans, 0, sizeof ans);
@@ -120,13 +129,24 @@ public:
 		vector<Upair> NewAll;
 		NewAll.clear();
 		for (int i = 0; i < (int)All.size(); i++) {
+			cout << All[i].first << " " << All[i].second << endl;
             Char *mWord = Doc -> mDict -> GetWord(All[i].first);
+            cout << "asdas" << endl;
+            if (mWord == NULL)
+            	cout << "fuck" << endl;
+            else
+            	cout << mWord << endl;
+            cout << "asd" << endl;
             // Word in the document
             int index = mWordEmbedding -> SearchVocab(mWord);
             // Word ID in the Embedding
+            cout << index;
+            cout << " === " << endl;
             if (index != -1)
                 NewAll.push_back(make_pair(index, All[i].second));
 		}
+		cout << "asdas" << endl;
+		cout << "asd" << endl;
 		return Transform(NewAll);
 	}
 	// double *transform(const Document &doc){
