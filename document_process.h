@@ -143,6 +143,7 @@ public:
 		//read a corpus from a file
 		//each line represents a document in the format "<w1, c1>, ...."
 		if (mode != 0) return;
+		mCorpus.clear();
 		FILE *fin = fopen(fn, "rb");
 		if (fin == NULL) {
 			printf("ERROR: training data file not found!\n");
