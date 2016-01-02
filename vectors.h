@@ -18,27 +18,17 @@ private:
 	int * word_hash;
 	int word_size;
 
-	void ReadWord(Char *word, FILE *fin) {
-		int a = 0, ch;
-		Char temp[MAX_STRING];
-		while (1) {
-            word[a] = fgetc(fin);
-            if (feof(fin) || (word[a] == ' ')) break;
-            if ((a < max_w) && (word[a] != '\n')) a++;
-        }
-		word[a] = 0;
-		strcpy(temp, &word[0]);
-		debug("%s\n", &temp[0]);
-	}
-
+	AllEmbeds All;
 
 public:
 
 	int GetWordHash(Char *word) {
 		unsigned long long a, hash = 0;
 		int len = strlen(word);
+		cout << len << endl;
 		for (a = 0; a < len; a++) hash = hash * 257 + word[a];
 		hash = hash % vocab_hash_size;
+		cout << hash << endl;
 		return hash;
 	}
 
@@ -46,9 +36,14 @@ public:
 
 	int SearchVocab(Char *word) {
 		unsigned int hash = GetWordHash(word);
-		// debug("%s\n ", word);
+		 printf("%s\n%d\n", word, word_hash[hash]);
+		 cout << "asd" << endl;
 		while (1) {
+			cout << word_hash[hash] << endl;
+			cout << "asdasfsa" << endl;
 			if (word_hash[hash] == -1) return -1;
+			cout << word_hash[hash] << endl;
+			cout << "asdsa" << endl;
 			if (!strcmp(word, mWordEmbeds[word_hash[hash]].word)) return word_hash[hash];
 			hash = (hash + 1) % vocab_hash_size;
 		}
@@ -95,7 +90,7 @@ public:
 		// word_size = 0;
 	}
 
-	WordEmbedding(const char *fn) {
+	WordEmbedding(const char *fn, bool IsBinary) {
 		long long words, size, a, b, c, d, bi[100], index;
 		real len;
 		char ch;
@@ -129,12 +124,19 @@ public:
 				if ((a < max_w) && (vocab[a] != '\n')) a++;
 			}
 			vocab[a] = 0;
+			printf("%s\n", vocab);
 			//debug("%s\n", vocab);
+			if (IsBinary) {
 			for (a = 0; a < size; a++) fread(&M[a], sizeof(float), 1, f);
 			len = 0;
 			for (a = 0; a < size; a++) len += M[a] * M[a];
 			len = sqrt(len);
 			for (a = 0; a < size; a++) M[a] /= len;
+			}
+			else {
+				for (a = 0; a < size; a++)
+					fscanf(f, "%f", &M[a]);
+			}
 			index = AddEmbedding(vocab, M);
 		}
 	}
@@ -177,6 +179,7 @@ public:
 
 	int AddEmbedding(Char* word, real* embedding){
 		// Insert the embedding to the dict and return the index
+		All.push_back(embedding);
 		int index = SearchVocab(word);
 		if (index == -1)
 			index = AddWordToVocab(word);
@@ -191,17 +194,7 @@ public:
 
 
 	vector<real *> getAllEmbedding() {
-		vector<real *> result;
-		result.clear();
-		for (int i = 0; i < vocab_hash_size; i++) {
-			 // get all embeddings
-			if (word_hash[i] == -1) continue;
-			int index = word_hash[i];
-			if (mWordEmbeds[index].embedding != NULL) {
-				result.push_back(mWordEmbeds[index].embedding);
-			}
-		}
-		return result;
+		return All;
 	}
 
 };
