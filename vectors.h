@@ -6,7 +6,7 @@
 using namespace std;
 struct embed_word {
 		Char *word;
-		double *embedding;
+		real *embedding;
 		int cn;
 		int word_id;
 	};
@@ -20,23 +20,15 @@ private:
 
 	void ReadWord(Char *word, FILE *fin) {
 		int a = 0, ch;
-		while (!feof(fin)) {
-			ch = fgetc(fin);
-			if (ch == 13) continue;
-			if ((ch == ' ') || (ch == '\t') || (ch == '\n')) {
-				if (a > 0) {
-					if (ch == '\n') ungetc(ch, fin);
-					break;
-				}
-				if (ch == '\n') {
-					strcpy(word, (char *)"</s>");
-					return;
-				} else continue;
-			}
-			word[a] = ch;
-			a++;
-		}
+		Char temp[MAX_STRING];
+		while (1) {
+            word[a] = fgetc(fin);
+            if (feof(fin) || (word[a] == ' ')) break;
+            if ((a < max_w) && (word[a] != '\n')) a++;
+        }
 		word[a] = 0;
+		strcpy(temp, &word[0]);
+		debug("%s\n", &temp[0]);
 	}
 
 
@@ -54,11 +46,13 @@ public:
 
 	int SearchVocab(Char *word) {
 		unsigned int hash = GetWordHash(word);
+		// debug("%s\n ", word);
 		while (1) {
 			if (word_hash[hash] == -1) return -1;
 			if (!strcmp(word, mWordEmbeds[word_hash[hash]].word)) return word_hash[hash];
 			hash = (hash + 1) % vocab_hash_size;
 		}
+		// check;
 		return -1;
 	}
 
@@ -68,7 +62,7 @@ public:
 		return mWordEmbeds[word_hash[hash]].word;
 	}
 
-	double* GetEmbedding(unsigned int hash) {
+	real* GetEmbedding(unsigned int hash) {
 		// Return the embedding in position hash
 		if (word_hash[hash] == -1) return NULL;
 		return mWordEmbeds[word_hash[hash]].embedding;
@@ -86,60 +80,118 @@ public:
 		hash = GetWordHash(word);
 		while (word_hash[hash] != -1) hash = (hash + 1) % vocab_hash_size;
 		mWordEmbeds[word_size].word_id = word_hash[hash] = word_size - 1;
-		return vocab_size - 1;
+		return word_size - 1;
 	}
 
 
 	WordEmbedding() {
-		mWordEmbeds = (struct embed_word *)calloc(vocab_max_size, sizeof(struct embed_word));
-		word_hash = (int *)calloc(vocab_hash_size, sizeof(int));
-		word_size = 0;
+
+		// check;
 	}
 
 	~WordEmbedding() {
-		free(mWordEmbeds);
-		free(word_hash);
+		// free(mWordEmbeds);
+		// free(word_hash);
+		// word_size = 0;
+	}
+
+	WordEmbedding(const char *fn) {
+		long long words, size, a, b, c, d, bi[100], index;
+		real len;
+		char ch;
+		real *M;
+		char *vocab;
+		char *temp;
+		FILE *f;
+		f = fopen(fn, "rb");
+		if (f == NULL) {
+			printf("Input file not found\n");
+			return ;
+		}
+		fscanf(f, "%I64d", &words);
+		fscanf(f, "%I64d", &size);
+		layer1_size = size;
+		if (words > vocab_hash_size) words = vocab_hash_size;
+		mWordEmbeds = (struct embed_word *)calloc(vocab_hash_size, sizeof(struct embed_word));
 		word_size = 0;
-	}
+		word_hash = (int *)calloc(vocab_hash_size, sizeof(int));
+		for (unsigned i = 0; i < vocab_hash_size; i++)
+            word_hash[i] = -1;
 
-
-	WordEmbedding(const char *fn, bool isBinary){
-		// read in from a word embedding file
-		// in the form of word array[embedding] separated in spaces
-		Char word[MAX_STRING];
-		unsigned index, i;
-		double embedding[layer1_size + 10];
-		FILE *fin = fopen(fn, "rb");
-		if (fin == NULL) {
-			printf("ERROR: training data file not found!\n");
-			exit(1);
-		}
-
-		while (1) {
-			ReadWord(word, fin);
-			if (feof(fin)) break;
-			for (i = 0; i < layer1_size; i++) {
-				fscanf(fin, "%lf", &embedding[i]);
+		// for (; fgetc(f) != '\n';);
+		for (b = 0; b < words; b++) {
+			vocab = (char *)malloc(max_w * sizeof(char));
+			M = (real *)malloc((long long) size * sizeof(real));
+			a = 0;
+			while (1) {
+				vocab[a] = fgetc(f);
+				if (feof(f) || (vocab[a] == ' ')) break;
+				if ((a < max_w) && (vocab[a] != '\n')) a++;
 			}
-			index = getEmbedding(word, embedding);
-			mWordEmbeds[index].cn++;
+			vocab[a] = 0;
+			//debug("%s\n", vocab);
+			for (a = 0; a < size; a++) fread(&M[a], sizeof(float), 1, f);
+			len = 0;
+			for (a = 0; a < size; a++) len += M[a] * M[a];
+			len = sqrt(len);
+			for (a = 0; a < size; a++) M[a] /= len;
+			index = AddEmbedding(vocab, M);
 		}
-
 	}
+	// WordEmbedding(const char *fn){
+		// read in from a word embedding file
+		// first line word_numbers && vector_dimensions
+		// in the form of word array[embedding] separated in spaces
+		// Char word[MAX_STRING];
+		// unsigned index, i, word_numbers;
+		// double *embedding;
+		// FILE *fin = fopen(fn, "rb");
+		// if (fin == NULL) {
+			// printf("ERROR: training data file not found!\n");
+			// exit(1);
+		// }
+		// fscanf(fin, "%d%d", &word_numbers, &layer1_size);
+        // vocab_hash_size = word_numbers;
+		// mWordEmbeds = (struct embed_word *)calloc(vocab_hash_size, sizeof(struct embed_word));
+		// word_size = 0;
+		// word_hash = (int *)calloc(vocab_hash_size * 2 + 1, sizeof(int));
+		// for (i = 0; i < vocab_hash_size; i++)
+            // word_hash[i] = -1;
 
-	int getEmbedding(Char* word, double* embedding){
+		// printf("%d %d\n", word_numbers, layer1_size);
+		// for (; fgetc(fin) != '\n';);
+        // embedding = (double *)calloc(layer1_size, sizeof(double));
+		// while (word_numbers --) {
+			// ReadWord(word, fin);
+			// printf("%s ", word);
+			// if (feof(fin)) break;
+			// for (i = 0; i < layer1_size; i++) {
+				// fscanf(fin, "%lf", &embedding[i]);
+			// }
+			// for (; fgetc(fin) != '\n';);
+			// index = AddEmbedding(word, embedding);
+			// mWordEmbeds[index].cn++;
+		// }
+
+	// }
+
+	int AddEmbedding(Char* word, real* embedding){
 		// Insert the embedding to the dict and return the index
 		int index = SearchVocab(word);
 		if (index == -1)
 			index = AddWordToVocab(word);
-		mWordEmbeds[index].embedding = (double *)calloc(layer1_size, sizeof(double));
-		memcpy(mWordEmbeds[index].embedding, embedding, sizeof(double) * layer1_size);
+		mWordEmbeds[index].embedding = (real *)calloc(layer1_size, sizeof(real));
+		if (mWordEmbeds[index].embedding == NULL) {
+                debug("%d\n", word_size);
+                perror("Memory Fail\n");
+		}
+		memcpy(mWordEmbeds[index].embedding, embedding, sizeof(real) * layer1_size);
 		return index;
 	}
 
 
-	vector<double *> getAllEmbedding() {
-		vector<double *> result;
+	vector<real *> getAllEmbedding() {
+		vector<real *> result;
 		result.clear();
 		for (int i = 0; i < vocab_hash_size; i++) {
 			 // get all embeddings
