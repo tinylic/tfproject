@@ -11,20 +11,25 @@
 #define MAX_SENTENCE_LENGTH 1000
 #define MAX_CODE_LENGTH 40
 
-using namespace std;
-const int vocab_hash_size = 30000000;  // Maximum 30 * 0.7 = 21M words in the vocabulary
+#define check printf("here is ok\n")
+#define debug(...) fprintf(stderr, __VA_ARGS__)
 
-typedef double real;                    // Precision of float numbers
+using namespace std;
+
+typedef float real;                    // Precision of float numbers
 typedef char Char;
 typedef pair<unsigned, unsigned> Upair;
 typedef map<unsigned, unsigned> Umap;
+typedef vector<real *> AllEmbeds;
 
 
 char train_file[MAX_STRING], output_file[MAX_STRING];
 char save_vocab_file[MAX_STRING], read_vocab_file[MAX_STRING];
 
+int vocab_hash_size = 30000000;  // Maximum 30 * 0.7 = 21M words in the vocabulary
 int binary = 0, cbow = 1, debug_mode = 2, window = 5, min_count = 5, num_threads = 12, min_reduce = 1;
 
+long long max_w = 50;
 long long vocab_max_size = 1000, vocab_size = 0, layer1_size = 100;
 long long train_words = 0, word_count_actual = 0, iter = 5, file_size = 0, classes = 0;
 real alpha = 0.025, starting_alpha, sample = 1e-3;
