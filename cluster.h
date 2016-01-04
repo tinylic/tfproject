@@ -20,10 +20,13 @@ public:
 	real *cent;
 	// cent : coordinates of the cluster centroid
 	AllEmbeds vectors;
-	cluster(){
-		// Initialization
+	void Init() {
 		mWordEmbedding = (WordEmbedding *)calloc(1, sizeof(WordEmbedding));
 		vectors.clear();
+	}
+	cluster(){
+		// Initialization
+		Init();
 	}
 
 	~cluster(){
@@ -31,13 +34,11 @@ public:
 	}
 
 	cluster(WordEmbedding *mEmbedding) {
-		mWordEmbedding = (WordEmbedding *)calloc(1, sizeof(WordEmbedding));
-		vectors.clear();
+		Init();
 		mWordEmbedding = mEmbedding;
 	}
 	cluster(const char *fn, bool IsBinary) {
-		mWordEmbedding = (WordEmbedding *)calloc(1, sizeof(WordEmbedding));
-		vectors.clear();
+		Init();
 		(*mWordEmbedding) = WordEmbedding(fn, IsBinary);
 	}
 	void Kmeans(int classes){
@@ -142,13 +143,4 @@ public:
 		}
 		return Transform(NewAll);
 	}
-	// double *transform(const Document &doc){
-	// Documents are represented in word_id
-	// int len = (int)doc.size();
-	// int *ans = (int *)calloc(classes, sizeof(int));
-	// memset(ans, 0, sizeof ans);
-	// for (int i = 0; i < len; i++)
-		// ans[cl[doc[i]]] ++;
-	// for (int i = 0; i < classes; i++)
-		// result[i] = (double)ans[i] / len;
 };

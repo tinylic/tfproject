@@ -15,7 +15,7 @@ private:
 	unsigned nDim;  //the dimensionality of word embedding
 	embed_word* mWordEmbeds;
 
-	int * word_hash;
+	int *word_hash;
 	int word_size;
 
 	AllEmbeds All;
@@ -43,16 +43,16 @@ public:
 		return -1;
 	}
 
-	Char* GetWord(unsigned int hash) {
+	Char* GetWord(int hash) {
 		// Return the word in position hash
-		if (word_hash[hash] == -1) return NULL;
-		return mWordEmbeds[word_hash[hash]].word;
+		if (hash == -1) return NULL;
+		return mWordEmbeds[hash].word;
 	}
 
-	real* GetEmbedding(unsigned int hash) {
+	real* GetEmbedding(int hash) {
 		// Return the embedding in position hash
-		if (word_hash[hash] == -1) return NULL;
-		return mWordEmbeds[word_hash[hash]].embedding;
+		if (hash == -1) return NULL;
+		return mWordEmbeds[hash].embedding;
 	}
 
 	int AddWordToVocab(Char *word) {
@@ -60,9 +60,7 @@ public:
 		if (length > MAX_STRING) length = MAX_STRING;
 		mWordEmbeds[word_size].word = (Char *)calloc(length, sizeof(Char));
 		mWordEmbeds[word_size].cn = 0;
-		// mWordEmbeds[word_size].embedding = (double *)calloc(layer1size, sizeof(double));
 		strcpy(mWordEmbeds[word_size].word, word);
-		// strcpy(mWordEmbeds[word_size].embedding, embedding);
 		word_size++;
 		hash = GetWordHash(word);
 		while (word_hash[hash] != -1) hash = (hash + 1) % vocab_hash_size;
@@ -70,9 +68,16 @@ public:
 		return word_size - 1;
 	}
 
+	void Init() {
+		mWordEmbeds = (struct embed_word *)calloc(vocab_hash_size, sizeof(struct embed_word));
+		word_size = 0;
+		word_hash = (int *)calloc(vocab_hash_size, sizeof(int));
+		for (int i = 0; i < vocab_hash_size; i++)
+            word_hash[i] = -1;
+	}
 
 	WordEmbedding() {
-
+		Init();
 		// check;
 	}
 
@@ -104,12 +109,7 @@ public:
 		fscanf(f, "%lld", &size);
 		layer1_size = size;
 		if (words > vocab_hash_size) words = vocab_hash_size;
-		mWordEmbeds = (struct embed_word *)calloc(vocab_hash_size, sizeof(struct embed_word));
-		word_size = 0;
-		word_hash = (int *)calloc(vocab_hash_size, sizeof(int));
-		for (unsigned i = 0; i < vocab_hash_size; i++)
-            word_hash[i] = -1;
-
+		Init();
 		for (b = 0; b < words; b++) {
 			vocab = (char *)malloc(max_w * sizeof(char));
 			M = (real *)malloc((long long) size * sizeof(real));
@@ -121,11 +121,11 @@ public:
 			}
 			vocab[a] = 0;
 			if (IsBinary) {
-			for (a = 0; a < size; a++) fread(&M[a], sizeof(float), 1, f);
-			len = 0;
-			for (a = 0; a < size; a++) len += M[a] * M[a];
-			len = sqrt(len);
-			for (a = 0; a < size; a++) M[a] /= len;
+				for (a = 0; a < size; a++) fread(&M[a], sizeof(float), 1, f);
+				len = 0;
+				for (a = 0; a < size; a++) len += M[a] * M[a];
+				len = sqrt(len);
+				for (a = 0; a < size; a++) M[a] /= len;
 			}
 			else {
 				for (a = 0; a < size; a++)

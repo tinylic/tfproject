@@ -44,11 +44,7 @@ public:
 	
 	Dictionary(const char *fn){
 		// read in a dictionary from a file
-		vocab = (struct vocab_word *)calloc(vocab_hash_size, sizeof(struct vocab_word));
-		vocab_hash = (int *)calloc(vocab_hash_size, sizeof(int));
-		for (unsigned i = 0; i < vocab_hash_size; i++)
-            vocab_hash[i] = -1;
-		vocab_size = 0;
+		Init();
 		Char word[MAX_STRING];
 		unsigned index;
 		FILE *fin = fopen(fn, "r");
@@ -94,7 +90,7 @@ public:
 		return -1;
 	}
 	// Return the word in the position [hash]
-	Char* GetWord(unsigned int hash) {
+	Char* GetWord(int hash) {
 		if (hash == -1) return NULL;
 		return vocab[hash].word;
 	}

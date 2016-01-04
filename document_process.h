@@ -21,10 +21,15 @@ private:
 
 public:
 
-	Document(){
+	void Init() {
 		// Initialization
 		mDict = (Dictionary *)calloc(1, sizeof(Dictionary));
+		mDict -> Init();
 		mWordCount.clear();
+		AllWord.clear();
+	}
+	Document(){
+		Init();
 	}
 	~Document(){
 		free(mDict);
@@ -34,25 +39,21 @@ public:
 
 	void ReadFile(const char *fn){
 		//read from a file that represents a document
-		mDict = (Dictionary *)calloc(1, sizeof(Dictionary));
-		(*mDict) = Dictionary();
-		(*mDict).Init();
-		mWordCount.clear();
-		AllWord.clear();
+		Init();
 		Char word[MAX_STRING];
 		FILE *fin = fopen(fn, "r");
 		while (1) {
 				if (feof(fin)) break;
 				ReadWord(word, fin);
-				unsigned index = mDict -> SearchVocab(word);
+				int index = mDict -> SearchVocab(word);
 				if (index == -1) {
-					unsigned a = mDict -> AddWordToVocab(word);
+					int a = mDict -> AddWordToVocab(word);
 					mWordCount[a] = 1;
 				} else mWordCount[index] ++;
 			}
 	}
 
-	void ReadFromCorpus(Char *document) {
+	void ReadCorpus(Char *document) {
 		//Read a document in the form of <w1, c1>
 		int a = 0, ch;
 		int len = strlen(document);
@@ -79,7 +80,7 @@ public:
 			if (index == -1) {
 				a = mDict -> AddWordToVocab(word);
 				mWordCount[a] = cnt;
-			} else mWordCount[index] ++;
+			} else mWordCount[index] += cnt;
 		}
 	}
 
@@ -139,7 +140,7 @@ public:
 			if (feof(fin)) break;
 			Document* NewDocument = (Document *)calloc(1, sizeof(Document));
 			fgets(Doc, vocab_hash_size, fin);
-			NewDocument -> ReadFromCorpus(Doc);
+			NewDocument -> ReadCorpus(Doc);
 			mCorpus.push_back(NewDocument);
 		}
 	}
