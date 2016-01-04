@@ -7,25 +7,15 @@ class Document {
 public:
 	Dictionary* mDict;
 	Umap mWordCount;
+	vector<Upair> AllWord;
 private:
-	void ReadWord(Char *word, FILE *fin) {
-		int a = 0, ch;
-		while (!feof(fin)) {
-			ch = fgetc(fin);
-			if (ch == 13) continue;
-			if ((ch == ' ') || (ch == '\t') || (ch == '\n')) {
-				if (a > 0) {
-					if (ch == '\n') ungetc(ch, fin);
-					break;
-				}
-				if (ch == '\n') {
-					strcpy(word, (char *)"</s>");
-					return;
-				} else continue;
-			}
-			word[a] = ch;
-			a++;
-		}
+	void ReadWord(Char *word, FILE *f) {
+		int a = 0;
+		while (1) {
+			word[a] = fgetc(f);
+			if (feof(f) || (word[a] == ' ')) break;
+						if ((a < max_w) && (word[a] != '\n')) a++;
+					}
 		word[a] = 0;
 	}
 
@@ -42,27 +32,24 @@ public:
 	}
 
 
-	Document(const char *fn){
+	void ReadFile(const char *fn){
 		//read from a file that represents a document
-
+		mDict = (Dictionary *)calloc(1, sizeof(Dictionary));
+		(*mDict) = Dictionary();
+		(*mDict).Init();
+		mWordCount.clear();
+		AllWord.clear();
 		Char word[MAX_STRING];
-		FILE *fin = fopen(fn, "rb");
-		if (fin == NULL) {
-			printf("ERROR: training data file not found!\n");
-			exit(1);
-		}
-
+		FILE *fin = fopen(fn, "r");
 		while (1) {
-			mDict -> ReadWord(word, fin);
-			if (feof(fin)) break;
-			int index = mDict -> SearchVocab(word);
-			printf("index = %d\n", index);
-			if (index == -1) {
-				int a = mDict -> AddWordToVocab(word);
-				mWordCount[a] = 1;
-			} else mWordCount[index] ++;
-		}
-		//mDict has to be modified
+				if (feof(fin)) break;
+				ReadWord(word, fin);
+				unsigned index = mDict -> SearchVocab(word);
+				if (index == -1) {
+					unsigned a = mDict -> AddWordToVocab(word);
+					mWordCount[a] = 1;
+				} else mWordCount[index] ++;
+			}
 	}
 
 void ReadFromCorpus(Char *document) {
@@ -108,7 +95,7 @@ void ReadFromCorpus(Char *document) {
 
 		while (1) {
 			if (feof(fin)) break;
-			mDict -> ReadWord(word, fin);
+			ReadWord(word, fin);
 			fscanf(fin, "%d", &cnt);
 			unsigned index = mDict -> SearchVocab(word);
 			if (index == -1) {
@@ -125,8 +112,9 @@ void ReadFromCorpus(Char *document) {
 	vector<Upair> GetAllWord() {
 		vector<Upair> result;
 		result.clear();
-		for (Umap :: iterator Uit = mWordCount.begin(); Uit != mWordCount.end(); Uit++)
+		for (Umap :: iterator Uit = mWordCount.begin(); Uit != mWordCount.end(); Uit++) {
 			result.push_back(make_pair(Uit -> first, Uit -> second));
+		}
 		return result;
 	}
 };
