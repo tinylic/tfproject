@@ -121,7 +121,6 @@ public:
 				if ((a < max_w) && (vocab[a] != '\n')) a++;
 			}
 			vocab[a] = 0;
-			printf("%s\n", vocab);
 			//debug("%s\n", vocab);
 			if (IsBinary) {
 			for (a = 0; a < size; a++) fread(&M[a], sizeof(float), 1, f);

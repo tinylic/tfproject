@@ -95,9 +95,8 @@ public:
 	}
 	// Return the word in the position [hash]
 	Char* GetWord(unsigned int hash) {
-		cout << vocab_hash[hash] << endl;
-		if (vocab_hash[hash] == -1) return NULL;
-		return vocab[vocab_hash[hash]].word;
+		if (hash == -1) return NULL;
+		return vocab[hash].word;
 	}
 	int AddWordToVocab(Char *word) {
 		unsigned int hash, length = strlen(word) + 1;

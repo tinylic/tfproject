@@ -113,14 +113,18 @@ public:
 	real *Transform(vector<Upair> doc){
 		// Documents are represented in word_id
 		int len = (int)doc.size();
-		//debug("len = %d\n", len);
-		int *ans = (int *)calloc(classes, sizeof(int));
+		long long total = 0;
+		int *ans = (int *)calloc(clcn, sizeof(int));
 		real *result = (real *)calloc(clcn, sizeof(real));
 		memset(ans, 0, sizeof ans);
-		for (int i = 0; i < len; i++)
+		for (int i = 0; i < len; i++) {
 			ans[cl[doc[i].first]] += doc[i].second;
-		for (int i = 0; i < classes; i++)
-			result[i] = (real)ans[i] / len;
+			total += doc[i].second;
+		}
+		for (int i = 0; i < clcn; i++){
+			//printf("%d ", ans[i]);
+			result[i] = (real)ans[i] / total;
+		}
 		return result;
 	}
 	real *Transform(Document *Doc) {
@@ -129,24 +133,13 @@ public:
 		vector<Upair> NewAll;
 		NewAll.clear();
 		for (int i = 0; i < (int)All.size(); i++) {
-			cout << All[i].first << " " << All[i].second << endl;
             Char *mWord = Doc -> mDict -> GetWord(All[i].first);
-            cout << "asdas" << endl;
-            if (mWord == NULL)
-            	cout << "fuck" << endl;
-            else
-            	cout << mWord << endl;
-            cout << "asd" << endl;
             // Word in the document
             int index = mWordEmbedding -> SearchVocab(mWord);
             // Word ID in the Embedding
-            cout << index;
-            cout << " === " << endl;
             if (index != -1)
                 NewAll.push_back(make_pair(index, All[i].second));
 		}
-		cout << "asdas" << endl;
-		cout << "asd" << endl;
 		return Transform(NewAll);
 	}
 	// double *transform(const Document &doc){
