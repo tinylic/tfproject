@@ -56,6 +56,7 @@ public:
 			mDict -> ReadWord(word, fin);
 			if (feof(fin)) break;
 			int index = mDict -> SearchVocab(word);
+			printf("index = %d\n", index);
 			if (index == -1) {
 				int a = mDict -> AddWordToVocab(word);
 				mWordCount[a] = 1;
@@ -99,7 +100,7 @@ void ReadFromCorpus(Char *document) {
 
 		int cnt;
 		Char word[MAX_STRING];
-		FILE *fin = fopen(fn, "rb");
+		FILE *fin = fopen(fn, "r");
 		if (fin == NULL) {
 			printf("ERROR: training data file not found!\n");
 			exit(1);

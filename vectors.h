@@ -25,10 +25,8 @@ public:
 	int GetWordHash(Char *word) {
 		unsigned long long a, hash = 0;
 		int len = strlen(word);
-		cout << len << endl;
 		for (a = 0; a < len; a++) hash = hash * 257 + word[a];
 		hash = hash % vocab_hash_size;
-		cout << hash << endl;
 		return hash;
 	}
 
@@ -36,14 +34,8 @@ public:
 
 	int SearchVocab(Char *word) {
 		unsigned int hash = GetWordHash(word);
-		 printf("%s\n%d\n", word, word_hash[hash]);
-		 cout << "asd" << endl;
 		while (1) {
-			cout << word_hash[hash] << endl;
-			cout << "asdasfsa" << endl;
 			if (word_hash[hash] == -1) return -1;
-			cout << word_hash[hash] << endl;
-			cout << "asdsa" << endl;
 			if (!strcmp(word, mWordEmbeds[word_hash[hash]].word)) return word_hash[hash];
 			hash = (hash + 1) % vocab_hash_size;
 		}
@@ -98,13 +90,18 @@ public:
 		char *vocab;
 		char *temp;
 		FILE *f;
-		f = fopen(fn, "rb");
+		if (IsBinary) {
+			f = fopen(fn, "rb");
+		}
+		else {
+			f = fopen(fn, "r");
+		}
 		if (f == NULL) {
 			printf("Input file not found\n");
 			return ;
 		}
-		fscanf(f, "%I64d", &words);
-		fscanf(f, "%I64d", &size);
+		fscanf(f, "%lld", &words);
+		fscanf(f, "%lld", &size);
 		layer1_size = size;
 		if (words > vocab_hash_size) words = vocab_hash_size;
 		mWordEmbeds = (struct embed_word *)calloc(vocab_hash_size, sizeof(struct embed_word));
