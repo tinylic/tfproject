@@ -1,15 +1,4 @@
 <<<<<<< HEAD
-*.o
-bin/Debug/tfproject.exe
-*.cbp
-*.depend
-*.layout
-/bin
-/obj
-=======
-/bin
-/obj
-.cbp
-.depend
-.layout
->>>>>>> origin/master
+*.*
+!*.h
+!*.cpp
