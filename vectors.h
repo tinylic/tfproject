@@ -110,7 +110,6 @@ public:
 		for (unsigned i = 0; i < vocab_hash_size; i++)
             word_hash[i] = -1;
 
-		// for (; fgetc(f) != '\n';);
 		for (b = 0; b < words; b++) {
 			vocab = (char *)malloc(max_w * sizeof(char));
 			M = (real *)malloc((long long) size * sizeof(real));
@@ -121,7 +120,6 @@ public:
 				if ((a < max_w) && (vocab[a] != '\n')) a++;
 			}
 			vocab[a] = 0;
-			//debug("%s\n", vocab);
 			if (IsBinary) {
 			for (a = 0; a < size; a++) fread(&M[a], sizeof(float), 1, f);
 			len = 0;
@@ -136,43 +134,6 @@ public:
 			index = AddEmbedding(vocab, M);
 		}
 	}
-	// WordEmbedding(const char *fn){
-		// read in from a word embedding file
-		// first line word_numbers && vector_dimensions
-		// in the form of word array[embedding] separated in spaces
-		// Char word[MAX_STRING];
-		// unsigned index, i, word_numbers;
-		// double *embedding;
-		// FILE *fin = fopen(fn, "rb");
-		// if (fin == NULL) {
-			// printf("ERROR: training data file not found!\n");
-			// exit(1);
-		// }
-		// fscanf(fin, "%d%d", &word_numbers, &layer1_size);
-        // vocab_hash_size = word_numbers;
-		// mWordEmbeds = (struct embed_word *)calloc(vocab_hash_size, sizeof(struct embed_word));
-		// word_size = 0;
-		// word_hash = (int *)calloc(vocab_hash_size * 2 + 1, sizeof(int));
-		// for (i = 0; i < vocab_hash_size; i++)
-            // word_hash[i] = -1;
-
-		// printf("%d %d\n", word_numbers, layer1_size);
-		// for (; fgetc(fin) != '\n';);
-        // embedding = (double *)calloc(layer1_size, sizeof(double));
-		// while (word_numbers --) {
-			// ReadWord(word, fin);
-			// printf("%s ", word);
-			// if (feof(fin)) break;
-			// for (i = 0; i < layer1_size; i++) {
-				// fscanf(fin, "%lf", &embedding[i]);
-			// }
-			// for (; fgetc(fin) != '\n';);
-			// index = AddEmbedding(word, embedding);
-			// mWordEmbeds[index].cn++;
-		// }
-
-	// }
-
 	int AddEmbedding(Char* word, real* embedding){
 		// Insert the embedding to the dict and return the index
 		All.push_back(embedding);
