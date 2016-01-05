@@ -5,6 +5,7 @@ using namespace std;
 
 class Document {
 public:
+	int mtag;
 	Dictionary* mDict;
 	Umap mWordCount;
 	vector<Upair> AllWord;
@@ -27,6 +28,7 @@ public:
 		mDict -> Init();
 		mWordCount.clear();
 		AllWord.clear();
+		mtag = -1;
 	}
 	Document(){
 		Init();
@@ -37,11 +39,12 @@ public:
 	}
 
 
-	void ReadFile(const char *fn){
+	void ReadFile(const int Tag, const char *fn){
 		//read from a file that represents a document
 		Init();
 		Char word[MAX_STRING];
 		FILE *fin = fopen(fn, "r");
+		mtag = Tag;
 		while (1) {
 				if (feof(fin)) break;
 				ReadWord(word, fin);

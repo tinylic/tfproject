@@ -1,9 +1,14 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <dirent.h>
+#include <unistd.h>
 #include <math.h>
 #include <map>
 #include <vector>
+
 
 #define MAX_STRING 100
 #define EXP_TABLE_SIZE 1000
@@ -13,6 +18,7 @@
 
 #define check printf("here is ok\n")
 #define debug(...) fprintf(stderr, __VA_ARGS__)
+#define connect(x, y) x##y
 
 using namespace std;
 
