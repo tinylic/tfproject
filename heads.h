@@ -10,7 +10,7 @@
 #include <vector>
 
 
-#define MAX_STRING 100
+#define MAX_STRING 1000
 #define EXP_TABLE_SIZE 1000
 #define MAX_EXP 6
 #define MAX_SENTENCE_LENGTH 1000
@@ -32,7 +32,8 @@ typedef vector<real *> AllEmbeds;
 char train_file[MAX_STRING], output_file[MAX_STRING];
 char save_vocab_file[MAX_STRING], read_vocab_file[MAX_STRING];
 
-int vocab_hash_size = 30000000;  // Maximum 30 * 0.7 = 21M words in the vocabulary
+int vocab_hash_size = 3000000;  // Maximum 30 * 0.7 = 21M words in the vocabulary
+int dict_hash_size = 10000;
 int binary = 0, cbow = 1, debug_mode = 2, window = 5, min_count = 5, num_threads = 12, min_reduce = 1;
 
 long long max_w = 50;

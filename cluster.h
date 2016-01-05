@@ -10,10 +10,10 @@ private:
 	WordEmbedding *mWordEmbedding;
 
 public:
-	int clcn, iter, closeid;
+	unsigned clcn, iter, closeid;
 	// clcn : class number
 	// closeid : closest cluster
-	int vec_size;
+
 	int *centcn;
 	int *cl;
 	real closev,x;
@@ -57,7 +57,7 @@ public:
 			unsigned a, b, c, d;
 			clcn = classes, iter = 10;
 			vectors = (*mWordEmbedding).getAllEmbedding();
-			vec_size = (int)vectors.size();
+			unsigned vec_size = (int)vectors.size();
 			centcn = (int *)malloc(classes * sizeof(int));
 			cl = (int *)calloc(vec_size, sizeof(int));
 			cent = (real *)calloc(classes * layer1_size, sizeof(real));
@@ -103,7 +103,8 @@ public:
 			// Return the centroid coordinates
 			vector<real *> result;
 			result.clear();
-			for (int i = 0; i < clcn; i++) {
+			unsigned i;
+			for (i = 0; i < clcn; i++) {
 				real *centroid = (real *)calloc(layer1_size, sizeof(real));
 				for (int j = 0; j < layer1_size; j++)
 					centroid[j] = cent[i * layer1_size + j];
@@ -113,16 +114,17 @@ public:
 		}
 	real *Transform(vector<Upair> doc){
 		// Documents are represented in word_id
-		int len = (int)doc.size();
+		unsigned len = doc.size();
+		unsigned i;
 		long long total = 0;
 		int *ans = (int *)calloc(clcn, sizeof(int));
 		real *result = (real *)calloc(clcn, sizeof(real));
 		memset(ans, 0, sizeof ans);
-		for (int i = 0; i < len; i++) {
+		for (i = 0; i < len; i++) {
 			ans[cl[doc[i].first]] += doc[i].second;
 			total += doc[i].second;
 		}
-		for (int i = 0; i < clcn; i++){
+		for (i = 0; i < clcn; i++){
 			//printf("%d ", ans[i]);
 			result[i] = (real)ans[i] / total;
 		}

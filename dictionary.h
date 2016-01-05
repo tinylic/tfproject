@@ -19,16 +19,16 @@ public:
 
 	Dictionary(){
 		// Initialization
-		vocab = (struct vocab_word *)calloc(vocab_hash_size, sizeof(struct vocab_word));
-		vocab_hash = (int *)calloc(vocab_hash_size, sizeof(int));
-		for (unsigned i = 0; i < vocab_hash_size; i++)
+		vocab = (struct vocab_word *)calloc(dict_hash_size, sizeof(struct vocab_word));
+		vocab_hash = (int *)calloc(dict_hash_size, sizeof(int));
+		for (int i = 0; i < dict_hash_size; i++)
             vocab_hash[i] = -1;
 		vocab_size = 0;
 	}
 	void Init() {
-		vocab = (struct vocab_word *)calloc(vocab_hash_size, sizeof(struct vocab_word));
-		vocab_hash = (int *)calloc(vocab_hash_size, sizeof(int));
-		for (unsigned i = 0; i < vocab_hash_size; i++)
+		vocab = (struct vocab_word *)calloc(dict_hash_size, sizeof(struct vocab_word));
+		vocab_hash = (int *)calloc(dict_hash_size, sizeof(int));
+		for (int i = 0; i < dict_hash_size; i++)
             vocab_hash[i] = -1;
 		vocab_size = 0;
 	}
@@ -36,7 +36,7 @@ public:
 			int a = 0;
 			while (1) {
 				word[a] = fgetc(f);
-				if (feof(f) || (word[a] == ' ')) break;
+				if (!isalpha(word[a])) break;
 							if ((a < max_w) && (word[a] != '\n')) a++;
 						}
 			word[a] = 0;
@@ -46,7 +46,7 @@ public:
 		// read in a dictionary from a file
 		Init();
 		Char word[MAX_STRING];
-		unsigned index;
+		int index;
 		FILE *fin = fopen(fn, "r");
 		if (fin == NULL) {
 			printf("ERROR: training data file not found!\n");
@@ -55,6 +55,7 @@ public:
 
 		while (1) {
 			ReadWord(word, fin);
+			if (strlen(word) < 3) continue;
 			if (feof(fin)) break;
 			index = SearchVocab(word);
 			if (index == -1) {
@@ -71,10 +72,10 @@ public:
 	}
 
 	int GetWordHash(Char *word) {
-		unsigned long long a, hash = 0;
-		int len = strlen(word);
+		unsigned long long hash = 0;
+		int a, len = strlen(word);
 		for (a = 0; a < len; a++) hash = hash * 257 + word[a];
-		hash = hash % vocab_hash_size;
+		hash = hash % dict_hash_size;
 		return hash;
 	}
 
@@ -85,7 +86,7 @@ public:
 		while (1) {
 			if (vocab_hash[hash] == -1) return -1;
 			if (!strcmp(word, vocab[vocab_hash[hash]].word)) return vocab_hash[hash];
-			hash = (hash + 1) % vocab_hash_size;
+			hash = (hash + 1) % dict_hash_size;
 		}
 		return -1;
 	}
@@ -101,7 +102,7 @@ public:
 		strcpy(vocab[vocab_size].word, word);
 		vocab_size++;
 		hash = GetWordHash(word);
-		while (vocab_hash[hash] != -1) hash = (hash + 1) % vocab_hash_size;
+		while (vocab_hash[hash] != -1) hash = (hash + 1) % dict_hash_size;
 		vocab_hash[hash] = vocab_size - 1;
 		return vocab_size - 1;
 	}

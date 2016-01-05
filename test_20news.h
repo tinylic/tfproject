@@ -30,7 +30,9 @@ public:
 					sprintf(curaddr, "%s/%s", addr, curptr -> d_name);
 					cout << curaddr << endl;
 					Document doc;
+					doc.Init();
 					doc.ReadFile(tag_count, curaddr);
+					//Groups.push_back(doc);
 				}
 			}
 		}

@@ -23,8 +23,8 @@ private:
 public:
 
 	int GetWordHash(Char *word) {
-		unsigned long long a, hash = 0;
-		int len = strlen(word);
+		unsigned long long hash = 0;
+		int a, len = strlen(word);
 		for (a = 0; a < len; a++) hash = hash * 257 + word[a];
 		hash = hash % vocab_hash_size;
 		return hash;
@@ -88,12 +88,10 @@ public:
 	}
 
 	WordEmbedding(const char *fn, bool IsBinary) {
-		long long words, size, a, b, c, d, bi[100], index;
+		long long words, size, a, b;
 		real len;
-		char ch;
 		real *M;
 		char *vocab;
-		char *temp;
 		FILE *f;
 		if (IsBinary) {
 			f = fopen(fn, "rb");
@@ -116,10 +114,11 @@ public:
 			a = 0;
 			while (1) {
 				vocab[a] = fgetc(f);
-				if (feof(f) || (vocab[a] == ' ')) break;
+				if (!isalpha(vocab[a])) break;
 				if ((a < max_w) && (vocab[a] != '\n')) a++;
 			}
 			vocab[a] = 0;
+			if (strlen(vocab) < 3) continue;
 			if (IsBinary) {
 				for (a = 0; a < size; a++) fread(&M[a], sizeof(float), 1, f);
 				len = 0;
@@ -131,7 +130,7 @@ public:
 				for (a = 0; a < size; a++)
 					fscanf(f, "%f", &M[a]);
 			}
-			index = AddEmbedding(vocab, M);
+			AddEmbedding(vocab, M);
 		}
 	}
 	int AddEmbedding(Char* word, real* embedding){

@@ -14,7 +14,7 @@ private:
 		int a = 0;
 		while (1) {
 			word[a] = fgetc(f);
-			if (feof(f) || (word[a] == ' ')) break;
+			if (!isalpha(word[a])) break;
 						if ((a < max_w) && (word[a] != '\n')) a++;
 					}
 		word[a] = 0;
@@ -41,24 +41,34 @@ public:
 
 	void ReadFile(const int Tag, const char *fn){
 		//read from a file that represents a document
+		//Read 20_news
 		Init();
 		Char word[MAX_STRING];
 		FILE *fin = fopen(fn, "r");
+		while (1) {
+			if (fgetc(fin) == '\n'){
+				char ch = fgetc(fin);
+				if (ch == '<' || ch == '\n') break;
+			}
+		}
 		mtag = Tag;
 		while (1) {
 				if (feof(fin)) break;
 				ReadWord(word, fin);
+				if (strlen(word) < 3) continue;
+				cout << word << endl;
 				int index = mDict -> SearchVocab(word);
 				if (index == -1) {
 					int a = mDict -> AddWordToVocab(word);
 					mWordCount[a] = 1;
 				} else mWordCount[index] ++;
+
 			}
 	}
 
 	void ReadCorpus(Char *document) {
 		//Read a document in the form of <w1, c1>
-		int a = 0, ch;
+		int a = 0;
 		int len = strlen(document);
 		Char word[MAX_STRING];
 		for (int i = 0; ; ) {
@@ -77,6 +87,7 @@ public:
 			int cnt = 0;
 			for (; isdigit(document[i]); i++)
 				cnt = cnt * 10 + document[i] - '0';
+			if (strlen(word) < 3) continue;
 
 			//add to dictionary
 			int index = mDict -> SearchVocab(word);
@@ -101,9 +112,10 @@ public:
 			if (feof(fin)) break;
 			ReadWord(word, fin);
 			fscanf(fin, "%d", &cnt);
-			unsigned index = mDict -> SearchVocab(word);
+			if (strlen(word) < 3) continue;
+			int index = mDict -> SearchVocab(word);
 			if (index == -1) {
-				unsigned a = mDict -> AddWordToVocab(word);
+				int a = mDict -> AddWordToVocab(word);
 				mWordCount[a] = cnt;
 			} else mWordCount[index] += cnt;
 		}
