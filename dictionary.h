@@ -55,7 +55,7 @@ public:
 
 		while (1) {
 			ReadWord(word, fin);
-			if (strlen(word) < 3) continue;
+			if (strlen(word) < MIN_WORDS) continue;
 			if (feof(fin)) break;
 			index = SearchVocab(word);
 			if (index == -1) {

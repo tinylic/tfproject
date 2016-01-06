@@ -118,7 +118,6 @@ public:
 				if ((a < max_w) && (vocab[a] != '\n')) a++;
 			}
 			vocab[a] = 0;
-			if (strlen(vocab) < 3) continue;
 			if (IsBinary) {
 				for (a = 0; a < size; a++) fread(&M[a], sizeof(float), 1, f);
 				len = 0;
@@ -130,6 +129,7 @@ public:
 				for (a = 0; a < size; a++)
 					fscanf(f, "%f", &M[a]);
 			}
+			if (strlen(vocab) < MIN_WORDS) continue;
 			AddEmbedding(vocab, M);
 		}
 	}

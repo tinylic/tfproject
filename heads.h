@@ -15,6 +15,8 @@
 #define MAX_EXP 6
 #define MAX_SENTENCE_LENGTH 1000
 #define MAX_CODE_LENGTH 40
+#define MAX_DOC_PER_TAG 100
+#define MIN_WORDS 3
 
 #define check printf("here is ok\n")
 #define debug(...) fprintf(stderr, __VA_ARGS__)

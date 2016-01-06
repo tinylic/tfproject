@@ -55,8 +55,7 @@ public:
 		while (1) {
 				if (feof(fin)) break;
 				ReadWord(word, fin);
-				if (strlen(word) < 3) continue;
-				cout << word << endl;
+				if (strlen(word) < MIN_WORDS) continue;
 				int index = mDict -> SearchVocab(word);
 				if (index == -1) {
 					int a = mDict -> AddWordToVocab(word);
@@ -112,7 +111,7 @@ public:
 			if (feof(fin)) break;
 			ReadWord(word, fin);
 			fscanf(fin, "%d", &cnt);
-			if (strlen(word) < 3) continue;
+			if (strlen(word) < MIN_WORDS) continue;
 			int index = mDict -> SearchVocab(word);
 			if (index == -1) {
 				int a = mDict -> AddWordToVocab(word);
