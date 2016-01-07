@@ -21,7 +21,7 @@ public:
 	// cent : coordinates of the cluster centroid
 	AllEmbeds vectors;
 	void Init() {
-		mWordEmbedding = (WordEmbedding *)calloc(1, sizeof(WordEmbedding));
+		mWordEmbedding = (WordEmbedding *)malloc(sizeof(WordEmbedding));
 		vectors.clear();
 	}
 	cluster(){
@@ -30,7 +30,7 @@ public:
 	}
 
 	~cluster(){
-		free(mWordEmbedding);
+		//free(mWordEmbedding);
 	}
 
 	cluster(WordEmbedding *mEmbedding) {
@@ -58,6 +58,7 @@ public:
 			clcn = classes, iter = 10;
 			vectors = (*mWordEmbedding).getAllEmbedding();
 			unsigned vec_size = (int)vectors.size();
+			cout << vec_size << endl;
 			centcn = (int *)malloc(classes * sizeof(int));
 			cl = (int *)calloc(vec_size, sizeof(int));
 			cent = (real *)calloc(classes * layer1_size, sizeof(real));
@@ -124,6 +125,7 @@ public:
 			ans[cl[doc[i].first]] += doc[i].second;
 			total += doc[i].second;
 		}
+		total ++;//Avoid total == 0
 		for (i = 0; i < clcn; i++){
 			//printf("%d ", ans[i]);
 			result[i] = (real)ans[i] / total;
@@ -135,6 +137,7 @@ public:
 		vector<Upair> All = Doc -> GetAllWord();
 		vector<Upair> NewAll;
 		NewAll.clear();
+		cout << All.size() << endl;
 		for (int i = 0; i < (int)All.size(); i++) {
             Char *mWord = Doc -> mDict -> GetWord(All[i].first);
             // Word in the document

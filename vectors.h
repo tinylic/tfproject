@@ -33,7 +33,7 @@ public:
 // Returns position of a word in the vocabulary; if the word is not found, returns -1
 
 	int SearchVocab(Char *word) {
-		unsigned int hash = GetWordHash(word);
+		int hash = GetWordHash(word);
 		while (1) {
 			if (word_hash[hash] == -1) return -1;
 			if (!strcmp(word, mWordEmbeds[word_hash[hash]].word)) return word_hash[hash];
@@ -56,7 +56,7 @@ public:
 	}
 
 	int AddWordToVocab(Char *word) {
-		unsigned int hash, length = strlen(word) + 1;
+		int hash, length = strlen(word) + 1;
 		if (length > MAX_STRING) length = MAX_STRING;
 		mWordEmbeds[word_size].word = (Char *)calloc(length, sizeof(Char));
 		mWordEmbeds[word_size].cn = 0;
@@ -103,11 +103,11 @@ public:
 			printf("Input file not found\n");
 			return ;
 		}
+		Init();
 		fscanf(f, "%lld", &words);
 		fscanf(f, "%lld", &size);
 		layer1_size = size;
 		if (words > vocab_hash_size) words = vocab_hash_size;
-		Init();
 		for (b = 0; b < words; b++) {
 			vocab = (char *)malloc(max_w * sizeof(char));
 			M = (real *)malloc((long long) size * sizeof(real));
