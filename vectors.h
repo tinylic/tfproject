@@ -107,6 +107,7 @@ public:
 		fscanf(f, "%lld", &words);
 		fscanf(f, "%lld", &size);
 		layer1_size = size;
+		cout << words << " " << size << endl;
 		if (words > vocab_hash_size) words = vocab_hash_size;
 		for (b = 0; b < words; b++) {
 			vocab = (char *)malloc(max_w * sizeof(char));
@@ -135,6 +136,7 @@ public:
 	}
 	int AddEmbedding(Char* word, real* embedding){
 		// Insert the embedding to the dict and return the index
+		cout << word << endl;
 		All.push_back(embedding);
 		int index = SearchVocab(word);
 		if (index == -1)

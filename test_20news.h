@@ -38,16 +38,16 @@ public:
 					if (curptr -> d_name[0] == '.') continue;
 					char *curaddr = (char *)calloc(255, sizeof(char));
 					sprintf(curaddr, "%s/%s", addr, curptr -> d_name);
-					cout << curaddr << endl;
+					//cout << curaddr << endl;
 					Document doc;
 					doc.Init();
 					doc.ReadFile(tag_count, curaddr);
 					Groups.push_back(&doc);
 					int cur_id = tag_count * MAX_DOC_PER_TAG + doc_count;
 					embeds[cur_id] = Cluster.Transform(&doc);
-					for (int i = 0; i < max_w; i++)
-						printf("%.6f ", embeds[cur_id][i]);
-					cout << endl;
+					//for (int i = 0; i < max_w; i++)
+						//printf("%.6f ", embeds[cur_id][i]);
+					//cout << endl;
 					belongs[cur_id] = tot_doc ++;
 					doc_count ++;
 					if (doc_count >= MAX_DOC_PER_TAG) break;
