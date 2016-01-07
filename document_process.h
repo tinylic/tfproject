@@ -9,22 +9,11 @@ public:
 	Dictionary* mDict;
 	Umap mWordCount;
 	vector<Upair> AllWord;
-private:
-	void ReadWord(Char *word, FILE *f) {
-		int a = 0;
-		while (1) {
-			word[a] = fgetc(f);
-			if (!isalpha(word[a])) break;
-						if ((a < max_w) && (word[a] != '\n')) a++;
-					}
-		word[a] = 0;
-	}
 
-public:
 
 	void Init() {
 		// Initialization
-		mDict = (Dictionary *)calloc(1, sizeof(Dictionary));
+		mDict = new Dictionary;
 		mDict -> Init();
 		mWordCount.clear();
 		AllWord.clear();
@@ -34,8 +23,7 @@ public:
 		Init();
 	}
 	~Document(){
-		free(mDict);
-		mWordCount.clear();
+		//delete mDict;
 	}
 
 
@@ -152,7 +140,7 @@ public:
 		Char Doc[MAX_STRING];
 		while (1) {
 			if (feof(fin)) break;
-			Document* NewDocument = (Document *)calloc(1, sizeof(Document));
+			Document *NewDocument = new Document;
 			fgets(Doc, vocab_hash_size, fin);
 			NewDocument -> ReadCorpus(Doc);
 			mCorpus.push_back(NewDocument);

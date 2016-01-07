@@ -14,7 +14,9 @@ public:
 		Groups.clear();
 		Hash.clear();
 		Cluster = cluster("vectors.bin", true);
+		cout << "reading" << endl;
 		Cluster.Kmeans(max_w);
+		cout << "Kmeans" << endl;
 		DIR *dir, *curdir;
 		int tag_count = 0;
 		int doc_count = 0;
@@ -23,8 +25,8 @@ public:
 		struct dirent *curptr;
 		struct stat info;
 		dir = opendir(rootaddr);
-		belongs = (int *)calloc(MAX_TAGS * MAX_DOC_PER_TAG, sizeof(int));
-		embeds = (real **)calloc(MAX_TAGS * MAX_DOC_PER_TAG, sizeof(real *));
+		belongs = new int[MAX_TAGS * MAX_DOC_PER_TAG];
+		embeds = new real *[MAX_TAGS * MAX_DOC_PER_TAG];
 		while ((ptr = readdir(dir)) != NULL){
 			if (ptr -> d_name[0] == '.') continue;
 			char *addr = (char *)calloc(255, sizeof(char));
@@ -38,23 +40,23 @@ public:
 					if (curptr -> d_name[0] == '.') continue;
 					char *curaddr = (char *)calloc(255, sizeof(char));
 					sprintf(curaddr, "%s/%s", addr, curptr -> d_name);
-					//cout << curaddr << endl;
+					//out << curaddr << endl;
 					Document doc;
 					doc.Init();
 					doc.ReadFile(tag_count, curaddr);
 					Groups.push_back(&doc);
 					int cur_id = tag_count * MAX_DOC_PER_TAG + doc_count;
 					embeds[cur_id] = Cluster.Transform(&doc);
-					//for (int i = 0; i < max_w; i++)
-						//printf("%.6f ", embeds[cur_id][i]);
-					//cout << endl;
+					for (int i = 0; i < max_w; i++)
+						printf("%.6f ", embeds[cur_id][i]);
+					cout << endl;
 					belongs[cur_id] = tot_doc ++;
 					doc_count ++;
 					if (doc_count >= MAX_DOC_PER_TAG) break;
 				}
 				tag_count ++;
 			}
-			cout << tot_doc << endl;
+			//cout << tot_doc << endl;
 		}
 	}
 };

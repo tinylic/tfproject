@@ -20,7 +20,6 @@
 
 #define check printf("here is ok\n")
 #define debug(...) fprintf(stderr, __VA_ARGS__)
-#define connect(x, y) x##y
 
 using namespace std;
 
@@ -47,3 +46,14 @@ real *syn0, *syn1, *syn1neg, *expTable;
 int hs = 0, negative = 5;
 const int table_size = 1e8;
 int *table;
+
+void ReadWord(Char *word, FILE *f) {
+	int a = 0;
+	while (1) {
+		word[a] = fgetc(f);
+		if (!isalpha(word[a])) break;
+		if (isupper(word[a])) word[a] = word[a] - 'A' + 'a';
+		if ((a < max_w) && (word[a] != '\n')) a++;
+	}
+	word[a] = 0;
+}

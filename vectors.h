@@ -11,16 +11,16 @@ struct embed_word {
 		int word_id;
 	};
 class WordEmbedding {
-private:
+public:
 	unsigned nDim;  //the dimensionality of word embedding
-	embed_word* mWordEmbeds;
+	embed_word *mWordEmbeds;
 
 	int *word_hash;
 	int word_size;
 
 	AllEmbeds All;
 
-public:
+
 
 	int GetWordHash(Char *word) {
 		unsigned long long hash = 0;
@@ -34,6 +34,7 @@ public:
 
 	int SearchVocab(Char *word) {
 		int hash = GetWordHash(word);
+		//cout << word_hash[hash] << endl;
 		while (1) {
 			if (word_hash[hash] == -1) return -1;
 			if (!strcmp(word, mWordEmbeds[word_hash[hash]].word)) return word_hash[hash];
@@ -57,8 +58,8 @@ public:
 
 	int AddWordToVocab(Char *word) {
 		int hash, length = strlen(word) + 1;
-		if (length > MAX_STRING) length = MAX_STRING;
-		mWordEmbeds[word_size].word = (Char *)calloc(length, sizeof(Char));
+		//if (length > MAX_STRING) length = MAX_STRING;
+		mWordEmbeds[word_size].word = new Char[length];
 		mWordEmbeds[word_size].cn = 0;
 		strcpy(mWordEmbeds[word_size].word, word);
 		word_size++;
@@ -69,9 +70,9 @@ public:
 	}
 
 	void Init() {
-		mWordEmbeds = (struct embed_word *)calloc(vocab_hash_size, sizeof(struct embed_word));
+		mWordEmbeds = new embed_word[vocab_hash_size];
 		word_size = 0;
-		word_hash = (int *)calloc(vocab_hash_size, sizeof(int));
+		word_hash = new int[vocab_hash_size];
 		for (int i = 0; i < vocab_hash_size; i++)
             word_hash[i] = -1;
 	}
@@ -83,8 +84,9 @@ public:
 
 	~WordEmbedding() {
 		// free(mWordEmbeds);
-		// free(word_hash);
-		// word_size = 0;
+		cout << "Destructing" << endl;
+		//free(word_hash);
+		//word_size = 0;
 	}
 
 	WordEmbedding(const char *fn, bool IsBinary) {
@@ -110,15 +112,9 @@ public:
 		cout << words << " " << size << endl;
 		if (words > vocab_hash_size) words = vocab_hash_size;
 		for (b = 0; b < words; b++) {
-			vocab = (char *)malloc(max_w * sizeof(char));
-			M = (real *)malloc((long long) size * sizeof(real));
-			a = 0;
-			while (1) {
-				vocab[a] = fgetc(f);
-				if (!isalpha(vocab[a])) break;
-				if ((a < max_w) && (vocab[a] != '\n')) a++;
-			}
-			vocab[a] = 0;
+			vocab = new char[max_w];
+			M = new real[size];
+			ReadWord(vocab, f);
 			if (IsBinary) {
 				for (a = 0; a < size; a++) fread(&M[a], sizeof(float), 1, f);
 				len = 0;
@@ -130,18 +126,23 @@ public:
 				for (a = 0; a < size; a++)
 					fscanf(f, "%f", &M[a]);
 			}
-			if (strlen(vocab) < MIN_WORDS) continue;
+			bool valid = true;
+			for (a = 0; a < size; a++)
+				if (!isfinite(M[a])) valid = false;
+			if (strlen(vocab) < MIN_WORDS || valid == false) continue;
 			AddEmbedding(vocab, M);
 		}
 	}
 	int AddEmbedding(Char* word, real* embedding){
 		// Insert the embedding to the dict and return the index
-		cout << word << endl;
-		All.push_back(embedding);
+		//cout << word << endl;
+
 		int index = SearchVocab(word);
-		if (index == -1)
+		if (index == -1) {
 			index = AddWordToVocab(word);
-		mWordEmbeds[index].embedding = (real *)calloc(layer1_size, sizeof(real));
+			All.push_back(embedding);
+		}
+		mWordEmbeds[index].embedding = new real[layer1_size];
 		if (mWordEmbeds[index].embedding == NULL) {
                 debug("%d\n", word_size);
                 perror("Memory Fail\n");

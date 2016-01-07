@@ -17,31 +17,18 @@ private:
 
 public:
 
+
+	void Init() {
+		vocab = new vocab_word[dict_hash_size];
+		vocab_hash = new int[dict_hash_size];
+		for (int i = 0; i < dict_hash_size; i++)
+            vocab_hash[i] = -1;
+		vocab_size = 0;
+	}
 	Dictionary(){
 		// Initialization
-		vocab = (struct vocab_word *)calloc(dict_hash_size, sizeof(struct vocab_word));
-		vocab_hash = (int *)calloc(dict_hash_size, sizeof(int));
-		for (int i = 0; i < dict_hash_size; i++)
-            vocab_hash[i] = -1;
-		vocab_size = 0;
+		Init();
 	}
-	void Init() {
-		vocab = (struct vocab_word *)calloc(dict_hash_size, sizeof(struct vocab_word));
-		vocab_hash = (int *)calloc(dict_hash_size, sizeof(int));
-		for (int i = 0; i < dict_hash_size; i++)
-            vocab_hash[i] = -1;
-		vocab_size = 0;
-	}
-	void ReadWord(Char *word, FILE *f) {
-			int a = 0;
-			while (1) {
-				word[a] = fgetc(f);
-				if (!isalpha(word[a])) break;
-							if ((a < max_w) && (word[a] != '\n')) a++;
-						}
-			word[a] = 0;
-		}
-	
 	Dictionary(const char *fn){
 		// read in a dictionary from a file
 		Init();
@@ -66,9 +53,9 @@ public:
 	}
 
 	~Dictionary(){
-		free(vocab);
-		free(vocab_hash);
-		vocab_size = 0;
+		//delete vocab;
+		//delete vocab_hash;
+		//vocab_size = 0;
 	}
 
 	int GetWordHash(Char *word) {
@@ -98,7 +85,7 @@ public:
 	int AddWordToVocab(Char *word) {
 		unsigned int hash, length = strlen(word) + 1;
 		if (length > MAX_STRING) length = MAX_STRING;
-		vocab[vocab_size].word = (Char *)calloc(length, sizeof(Char));
+		vocab[vocab_size].word = new Char[length];
 		strcpy(vocab[vocab_size].word, word);
 		vocab_size++;
 		hash = GetWordHash(word);
