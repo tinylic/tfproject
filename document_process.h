@@ -40,10 +40,12 @@ public:
 			}
 		}
 		mtag = Tag;
+		int wcnt = 0;
 		while (1) {
 				if (feof(fin)) break;
 				ReadWord(word, fin);
 				if (strlen(word) < MIN_WORDS) continue;
+				wcnt ++;
 				int index = mDict -> SearchVocab(word);
 				if (index == -1) {
 					int a = mDict -> AddWordToVocab(word);
@@ -51,6 +53,7 @@ public:
 				} else mWordCount[index] ++;
 
 			}
+		//cout << wcnt << endl;
 	}
 
 	void ReadCorpus(Char *document) {

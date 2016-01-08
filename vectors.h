@@ -84,7 +84,7 @@ public:
 
 	~WordEmbedding() {
 		// free(mWordEmbeds);
-		cout << "Destructing" << endl;
+		//cout << "Destructing" << endl;
 		//free(word_hash);
 		//word_size = 0;
 	}
@@ -130,6 +130,7 @@ public:
 			for (a = 0; a < size; a++)
 				if (!isfinite(M[a])) valid = false;
 			if (strlen(vocab) < MIN_WORDS || valid == false) continue;
+			//cout << vocab << endl;
 			AddEmbedding(vocab, M);
 		}
 	}
