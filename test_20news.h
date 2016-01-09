@@ -23,6 +23,7 @@ private:
 public:
 	vector < Document* > Groups;
 	vector <DocCmp> dis[MAX_TAGS * MAX_DOC_PER_TAG];
+	FILE *fout = fopen("result.txt", "w");
 	int *belongs;
 	int *tags;
 	real **embeds;
@@ -30,7 +31,7 @@ public:
 	real MAP(int doc_id) {
 		int len = dis[doc_id].size();
 		real result = 0;
-		for (int i = 0; i < len; i++)
+		for (int i = 1; i < len; i++)
 			if (tags[dis[doc_id][i].doc_id] == tags[doc_id])
 				result += 1 / (real)(i + 1);
 		return result;
@@ -40,14 +41,7 @@ public:
 		Hash.clear();
 		Cluster = cluster("vectors.bin", true);
 		cout << "reading" << endl;
-		Cluster.Kmeans(max_w);
-		cout << "Kmeans" << endl;
-		vector<real *> cent = Cluster.GetCentroid();
-		for (int i = 0; i < max_w; i++) {
-			for (int j = 0; j < layer1_size; j++)
-				printf("%.6f ", cent[i][j]);
-			cout << endl;
-		}
+
 		DIR *dir, *curdir;
 		int tag_count = 0;
 		int doc_count = 0;
@@ -68,7 +62,6 @@ public:
 				curdir = opendir(addr);
 				doc_count = 0;
 				while ((curptr = readdir(curdir)) != NULL) {
-					//printf("%s\n", curptr -> d_name);
 					if (curptr -> d_name[0] == '.') continue;
 					char *curaddr = (char *)calloc(255, sizeof(char));
 					sprintf(curaddr, "%s/%s", addr, curptr -> d_name);
@@ -77,10 +70,10 @@ public:
 					doc.Init();
 					doc.ReadFile(tag_count, curaddr);
 					Groups.push_back(&doc);
-					embeds[tot_doc] = Cluster.Transform(&doc);
+					embeds[tot_doc] = Cluster.Transform(max_w, &doc);
 					for (int i = 0; i < max_w; i++)
-						printf("%.6f ", embeds[tot_doc][i]);
-					cout << endl;
+						fprintf(fout, "%.6f ", embeds[tot_doc][i]);
+					fprintf(fout, "\n");
 					tags[tot_doc] = tag_count;
 					tot_doc ++;
 					doc_count ++;
@@ -95,13 +88,13 @@ public:
 					for (int k = 0; k < max_w; k++)
 						sum += SQR(embeds[i][k] - embeds[j][k]);
 					dis[i].push_back(DocCmp(j, sum));
-					//if (i == j) printf("fuck %d %.6f\n", i, sum);
 				}
 				sort(dis[i].begin(), dis[i].end());
-				if (dis[i][0].doc_id != i) cout << "fuck " << i << endl;
-				//printf("MAP = %.6f\n", MAP(i));
+				//for (int j = 0; j < dis[i].size(); j++)
+					//printf("%d ", dis[i][j].doc_id);
+				//cout << endl;
+				printf("MAP = %.6f\n", MAP(i));
 			}
-			//cout << tot_doc << endl;
 		}
 	}
 };

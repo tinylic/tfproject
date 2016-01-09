@@ -43,22 +43,14 @@ public:
 		Init();
 		(*mWordEmbedding) = WordEmbedding(fn, IsBinary);
 	}
-	void Kmeans(int classes){
-		if (classes == 0) {
-			// Save the word vectors
-			// fprintf(fo, "%lld %lld\n", vec_size, layer1_size);
-			// for (a = 0; a < vec_size; a++) {
-				// fprintf(fo, "%s ", vocab[a].word);
-				// if (binary) for (b = 0; b < layer1_size; b++) fwrite(&syn0[a * layer1_size + b], sizeof(real), 1, fo);
-				// else for (b = 0; b < layer1_size; b++) fprintf(fo, "%lf ", syn0[a * layer1_size + b]);
-				// fprintf(fo, "\n");
-			// }
-		}
-		else {
+	void Kmeans(int classes, const vector<Upair> &wordset){
 			// Run K-means on the word vectors
 			unsigned a, b, c, d;
 			clcn = classes, iter = 10;
-			vectors = (*mWordEmbedding).getAllEmbedding();
+			vectors.clear();
+			for (a = 0; a < wordset.size(); a++)
+				for (b = 0; b < wordset[a].second; b++)
+				vectors.push_back((*mWordEmbedding).GetEmbedding(wordset[a].first));
 			unsigned vec_size = (int)vectors.size();
 			cout << "vec_size == " << vec_size << endl;
 			cout << clcn << endl;
@@ -101,7 +93,6 @@ public:
 				}
 			}
 		}
-	}
 		vector<real *> GetCentroid() {
 			// Return the centroid coordinates
 			vector<real *> result;
@@ -115,17 +106,19 @@ public:
 			}
 			return result;
 		}
-	real *Transform(const vector<Upair> &doc){
+	real *Transform(int classes, const vector<Upair> &doc){
 		// Documents are represented in word_id
 		unsigned len = doc.size();
 		unsigned i;
 		long long total = 0;
 		int *ans = new int[clcn];
 		real *result = new real[clcn];
+		Kmeans(classes, doc);
 		for (i = 0; i < clcn; i++)
 			ans[i] = 0;
 		for (i = 0; i < len; i++) {
-			ans[cl[doc[i].first]] += doc[i].second;
+			//cout << cl[doc[i].first] << endl;
+			ans[cl[total]] += doc[i].second;
 			total += doc[i].second;
 		}
 		total ++;//Avoid total == 0
@@ -133,7 +126,7 @@ public:
 			result[i] = (real)ans[i] / total;
 		return result;
 	}
-	real *Transform(Document *Doc) {
+	real *Transform(int classes, Document *Doc) {
 		// Read documents in the form of <w1, c1>
 		vector<Upair> All = Doc -> GetAllWord();
 		vector<Upair> NewAll;
@@ -146,6 +139,6 @@ public:
             // Word ID in the Embedding
             NewAll.push_back(make_pair(index, All[i].second));
 		}
-		return Transform(NewAll);
+		return Transform(classes, NewAll);
 	}
 };

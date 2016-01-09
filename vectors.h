@@ -34,7 +34,6 @@ public:
 
 	int SearchVocab(Char *word) {
 		int hash = GetWordHash(word);
-		//cout << word_hash[hash] << endl;
 		while (1) {
 			if (word_hash[hash] == -1) return -1;
 			if (!strcmp(word, mWordEmbeds[word_hash[hash]].word)) return word_hash[hash];
@@ -79,7 +78,6 @@ public:
 
 	WordEmbedding() {
 		Init();
-		// check;
 	}
 
 	~WordEmbedding() {
@@ -130,13 +128,11 @@ public:
 			for (a = 0; a < size; a++)
 				if (!isfinite(M[a])) valid = false;
 			if (strlen(vocab) < MIN_WORDS || valid == false) continue;
-			//cout << vocab << endl;
 			AddEmbedding(vocab, M);
 		}
 	}
 	int AddEmbedding(Char* word, real* embedding){
 		// Insert the embedding to the dict and return the index
-		//cout << word << endl;
 
 		int index = SearchVocab(word);
 		if (index == -1) {
