@@ -6,10 +6,8 @@
 using namespace std;
 
 struct cluster{
-private:
-	WordEmbedding *mWordEmbedding;
-
 public:
+	WordEmbedding *mWordEmbedding;
 	unsigned clcn, iter, closeid;
 	// clcn : class number
 	// closeid : closest cluster

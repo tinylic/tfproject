@@ -28,6 +28,7 @@ typedef float real;                    // Precision of float numbers
 typedef char Char;
 typedef pair<unsigned, unsigned> Upair;
 typedef map<unsigned, unsigned> Umap;
+typedef real* Embeds;
 typedef vector<real *> AllEmbeds;
 
 

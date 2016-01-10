@@ -36,6 +36,73 @@ public:
 				result += 1 / (real)(i + 1);
 		return result;
 	}
+	real WordDistance(const Embeds &a, const Embeds &b) {
+		real result = 0;
+		for (int i = 0; i < layer1_size; i++)
+			result += SQR(a[i] - b[i]);
+		return sqrt(result);
+	}
+	real Nearest(const Embeds &a, const Document &doc) {
+		real result = 1e9;;
+		unsigned i;
+		for (i = 0; i < doc.AllWord.size(); i++) {
+			Char *mWord = doc.mDict -> GetWord(doc.AllWord[i].first);
+			int index = Cluster.mWordEmbedding -> SearchVocab(mWord);
+			Embeds vec = Cluster.mWordEmbedding -> GetEmbedding(index);
+			real temp = WordDistance(a, vec);
+			if (temp < result) result = temp;
+		}
+		return result;
+	}
+	Embeds GetDocCenter(const Document &a) {
+		Embeds result;
+		result = new real[layer1_size];
+		int *cnt = new int[layer1_size];
+		unsigned i, j;
+		memset(cnt, 0, sizeof cnt);
+		for (i = 0; i < layer1_size; i++)
+			result[i] = cnt[i] = 0;
+			for (i = 0; i < a.AllWord.size(); i++) {
+				Char *mWord = a.mDict -> GetWord(a.AllWord[i].first);
+	            int index = Cluster.mWordEmbedding -> SearchVocab(mWord);
+	            Embeds vec = Cluster.mWordEmbedding -> GetEmbedding(index);
+	            for (j = 0; j < layer1_size; j++) {
+	            	result[j] += vec[j] * a.AllWord[i].second;
+	            	cnt[j] += a.AllWord[i].second;
+	            }
+			}
+		for (i = 0; i < layer1_size; i++)
+			result[i] /= cnt[j];
+		return result;
+	}
+	real WCD(const Document &a, const Document &b) {
+		Embeds CentA, CentB;
+		CentA = GetDocCenter(a);
+		CentB = GetDocCenter(b);
+		return WordDistance(CentA, CentB);
+	}
+
+	real RWMD(const Document &a, const Document &b) {
+		real result = 1e9;
+		real temp = 0;
+		unsigned i;
+		for (i = 0; i < a.AllWord.size(); i++) {
+			Char *mWord = a.mDict -> GetWord(a.AllWord[i].first);
+			int index = Cluster.mWordEmbedding -> SearchVocab(mWord);
+			Embeds vec = Cluster.mWordEmbedding -> GetEmbedding(index);
+			temp += a.AllWord[i].second * Nearest(vec, b);
+		}
+		if (result > temp) result = temp;
+		temp = 0;
+		for (i = 0; i < b.AllWord.size(); i++) {
+			Char *mWord = b.mDict -> GetWord(b.AllWord[i].first);
+			int index = Cluster.mWordEmbedding -> SearchVocab(mWord);
+			Embeds vec = Cluster.mWordEmbedding -> GetEmbedding(index);
+			temp += b.AllWord[i].second * Nearest(vec, a);
+		}
+		if (result > temp) result = temp;
+		return result;
+	}
 	void Run() {
 		Groups.clear();
 		Hash.clear();
