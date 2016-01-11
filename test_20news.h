@@ -30,7 +30,6 @@ public:
 	int *belongs;
 	int *tags;
 	real **embeds;
-	real **cost;
 	cluster Cluster;
 	real MAP(int doc_id) {
 		int len = dis[doc_id].size();
