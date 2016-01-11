@@ -13,6 +13,7 @@
 #define MAX_STRING 1000
 #define EXP_TABLE_SIZE 1000
 #define MAX_EXP 6
+#define MAX_DOC_LENGTH 100
 #define MAX_SENTENCE_LENGTH 1000
 #define MAX_CODE_LENGTH 40
 #define MAX_DOC_PER_TAG 100
@@ -44,6 +45,7 @@ long long vocab_max_size = 1000, vocab_size = 0, layer1_size = 100;
 long long train_words = 0, word_count_actual = 0, iter = 5, file_size = 0, classes = 0;
 real alpha = 0.025, starting_alpha, sample = 1e-3;
 real *syn0, *syn1, *syn1neg, *expTable;
+real **cost;
 
 int hs = 0, negative = 5;
 const int table_size = 1e8;

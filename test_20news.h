@@ -1,5 +1,5 @@
 #include "cluster.h"
-
+#include "emd.c"
 #define MAX_TAGS 20
 const char rootaddr[] = "/home/tinylic/workspace/tfproject/20_newsgroups";
 struct DocCmp {
@@ -17,6 +17,9 @@ struct DocCmp {
 		return a.distance < b.distance;
 	}
 };
+real _Cost(int *i, int *j) {
+	return cost[*i][*j];
+}
 class test_20news {
 private:
 	map<string, int> Hash;
@@ -27,6 +30,7 @@ public:
 	int *belongs;
 	int *tags;
 	real **embeds;
+	real **cost;
 	cluster Cluster;
 	real MAP(int doc_id) {
 		int len = dis[doc_id].size();
@@ -73,6 +77,51 @@ public:
 			}
 		for (i = 0; i < layer1_size; i++)
 			result[i] /= cnt[j];
+		return result;
+	}
+	real WMD(const Document &a, const Document &b) {
+		unsigned lena, lenb;
+		lena = a.AllWord.size();
+		lenb = b.AllWord.size();
+		if (lena > MAX_DOC_LENGTH) lena = MAX_DOC_LENGTH;
+		if (lenb > MAX_DOC_LENGTH) lenb = MAX_DOC_LENGTH;
+		unsigned i, j;
+		real *DA = new real[MAX_DOC_LENGTH];
+		real *DB = new real[MAX_DOC_LENGTH];
+		int *IDA = new int[MAX_DOC_LENGTH];
+		int *IDB = new int[MAX_DOC_LENGTH];
+		real suma = 0, sumb = 0;
+		for (i = 0; i < lena; i++) {
+			suma += a.AllWord[i].second;
+			IDA[i] = i;
+		}
+		for (i = 0; i < lenb; i++) {
+			sumb += b.AllWord[i].second;
+			IDB[i] = i;
+		}
+		for (i = 0; i < lena; i++)
+			DA[i] = (real)a.AllWord[i].second / suma;
+		for (i = 0; i < lenb; i++)
+			DB[i] = (real)b.AllWord[i].second / sumb;
+		cost = new real *[MAX_DOC_LENGTH];
+		for (i = 0; i < MAX_DOC_LENGTH; i++)
+			cost[i] = new real[MAX_DOC_LENGTH];
+		for (i = 0; i < lena; i++)
+			for (j = 0; j < lenb; j++) {
+				Char *mWord;
+				int index;
+				Embeds veca, vecb;
+				mWord = a.mDict -> GetWord(a.AllWord[i].first);
+				index = Cluster.mWordEmbedding -> SearchVocab(mWord);
+				veca = Cluster.mWordEmbedding -> GetEmbedding(index);
+				mWord = b.mDict -> GetWord(b.AllWord[j].first);
+				index = Cluster.mWordEmbedding -> SearchVocab(mWord);
+				vecb = Cluster.mWordEmbedding -> GetEmbedding(index);
+				cost[i][j] = WordDistance(veca, vecb);
+			}
+		signature_t doca = signature_t{lena, IDA, DA};
+		signature_t docb = signature_t{lenb, IDB, DB};
+		real result = emd(&doca, &docb, _Cost, 0, 0);
 		return result;
 	}
 	real WCD(const Document &a, const Document &b) {
