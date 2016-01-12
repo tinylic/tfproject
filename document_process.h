@@ -112,12 +112,11 @@ public:
 		}
 	}
 	vector<Upair> GetAllWord() {
-		vector<Upair> result;
-		result.clear();
+		AllWord.clear();
 		for (Umap :: iterator Uit = mWordCount.begin(); Uit != mWordCount.end(); Uit++) {
-			result.push_back(make_pair(Uit -> first, Uit -> second));
+			AllWord.push_back(make_pair(Uit -> first, Uit -> second));
 		}
-		return result;
+		return AllWord;
 	}
 };
 

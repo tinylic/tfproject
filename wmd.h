@@ -39,10 +39,10 @@ real WMD(const Document &a, const Document &b) {
 	if (lena > MAX_DOC_LENGTH) lena = MAX_DOC_LENGTH;
 	if (lenb > MAX_DOC_LENGTH) lenb = MAX_DOC_LENGTH;
 	unsigned i, j;
-	real *DA = new real[MAX_DOC_LENGTH];
-	real *DB = new real[MAX_DOC_LENGTH];
-	int *IDA = new int[MAX_DOC_LENGTH];
-	int *IDB = new int[MAX_DOC_LENGTH];
+	real *DA = new real[lena];
+	real *DB = new real[lenb];
+	int *IDA = new int[lena];
+	int *IDB = new int[lenb];
 	real suma = 0, sumb = 0;
 	for (i = 0; i < lena; i++) {
 		suma += a.AllWord[i].second;
@@ -56,19 +56,26 @@ real WMD(const Document &a, const Document &b) {
 		DA[i] = (real)a.AllWord[i].second / suma;
 	for (i = 0; i < lenb; i++)
 		DB[i] = (real)b.AllWord[i].second / sumb;
-	cost = new real *[MAX_DOC_LENGTH];
-	for (i = 0; i < MAX_DOC_LENGTH; i++)
-		cost[i] = new real[MAX_DOC_LENGTH];
+	cost = new real *[lena];
 	for (i = 0; i < lena; i++)
+		cost[i] = new real[lenb];
+	for (i = 0; i < lena; i++) {
 		for (j = 0; j < lenb; j++) {
+			//cout << "\ni = " << i << " j = " << j << endl;
 			Embeds veca, vecb;
 			veca = a.AllEmbed[i];
 			vecb = b.AllEmbed[j];
 			cost[i][j] = WordDistance(veca, vecb);
+			//printf("%.6f ", cost[i][j]);
 		}
+		//cout << endl;
+	}
+	//cout << "fuck" << endl;
 	signature_t doca = signature_t{lena, IDA, DA};
 	signature_t docb = signature_t{lenb, IDB, DB};
 	real result = emd(&doca, &docb, _Cost, 0, 0);
+	//printf("%.6f\n", result);
+	if (!isfinite(result)) result = 1e9;
 	return result;
 }
 real WCD(const Document &a, const Document &b) {

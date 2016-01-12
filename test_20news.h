@@ -70,8 +70,9 @@ public:
 					Document doc;
 					doc.Init();
 					doc.ReadFile(tag_count, curaddr);
-					Groups.push_back(doc);
 					Cluster.GetAllEmbedding(&doc);
+					//cout << doc.AllWord.size() << endl;
+					Groups.push_back(doc);
 					tags[tot_doc] = tag_count;
 					tot_doc ++;
 					doc_count ++;
@@ -80,11 +81,13 @@ public:
 				tag_count ++;
 			}
 		}
-		RunMethod1(&Cluster);
+		//for (int i = 0; i < tot_doc; i++)
+			//printf("%d\n", Groups[i].AllEmbed.size());
+		//RunMethod1(&Cluster);
 		for (int i = 0; i < tot_doc; i++) {
 			dis[i].clear();
 			for (int j = 0; j < tot_doc; j++) {
-				real sum = DistMethod1(i, j);
+				real sum = WMD(Groups[i], Groups[j]);
 				//printf("%.6f\n", sum);
 				dis[i].push_back(DocCmp(j, sum));
 			}
@@ -94,5 +97,6 @@ public:
 			//cout << endl;
 			printf("MAP = %.6f\n", MAP(i));
 		}
+		//WMD(Groups[0], Groups[0]);
 	}
 };

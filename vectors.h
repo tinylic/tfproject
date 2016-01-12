@@ -112,7 +112,13 @@ public:
 		for (b = 0; b < words; b++) {
 			vocab = new char[max_w];
 			M = new real[size];
-			ReadWord(vocab, f);
+			a = 0;
+			while (1) {
+				vocab[a] = fgetc(f);
+				if (feof(f) || (vocab[a] == ' ')) break;
+				if ((a < max_w) && (vocab[a] != '\n')) a++;
+			}
+			vocab[a] = 0;
 			if (IsBinary) {
 				for (a = 0; a < size; a++) fread(&M[a], sizeof(float), 1, f);
 				len = 0;
@@ -131,7 +137,7 @@ public:
 			AddEmbedding(vocab, M);
 		}
 	}
-	int AddEmbedding(Char* word, real* embedding){
+	int AddEmbedding(Char* word, real embedding[]){
 		// Insert the embedding to the dict and return the index
 
 		int index = SearchVocab(word);
@@ -144,7 +150,10 @@ public:
                 debug("%d\n", word_size);
                 perror("Memory Fail\n");
 		}
-		memcpy(mWordEmbeds[index].embedding, embedding, sizeof(real) * layer1_size);
+		for (int i = 0; i < layer1_size; i++)
+			if (fabs(embedding[i]) > 10) cout << "fuck" << endl;
+		for (int i = 0; i < layer1_size; i++)
+			mWordEmbeds[index].embedding[i] = embedding[i];
 		return index;
 	}
 

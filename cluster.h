@@ -131,6 +131,7 @@ public:
 		NewAll.clear();
 		for (int i = 0; i < (int)All.size(); i++) {
             Char *mWord = Doc -> mDict -> GetWord(All[i].first);
+            //cout << mWord << endl;
             // Word in the document
             int index = mWordEmbedding -> SearchVocab(mWord);
             if (index == -1) continue;
@@ -145,13 +146,18 @@ public:
 		for (int i = 0; i < (int)All.size(); i++) {
 			Doc -> AllEmbed[i] = NULL;
             Char *mWord = Doc -> mDict -> GetWord(All[i].first);
+            //cout << mWord << endl;
             // Word in the document
             int index = mWordEmbedding -> SearchVocab(mWord);
             if (index == -1) continue;
             // Word ID in the Embedding
             Doc -> AllEmbed[i] = new real[layer1_size];
             real *mEmbed = (*mWordEmbedding).GetEmbedding(index);
-            memcpy(Doc -> AllEmbed[i], mEmbed, sizeof(mEmbed));
+            for (int j = 0; j < layer1_size; j++)
+            	Doc -> AllEmbed[i][j] = mEmbed[j];
+            for (int j = 0; j < layer1_size; j++)
+            	if (fabs(Doc -> AllEmbed[i][j]) > 10)
+            		cout << "fuck" << endl;
 		}
 	}
 };
