@@ -9,7 +9,7 @@ public:
 	Dictionary* mDict;
 	Umap mWordCount;
 	vector<Upair> AllWord;
-
+	AllEmbeds AllEmbed;
 
 	void Init() {
 		// Initialization
@@ -18,6 +18,7 @@ public:
 		mWordCount.clear();
 		AllWord.clear();
 		mtag = -1;
+		AllEmbed.clear();
 	}
 	Document(){
 		Init();

@@ -50,8 +50,8 @@ public:
 				for (b = 0; b < wordset[a].second; b++)
 				vectors.push_back((*mWordEmbedding).GetEmbedding(wordset[a].first));
 			unsigned vec_size = (int)vectors.size();
-			cout << "vec_size == " << vec_size << endl;
-			cout << clcn << endl;
+			//cout << "vec_size == " << vec_size << endl;
+			//cout << clcn << endl;
 			centcn = new int[classes];
 			cl = new int[vec_size];
 			cent = new real[classes * layer1_size];
@@ -138,5 +138,20 @@ public:
             NewAll.push_back(make_pair(index, All[i].second));
 		}
 		return Transform(classes, NewAll);
+	}
+	void GetAllEmbedding(Document *Doc) {
+		vector<Upair> All = Doc -> GetAllWord();
+		Doc -> AllEmbed.resize(All.size());
+		for (int i = 0; i < (int)All.size(); i++) {
+			Doc -> AllEmbed[i] = NULL;
+            Char *mWord = Doc -> mDict -> GetWord(All[i].first);
+            // Word in the document
+            int index = mWordEmbedding -> SearchVocab(mWord);
+            if (index == -1) continue;
+            // Word ID in the Embedding
+            Doc -> AllEmbed[i] = new real[layer1_size];
+            real *mEmbed = (*mWordEmbedding).GetEmbedding(index);
+            memcpy(Doc -> AllEmbed[i], mEmbed, sizeof(mEmbed));
+		}
 	}
 };
