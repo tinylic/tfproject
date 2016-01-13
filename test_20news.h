@@ -1,4 +1,5 @@
 #include "cluster.h"
+#include "transform.h"
 #include "wmd.h"
 
 

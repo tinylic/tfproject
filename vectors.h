@@ -7,7 +7,7 @@ using namespace std;
 struct embed_word {
 		Char *word;
 		real *embedding;
-		int cn;
+		int cl;
 		int word_id;
 	};
 class WordEmbedding {
@@ -17,6 +17,7 @@ public:
 
 	int *word_hash;
 	int word_size;
+
 
 	AllEmbeds All;
 
@@ -59,7 +60,6 @@ public:
 		int hash, length = strlen(word) + 1;
 		//if (length > MAX_STRING) length = MAX_STRING;
 		mWordEmbeds[word_size].word = new Char[length];
-		mWordEmbeds[word_size].cn = 0;
 		strcpy(mWordEmbeds[word_size].word, word);
 		word_size++;
 		hash = GetWordHash(word);

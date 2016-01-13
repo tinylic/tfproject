@@ -4,10 +4,10 @@
 #include "vectors.h"
 
 using namespace std;
-
+WordEmbedding *mWordEmbedding;
 struct cluster{
 public:
-	WordEmbedding *mWordEmbedding;
+
 	unsigned clcn, iter, closeid;
 	// clcn : class number
 	// closeid : closest cluster
@@ -51,18 +51,18 @@ public:
 			//cout << "vec_size == " << vec_size << endl;
 			//cout << clcn << endl;
 			centcn = new int[classes];
-			cl = new int[vocab_hash_size];
+			cl = new int[vec_size];
 			cent = new real[classes * layer1_size];
 			if (cent == NULL) perror("Memory fail\n");
-			for (a = 0; a < vec_size; a++) cl[IDvectors[a]] = a % clcn;
+			for (a = 0; a < vec_size; a++) cl[a] = a % clcn;
 			for (a = 0; a < iter; a++) {
 				memset(cent, 0, sizeof cent);
 				memset(centcn, 0, sizeof centcn);
 				for (b = 0; b < clcn; b++) centcn[b] = 1;
 				for (c = 0; c < vec_size; c++) {
 					for (d = 0; d < layer1_size; d++)
-						cent[layer1_size * cl[IDvectors[c]] + d] += vectors[c][d];
-					centcn[cl[IDvectors[c]]]++;
+						cent[layer1_size * cl[c] + d] += vectors[c][d];
+					centcn[cl[c]]++;
 				}
 				for (b = 0; b < clcn; b++) {
 					closev = 0;
@@ -85,9 +85,11 @@ public:
 							closeid = d;
 						}
 					}
-					cl[IDvectors[c]] = closeid;
+					cl[c] = closeid;
 				}
 			}
+			for (a = 0; a < vec_size; a++)
+				mWordEmbedding -> mWordEmbeds[IDvectors[a]].cl = cl[a];
 		}
 		vector<real *> GetCentroid() {
 			// Return the centroid coordinates
@@ -102,41 +104,7 @@ public:
 			}
 			return result;
 		}
-	real *Transform(const vector<Upair> &doc){
-		// Documents are represented in word_id
-		unsigned len = doc.size();
-		unsigned i;
-		long long total = 0;
-		int *ans = new int[clcn];
-		real *result = new real[clcn];
-		for (i = 0; i < clcn; i++)
-			ans[i] = 0;
-		for (i = 0; i < len; i++) {
-			//cout << cl[doc[i].first] << endl;
-			ans[cl[doc[i].first]] += doc[i].second;
-			total += doc[i].second;
-		}
-		total ++;//Avoid total == 0
-		for (i = 0; i < clcn; i++)
-			result[i] = (real)ans[i] / total;
-		return result;
-	}
-	real *Transform(Document *Doc) {
-		// Read documents in the form of <w1, c1>
-		vector<Upair> All = Doc -> GetAllWord();
-		vector<Upair> NewAll;
-		NewAll.clear();
-		for (int i = 0; i < (int)All.size(); i++) {
-            Char *mWord = Doc -> mDict -> GetWord(All[i].first);
-            //cout << mWord << endl;
-            // Word in the document
-            int index = mWordEmbedding -> SearchVocab(mWord);
-            if (index == -1) continue;
-            // Word ID in the Embedding
-            NewAll.push_back(make_pair(index, All[i].second));
-		}
-		return Transform(NewAll);
-	}
+
 	void GetAllEmbedding(Document *Doc) {
 		vector<Upair> All = Doc -> GetAllWord();
 		Doc -> AllEmbed.resize(All.size());
@@ -156,9 +124,6 @@ public:
             }
             for (int j = 0; j < layer1_size; j++)
             	Doc -> AllEmbed[i][j] = mEmbed[j];
-            for (int j = 0; j < layer1_size; j++)
-            	if (fabs(Doc -> AllEmbed[i][j]) > 10)
-            		cout << "fuck" << endl;
 		}
 	}
 };
