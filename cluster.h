@@ -18,9 +18,11 @@ public:
 	real *cent;
 	// cent : coordinates of the cluster centroid
 	AllEmbeds vectors;
+	vector<int> IDvectors;
 	void Init() {
 		mWordEmbedding = new WordEmbedding;
 		vectors.clear();
+		IDvectors.clear();
 	}
 	cluster(){
 		// Initialization
@@ -41,30 +43,26 @@ public:
 		Init();
 		(*mWordEmbedding) = WordEmbedding(fn, IsBinary);
 	}
-	void Kmeans(int classes, const vector<Upair> &wordset){
+	void Kmeans(int classes){
 			// Run K-means on the word vectors
 			unsigned a, b, c, d;
 			clcn = classes, iter = 10;
-			vectors.clear();
-			for (a = 0; a < wordset.size(); a++)
-				for (b = 0; b < wordset[a].second; b++)
-				vectors.push_back((*mWordEmbedding).GetEmbedding(wordset[a].first));
 			unsigned vec_size = (int)vectors.size();
 			//cout << "vec_size == " << vec_size << endl;
 			//cout << clcn << endl;
 			centcn = new int[classes];
-			cl = new int[vec_size];
+			cl = new int[vocab_hash_size];
 			cent = new real[classes * layer1_size];
 			if (cent == NULL) perror("Memory fail\n");
-			for (a = 0; a < vec_size; a++) cl[a] = a % clcn;
+			for (a = 0; a < vec_size; a++) cl[IDvectors[a]] = a % clcn;
 			for (a = 0; a < iter; a++) {
 				memset(cent, 0, sizeof cent);
 				memset(centcn, 0, sizeof centcn);
 				for (b = 0; b < clcn; b++) centcn[b] = 1;
 				for (c = 0; c < vec_size; c++) {
 					for (d = 0; d < layer1_size; d++)
-						cent[layer1_size * cl[c] + d] += vectors[c][d];
-					centcn[cl[c]]++;
+						cent[layer1_size * cl[IDvectors[c]] + d] += vectors[c][d];
+					centcn[cl[IDvectors[c]]]++;
 				}
 				for (b = 0; b < clcn; b++) {
 					closev = 0;
@@ -87,7 +85,7 @@ public:
 							closeid = d;
 						}
 					}
-					cl[c] = closeid;
+					cl[IDvectors[c]] = closeid;
 				}
 			}
 		}
@@ -104,19 +102,18 @@ public:
 			}
 			return result;
 		}
-	real *Transform(int classes, const vector<Upair> &doc){
+	real *Transform(const vector<Upair> &doc){
 		// Documents are represented in word_id
 		unsigned len = doc.size();
 		unsigned i;
 		long long total = 0;
 		int *ans = new int[clcn];
 		real *result = new real[clcn];
-		Kmeans(classes, doc);
 		for (i = 0; i < clcn; i++)
 			ans[i] = 0;
 		for (i = 0; i < len; i++) {
 			//cout << cl[doc[i].first] << endl;
-			ans[cl[total]] += doc[i].second;
+			ans[cl[doc[i].first]] += doc[i].second;
 			total += doc[i].second;
 		}
 		total ++;//Avoid total == 0
@@ -124,7 +121,7 @@ public:
 			result[i] = (real)ans[i] / total;
 		return result;
 	}
-	real *Transform(int classes, Document *Doc) {
+	real *Transform(Document *Doc) {
 		// Read documents in the form of <w1, c1>
 		vector<Upair> All = Doc -> GetAllWord();
 		vector<Upair> NewAll;
@@ -138,7 +135,7 @@ public:
             // Word ID in the Embedding
             NewAll.push_back(make_pair(index, All[i].second));
 		}
-		return Transform(classes, NewAll);
+		return Transform(NewAll);
 	}
 	void GetAllEmbedding(Document *Doc) {
 		vector<Upair> All = Doc -> GetAllWord();
@@ -153,6 +150,10 @@ public:
             // Word ID in the Embedding
             Doc -> AllEmbed[i] = new real[layer1_size];
             real *mEmbed = (*mWordEmbedding).GetEmbedding(index);
+            for (int j = 0; j < All[i].second; j++) {
+            	vectors.push_back(mEmbed);
+            	IDvectors.push_back(index);
+            }
             for (int j = 0; j < layer1_size; j++)
             	Doc -> AllEmbed[i][j] = mEmbed[j];
             for (int j = 0; j < layer1_size; j++)

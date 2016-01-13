@@ -83,11 +83,11 @@ public:
 		}
 		//for (int i = 0; i < tot_doc; i++)
 			//printf("%d\n", Groups[i].AllEmbed.size());
-		//RunMethod1(&Cluster);
+		RunMethod1(&Cluster);
 		for (int i = 0; i < tot_doc; i++) {
 			dis[i].clear();
 			for (int j = 0; j < tot_doc; j++) {
-				real sum = WMD(Groups[i], Groups[j]);
+				real sum = DistMethod1(i, j);
 				//printf("%.6f\n", sum);
 				dis[i].push_back(DocCmp(j, sum));
 			}
