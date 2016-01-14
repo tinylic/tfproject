@@ -9,6 +9,7 @@ FILE *corpus;
 
 #include "Method1.h"
 #include "BrownCluster.h"
+#include "distance.h"
 
 struct DocCmp {
 	int doc_id;
@@ -87,12 +88,12 @@ public:
 		}
 		//for (int i = 0; i < tot_doc; i++)
 			//printf("%d\n", Groups[i].AllEmbed.size());
-		//RunMethodBrown(max_w);
-		RunMethod1(&Cluster);
+		RunMethodBrown(max_w);
+		//RunMethod1(&Cluster);
 		for (int i = 0; i < tot_doc; i++) {
 			dis[i].clear();
 			for (int j = 0; j < tot_doc; j++) {
-				real sum = DistMethod1(i, j);
+				real sum = DistCluster(i, j);
 				//printf("%.6f\n", sum);
 				dis[i].push_back(DocCmp(j, sum));
 			}

@@ -146,17 +146,19 @@ public:
 			All.push_back(embedding);
 		}
 		mWordEmbeds[index].embedding = new real[layer1_size];
-		if (mWordEmbeds[index].embedding == NULL) {
-                debug("%d\n", word_size);
-                perror("Memory Fail\n");
-		}
-		for (int i = 0; i < layer1_size; i++)
-			if (fabs(embedding[i]) > 10) cout << "fuck" << endl;
 		for (int i = 0; i < layer1_size; i++)
 			mWordEmbeds[index].embedding[i] = embedding[i];
 		return index;
 	}
+	int AddCluster(Char* word, int cluster_id){
+		// Insert the embedding to the dict and return the index
 
+		int index = SearchVocab(word);
+		if (index == -1)
+			index = AddWordToVocab(word);
+		mWordEmbeds[index].cl = cluster_id;
+		return index;
+	}
 
 	vector<real *> getAllEmbedding() {
 		return All;
