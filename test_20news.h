@@ -1,12 +1,14 @@
 #include "cluster.h"
 #include "transform.h"
 #include "wmd.h"
-
+#include "ReadFile.h"
 
 const char rootaddr[] = "/home/tinylic/workspace/tfproject/20_newsgroups";
 vector < Document > Groups;
+FILE *corpus;
 
 #include "Method1.h"
+#include "BrownCluster.h"
 
 struct DocCmp {
 	int doc_id;
@@ -67,7 +69,8 @@ public:
 					if (curptr -> d_name[0] == '.') continue;
 					char *curaddr = (char *)calloc(255, sizeof(char));
 					sprintf(curaddr, "%s/%s", addr, curptr -> d_name);
-					//out << curaddr << endl;
+					//cout << curaddr << endl;
+					read_file(curaddr, browninput);
 					Document doc;
 					doc.Init();
 					doc.ReadFile(tag_count, curaddr);
@@ -84,6 +87,7 @@ public:
 		}
 		//for (int i = 0; i < tot_doc; i++)
 			//printf("%d\n", Groups[i].AllEmbed.size());
+		//RunMethodBrown(max_w);
 		RunMethod1(&Cluster);
 		for (int i = 0; i < tot_doc; i++) {
 			dis[i].clear();
