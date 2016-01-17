@@ -40,7 +40,7 @@ char save_vocab_file[MAX_STRING], read_vocab_file[MAX_STRING];
 
 int vocab_hash_size = 3000000;  // Maximum 30 * 0.7 = 21M words in the vocabulary
 int dict_hash_size = 10000;
-int binary = 0, cbow = 1, debug_mode = 2, window = 5, min_count = 5, num_threads = 12, min_reduce = 1;
+int binary = 0, cbow = 1, debug_mode = 2, window = 5, min_count = 5, min_reduce = 1;
 
 long long max_w = 200;
 long long vocab_max_size = 1000, vocab_size = 0, layer1_size = 100;

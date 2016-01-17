@@ -10,6 +10,8 @@ FILE *corpus;
 #include "Method1.h"
 #include "BrownCluster.h"
 #include "distance.h"
+//#include "wcluster.cc"
+
 
 struct DocCmp {
 	int doc_id;
