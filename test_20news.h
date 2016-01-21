@@ -5,12 +5,11 @@
 
 const char rootaddr[] = "/home/tinylic/workspace/tfproject/20_newsgroups";
 vector < Document > Groups;
-FILE *corpus;
 
 #include "Method1.h"
 #include "BrownCluster.h"
 #include "distance.h"
-//#include "wcluster.cc"
+//#include "../brown/wcluster.h"
 
 
 struct DocCmp {
@@ -29,10 +28,24 @@ struct DocCmp {
 	}
 };
 
+vector < DocCmp > dis[MAX_TAGS * MAX_DOC_PER_TAG];
+
+
+void *RunMethod(void *arg) {
+	pair<int, int> *temp = (pair<int, int> *)arg;
+	int i = temp -> first;
+	int id = temp -> second;
+	int num = (Groups.size() - QUERY_DOC) / MAX_THREADS;
+	for (int j = 0; j < num; j++) {
+		int k = QUERY_DOC + id * num + j;
+		real sum = DistCluster(i, k);
+		dis[i].push_back(DocCmp(k, sum));
+	}
+	pthread_exit(NULL);
+}
+
 class test_20news {
 public:
-
-	vector <DocCmp> dis[MAX_TAGS * MAX_DOC_PER_TAG];
 	FILE *fout = fopen("result.txt", "w");
 	int *belongs;
 	int *tags;
@@ -41,7 +54,7 @@ public:
 		int len = dis[doc_id].size();
 		real result = 0;
 		for (int i = 1; i < len; i++)
-			if (tags[dis[doc_id][i].doc_id] == tags[doc_id])
+			if (Groups[dis[doc_id][i].doc_id].mtag == Groups[doc_id].mtag)
 				result += 1 / (real)(i + 1);
 		return result;
 	}
@@ -72,7 +85,7 @@ public:
 					if (curptr -> d_name[0] == '.') continue;
 					char *curaddr = (char *)calloc(255, sizeof(char));
 					sprintf(curaddr, "%s/%s", addr, curptr -> d_name);
-					//cout << curaddr << endl;
+					cout << curaddr << endl;
 					read_file(curaddr, browninput);
 					Document doc;
 					doc.Init();
@@ -88,17 +101,25 @@ public:
 				tag_count ++;
 			}
 		}
+		//random_shuffle(Groups.begin(), Groups.end());
 		//for (int i = 0; i < tot_doc; i++)
 			//printf("%d\n", Groups[i].AllEmbed.size());
-		RunMethodBrown(max_w);
-		//RunMethod1(&Cluster);
-		for (int i = 0; i < tot_doc; i++) {
+		//RunMethodBrown(max_w);
+		RunMethod1(&Cluster);
+		pthread_t *pt = (pthread_t *)malloc(MAX_THREADS * sizeof(pthread_t));
+		for (int i = 0; i < QUERY_DOC; i++) {
 			dis[i].clear();
-			for (int j = 0; j < tot_doc; j++) {
-				real sum = DistCluster(i, j);
-				//printf("%.6f\n", sum);
-				dis[i].push_back(DocCmp(j, sum));
+			for (int j = 0; j < MAX_THREADS; j++) {
+				pair<int, int> arg = make_pair(i, j);
+				pthread_create(&pt[j], NULL, RunMethod, (void *)&arg);
 			}
+			for (int j = 0; j < MAX_THREADS; j++)
+				pthread_join(pt[j], NULL);
+			//for (int j = QUERY_DOC; j < tot_doc; j++) {
+				//real sum = DistCluster(i, j);
+				//printf("%.6f\n", sum);
+				//dis[i].push_back(DocCmp(j, sum));
+			//}
 			sort(dis[i].begin(), dis[i].end());
 			//for (int j = 0; j < dis[i].size(); j++)
 				//printf("%d ", dis[i][j].doc_id);

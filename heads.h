@@ -9,7 +9,9 @@
 #include <map>
 #include <vector>
 #include <algorithm>
+#include <pthread.h>
 
+#define MAX_THREADS 20
 #define DIS_INF 100
 #define MAX_STRING 1000
 #define EXP_TABLE_SIZE 1000
@@ -20,7 +22,7 @@
 #define MAX_DOC_PER_TAG 100
 #define MIN_WORDS 3
 #define MAX_TAGS 20
-
+#define QUERY_DOC 500
 
 #define check printf("here is ok\n")
 #define debug(...) fprintf(stderr, __VA_ARGS__)
@@ -62,12 +64,6 @@ real SQR(real x) {
 real WordDistance(const Embeds &a, const Embeds &b) {
 	real result = 0;
 	if (a == NULL || b == NULL) return DIS_INF;
-	//for (int i = 0; i < layer1_size; i++)
-		//printf("%.6f ", a[i]);
-	//cout << endl;
-	//for (int i = 0; i < layer1_size; i++)
-		//printf("%.6f ", b[i]);
-	//cout << endl;
 	for (int i = 0; i < layer1_size; i++)
 		result += SQR(a[i] - b[i]);
 	return sqrt(result);

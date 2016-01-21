@@ -139,7 +139,6 @@ public:
 	}
 	int AddEmbedding(Char* word, real embedding[]){
 		// Insert the embedding to the dict and return the index
-
 		int index = SearchVocab(word);
 		if (index == -1) {
 			index = AddWordToVocab(word);
@@ -148,6 +147,7 @@ public:
 		mWordEmbeds[index].embedding = new real[layer1_size];
 		for (int i = 0; i < layer1_size; i++)
 			mWordEmbeds[index].embedding[i] = embedding[i];
+		cout << word << " " << index << endl;
 		return index;
 	}
 	int AddCluster(Char* word, int cluster_id){
