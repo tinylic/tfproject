@@ -47,8 +47,6 @@ void *RunMethod(void *arg) {
 class test_20news {
 public:
 	FILE *fout = fopen("result.txt", "w");
-	int *belongs;
-	int *tags;
 	cluster Cluster;
 	real MAP(int doc_id) {
 		int len = dis[doc_id].size();
@@ -70,8 +68,6 @@ public:
 		struct dirent *curptr;
 		struct stat info;
 		dir = opendir(rootaddr);
-		belongs = new int[MAX_TAGS * MAX_DOC_PER_TAG];
-		tags = new int[MAX_TAGS * MAX_DOC_PER_TAG];
 		while ((ptr = readdir(dir)) != NULL) {
 			if (ptr -> d_name[0] == '.') continue;
 			char *addr = (char *)calloc(255, sizeof(char));
@@ -93,7 +89,6 @@ public:
 					Cluster.GetAllEmbedding(&doc);
 					//cout << doc.AllWord.size() << endl;
 					Groups.push_back(doc);
-					tags[tot_doc] = tag_count;
 					tot_doc ++;
 					doc_count ++;
 					if (doc_count >= MAX_DOC_PER_TAG) break;
@@ -101,13 +96,12 @@ public:
 				tag_count ++;
 			}
 		}
-		//random_shuffle(Groups.begin(), Groups.end());
+		random_shuffle(Groups.begin(), Groups.end());
 		//for (int i = 0; i < tot_doc; i++)
 			//printf("%d\n", Groups[i].AllEmbed.size());
 		//RunMethodBrown(max_w);
 		RunMethod1(&Cluster);
 		pthread_t *pt = (pthread_t *)malloc(MAX_THREADS * sizeof(pthread_t));
-		if (pt == NULL) perror("fuck\n");
 		for (int i = 0; i < QUERY_DOC; i++) {
 			dis[i].clear();
 			for (int j = 0; j < MAX_THREADS; j++) {
