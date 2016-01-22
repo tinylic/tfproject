@@ -3,13 +3,13 @@
 #include "wmd.h"
 #include "ReadFile.h"
 
-const char rootaddr[] = "/home/tinylic/workspace/tfproject/20_newsgroups";
+const char rootaddr[] = "20_newsgroups";
 vector < Document > Groups;
 
 #include "Method1.h"
 #include "BrownCluster.h"
 #include "distance.h"
-//#include "../brown/wcluster.h"
+#include "../brown/wcluster.h"
 
 
 struct DocCmp {
@@ -71,13 +71,13 @@ public:
 		struct stat info;
 		dir = opendir(rootaddr);
 		belongs = new int[MAX_TAGS * MAX_DOC_PER_TAG];
-
 		tags = new int[MAX_TAGS * MAX_DOC_PER_TAG];
-		while ((ptr = readdir(dir)) != NULL){
+		while ((ptr = readdir(dir)) != NULL) {
 			if (ptr -> d_name[0] == '.') continue;
 			char *addr = (char *)calloc(255, sizeof(char));
 				sprintf(addr, "%s/%s", rootaddr, ptr -> d_name);
 			stat(addr, &info);
+			cout << addr << endl;
 			if (S_ISDIR(info.st_mode)) {
 				curdir = opendir(addr);
 				doc_count = 0;
@@ -86,7 +86,7 @@ public:
 					char *curaddr = (char *)calloc(255, sizeof(char));
 					sprintf(curaddr, "%s/%s", addr, curptr -> d_name);
 					cout << curaddr << endl;
-					read_file(curaddr, browninput);
+					read_file(curaddr, totalinput);
 					Document doc;
 					doc.Init();
 					doc.ReadFile(tag_count, curaddr);
@@ -107,6 +107,7 @@ public:
 		//RunMethodBrown(max_w);
 		RunMethod1(&Cluster);
 		pthread_t *pt = (pthread_t *)malloc(MAX_THREADS * sizeof(pthread_t));
+		if (pt == NULL) perror("fuck\n");
 		for (int i = 0; i < QUERY_DOC; i++) {
 			dis[i].clear();
 			for (int j = 0; j < MAX_THREADS; j++) {

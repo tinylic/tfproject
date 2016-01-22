@@ -6,11 +6,11 @@ using namespace std;
 class Document {
 public:
 	int mtag;
+	int total_word;
 	Dictionary* mDict;
 	Umap mWordCount;
 	vector<Upair> AllWord;
 	AllEmbeds AllEmbed;
-
 	void Init() {
 		// Initialization
 		mDict = new Dictionary;
@@ -18,6 +18,7 @@ public:
 		mWordCount.clear();
 		AllWord.clear();
 		mtag = -1;
+		total_word = 0;
 		AllEmbed.clear();
 	}
 	Document(){
@@ -41,12 +42,12 @@ public:
 			}
 		}
 		mtag = Tag;
-		int wcnt = 0;
+
 		while (1) {
 				if (feof(fin)) break;
 				ReadWord(word, fin);
 				if (strlen(word) < MIN_WORDS) continue;
-				wcnt ++;
+				total_word ++;
 				int index = mDict -> SearchVocab(word);
 				if (index == -1) {
 					int a = mDict -> AddWordToVocab(word);
@@ -54,7 +55,6 @@ public:
 				} else mWordCount[index] ++;
 
 			}
-		//cout << wcnt << endl;
 	}
 
 	void ReadCorpus(Char *document) {
@@ -81,6 +81,7 @@ public:
 			if (strlen(word) < 3) continue;
 
 			//add to dictionary
+			total_word += cnt;
 			int index = mDict -> SearchVocab(word);
 			if (index == -1) {
 				a = mDict -> AddWordToVocab(word);
@@ -104,6 +105,7 @@ public:
 			ReadWord(word, fin);
 			fscanf(fin, "%d", &cnt);
 			if (strlen(word) < MIN_WORDS) continue;
+			total_word += cnt;
 			int index = mDict -> SearchVocab(word);
 			if (index == -1) {
 				int a = mDict -> AddWordToVocab(word);

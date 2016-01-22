@@ -11,7 +11,7 @@
 #include <algorithm>
 #include <pthread.h>
 
-#define MAX_THREADS 20
+#define MAX_THREADS 1
 #define DIS_INF 100
 #define MAX_STRING 1000
 #define EXP_TABLE_SIZE 1000
@@ -22,6 +22,7 @@
 #define MAX_DOC_PER_TAG 100
 #define MIN_WORDS 3
 #define MAX_TAGS 20
+#define MAX_KEY_WORDS 1000
 #define QUERY_DOC 500
 
 #define check printf("here is ok\n")
@@ -40,7 +41,7 @@ typedef vector<real *> AllEmbeds;
 char train_file[MAX_STRING], output_file[MAX_STRING];
 char save_vocab_file[MAX_STRING], read_vocab_file[MAX_STRING];
 
-int vocab_hash_size = 3000000;  // Maximum 30 * 0.7 = 21M words in the vocabulary
+int vocab_hash_size = 30000000;  // Maximum 30 * 0.7 = 21M words in the vocabulary
 int dict_hash_size = 10000;
 int binary = 0, cbow = 1, debug_mode = 2, window = 5, min_count = 5, min_reduce = 1;
 
@@ -51,7 +52,7 @@ real alpha = 0.025, starting_alpha, sample = 1e-3;
 real *syn0, *syn1, *syn1neg, *expTable;
 real **cost;
 
-char browninput[] = "input.txt";
+char totalinput[] = "input.txt";
 
 
 int hs = 0, negative = 5;

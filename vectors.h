@@ -93,6 +93,7 @@ public:
 		real *M;
 		char *vocab;
 		FILE *f;
+		int wordcnt = 0;
 		if (IsBinary) {
 			f = fopen(fn, "rb");
 		}
@@ -134,6 +135,11 @@ public:
 			for (a = 0; a < size; a++)
 				if (!isfinite(M[a])) valid = false;
 			if (strlen(vocab) < MIN_WORDS || valid == false) continue;
+			wordcnt ++;
+			if (wordcnt % 100000 == 0)  {
+				cout << wordcnt << endl;
+			}
+
 			AddEmbedding(vocab, M);
 		}
 	}
@@ -147,7 +153,7 @@ public:
 		mWordEmbeds[index].embedding = new real[layer1_size];
 		for (int i = 0; i < layer1_size; i++)
 			mWordEmbeds[index].embedding[i] = embedding[i];
-		cout << word << " " << index << endl;
+		//cout << word << " " << index << endl;
 		return index;
 	}
 	int AddCluster(Char* word, int cluster_id){
