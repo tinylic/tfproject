@@ -48,8 +48,9 @@ public:
 			unsigned a, b, c, d;
 			clcn = classes, iter = 10;
 			unsigned vec_size = (int)vectors.size();
-			//cout << "vec_size == " << vec_size << endl;
+			cout << "vec_size == " << vec_size << endl;
 			//cout << clcn << endl;
+			cout << "Kmeans" << endl;
 			centcn = new int[classes];
 			cl = new int[vec_size];
 			cent = new real[classes * layer1_size];
@@ -90,6 +91,7 @@ public:
 			}
 			for (a = 0; a < vec_size; a++)
 				mWordEmbedding -> mWordEmbeds[IDvectors[a]].cl = cl[a];
+			cout << "End Kmeans" << endl;
 		}
 		vector<real *> GetCentroid() {
 			// Return the centroid coordinates

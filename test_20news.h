@@ -28,18 +28,19 @@ struct DocCmp {
 	}
 };
 
-vector < DocCmp > dis[MAX_TAGS * MAX_DOC_PER_TAG];
+DocCmp dis[MAX_DOCS][MAX_DOCS];
+int query_id;
 
 
 void *RunMethod(void *arg) {
-	pair<int, int> *temp = (pair<int, int> *)arg;
-	int i = temp -> first;
-	int id = temp -> second;
+	int i = query_id;
+	int id = (intptr_t)arg;
 	int num = (Groups.size() - QUERY_DOC) / MAX_THREADS;
 	for (int j = 0; j < num; j++) {
 		int k = QUERY_DOC + id * num + j;
-		real sum = DistCluster(i, k);
-		dis[i].push_back(DocCmp(k, sum));
+		//real sum = WMD(Groups[i], Groups[k]);
+		real sum = WMD(Groups[i], Groups[k]);
+		dis[i][k - QUERY_DOC] = DocCmp(k, sum);
 	}
 	pthread_exit(NULL);
 }
@@ -47,11 +48,10 @@ void *RunMethod(void *arg) {
 class test_20news {
 public:
 	FILE *fout = fopen("result.txt", "w");
-	int *belongs;
-	int *tags;
+	FILE *frepo = fopen("WMDResult.txt", "w");
 	cluster Cluster;
 	real MAP(int doc_id) {
-		int len = dis[doc_id].size();
+		int len = MAX_DOCS - QUERY_DOC;
 		real result = 0;
 		for (int i = 1; i < len; i++)
 			if (Groups[dis[doc_id][i].doc_id].mtag == Groups[doc_id].mtag)
@@ -59,8 +59,12 @@ public:
 		return result;
 	}
 	void Run() {
+		fprintf(frepo, "Using %d Threads\n", MAX_THREADS);
+		clock_t start_time = clock();
 		Groups.clear();
 		Cluster = cluster("vectors.bin", true);
+		clock_t read_corpus_time = clock();
+		fprintf(frepo, "Reading Corpus : %.6lf seconds.\n", (double)(read_corpus_time - start_time) / CLOCKS_PER_SEC);
 		cout << "reading" << endl;
 		DIR *dir, *curdir;
 		int tag_count = 0;
@@ -70,8 +74,6 @@ public:
 		struct dirent *curptr;
 		struct stat info;
 		dir = opendir(rootaddr);
-		belongs = new int[MAX_TAGS * MAX_DOC_PER_TAG];
-		tags = new int[MAX_TAGS * MAX_DOC_PER_TAG];
 		while ((ptr = readdir(dir)) != NULL) {
 			if (ptr -> d_name[0] == '.') continue;
 			char *addr = (char *)calloc(255, sizeof(char));
@@ -93,7 +95,6 @@ public:
 					Cluster.GetAllEmbedding(&doc);
 					//cout << doc.AllWord.size() << endl;
 					Groups.push_back(doc);
-					tags[tot_doc] = tag_count;
 					tot_doc ++;
 					doc_count ++;
 					if (doc_count >= MAX_DOC_PER_TAG) break;
@@ -101,18 +102,21 @@ public:
 				tag_count ++;
 			}
 		}
-		//random_shuffle(Groups.begin(), Groups.end());
+		random_shuffle(Groups.begin(), Groups.end());
+		clock_t read_news_time = clock();
+		fprintf(frepo, "Reading 20news : %.6lf seconds.\n", (double)(read_news_time - read_corpus_time) / CLOCKS_PER_SEC);
 		//for (int i = 0; i < tot_doc; i++)
 			//printf("%d\n", Groups[i].AllEmbed.size());
 		//RunMethodBrown(max_w);
-		RunMethod1(&Cluster);
+		//RunMethod1(&Cluster);
+		clock_t cluster_time = clock();
+		//fprintf(frepo, "Clustering : %.6lf seconds.\n", (double)(cluster_time - read_news_time) / CLOCKS_PER_SEC);
 		pthread_t *pt = (pthread_t *)malloc(MAX_THREADS * sizeof(pthread_t));
-		if (pt == NULL) perror("fuck\n");
+		real total = 0;
 		for (int i = 0; i < QUERY_DOC; i++) {
-			dis[i].clear();
+			query_id = i;
 			for (int j = 0; j < MAX_THREADS; j++) {
-				pair<int, int> arg = make_pair(i, j);
-				pthread_create(&pt[j], NULL, RunMethod, (void *)&arg);
+				pthread_create(&pt[j], NULL, RunMethod, (void *)j);
 			}
 			for (int j = 0; j < MAX_THREADS; j++)
 				pthread_join(pt[j], NULL);
@@ -121,12 +125,17 @@ public:
 				//printf("%.6f\n", sum);
 				//dis[i].push_back(DocCmp(j, sum));
 			//}
-			sort(dis[i].begin(), dis[i].end());
+			sort(dis[i], dis[i] + MAX_DOCS - QUERY_DOC);
 			//for (int j = 0; j < dis[i].size(); j++)
 				//printf("%d ", dis[i][j].doc_id);
 			//cout << endl;
-			printf("MAP = %.6f\n", MAP(i));
+			real tmap = MAP(i);
+			total += tmap;
+			fprintf(frepo, "MAP = %.6f\n", tmap);
 		}
+		fprintf(frepo, "Average MAP : %.6f\n", total / QUERY_DOC);
+		clock_t dist_time = clock();
+		fprintf(frepo, "Calculating Similarities : %.6lf seconds.\n", (double)(dist_time - cluster_time) / CLOCKS_PER_SEC);
 		//WMD(Groups[0], Groups[0]);
 	}
 };

@@ -10,6 +10,7 @@
 #include <vector>
 #include <algorithm>
 #include <pthread.h>
+#include <cstdint>
 
 #define MAX_THREADS 1
 #define DIS_INF 100
@@ -24,7 +25,7 @@
 #define MAX_TAGS 20
 #define MAX_KEY_WORDS 1000
 #define QUERY_DOC 500
-
+#define MAX_DOCS ((MAX_TAGS) * (MAX_DOC_PER_TAG))
 #define check printf("here is ok\n")
 #define debug(...) fprintf(stderr, __VA_ARGS__)
 
@@ -42,10 +43,10 @@ char train_file[MAX_STRING], output_file[MAX_STRING];
 char save_vocab_file[MAX_STRING], read_vocab_file[MAX_STRING];
 
 int vocab_hash_size = 30000000;  // Maximum 30 * 0.7 = 21M words in the vocabulary
-int dict_hash_size = 10000;
+int dict_hash_size = 100000;
 int binary = 0, cbow = 1, debug_mode = 2, window = 5, min_count = 5, min_reduce = 1;
 
-long long max_w = 200;
+long long max_w = 50;
 long long vocab_max_size = 1000, vocab_size = 0, layer1_size = 100;
 long long train_words = 0, word_count_actual = 0, iter = 5, file_size = 0, classes = 0;
 real alpha = 0.025, starting_alpha, sample = 1e-3;
