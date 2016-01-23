@@ -48,7 +48,10 @@ void *RunMethod(void *arg) {
 class test_20news {
 public:
 	FILE *fout = fopen("result.txt", "w");
+<<<<<<< HEAD
 	FILE *frepo = fopen("WMDResult.txt", "w");
+=======
+>>>>>>> 53edd24804c76a0ad0d37c2bc6f5fa571ca256df
 	cluster Cluster;
 	real MAP(int doc_id) {
 		int len = MAX_DOCS - QUERY_DOC;
@@ -103,8 +106,11 @@ public:
 			}
 		}
 		random_shuffle(Groups.begin(), Groups.end());
+<<<<<<< HEAD
 		clock_t read_news_time = clock();
 		fprintf(frepo, "Reading 20news : %.6lf seconds.\n", (double)(read_news_time - read_corpus_time) / CLOCKS_PER_SEC);
+=======
+>>>>>>> 53edd24804c76a0ad0d37c2bc6f5fa571ca256df
 		//for (int i = 0; i < tot_doc; i++)
 			//printf("%d\n", Groups[i].AllEmbed.size());
 		//RunMethodBrown(max_w);
@@ -112,7 +118,10 @@ public:
 		clock_t cluster_time = clock();
 		//fprintf(frepo, "Clustering : %.6lf seconds.\n", (double)(cluster_time - read_news_time) / CLOCKS_PER_SEC);
 		pthread_t *pt = (pthread_t *)malloc(MAX_THREADS * sizeof(pthread_t));
+<<<<<<< HEAD
 		real total = 0;
+=======
+>>>>>>> 53edd24804c76a0ad0d37c2bc6f5fa571ca256df
 		for (int i = 0; i < QUERY_DOC; i++) {
 			query_id = i;
 			for (int j = 0; j < MAX_THREADS; j++) {
