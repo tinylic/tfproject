@@ -64,7 +64,7 @@ public:
 		word_size++;
 		hash = GetWordHash(word);
 		while (word_hash[hash] != -1) hash = (hash + 1) % vocab_hash_size;
-		mWordEmbeds[word_size].word_id = word_hash[hash] = word_size - 1;
+		word_hash[hash] = word_size - 1;
 		return word_size - 1;
 	}
 

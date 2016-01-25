@@ -18,26 +18,27 @@ Embeds GetDocCenter(const Document &a) {
 	result = new real[layer1_size];
 	int *cnt = new int[layer1_size];
 	unsigned i, j;
-	memset(cnt, 0, sizeof cnt);
+	//cout << a.AllWord.size() << endl;
 	for (i = 0; i < layer1_size; i++)
 		result[i] = cnt[i] = 0;
-		for (i = 0; i < a.AllWord.size(); i++) {
-            Embeds vec = a.AllEmbed[i];
-            for (j = 0; j < layer1_size; j++) {
-            	result[j] += vec[j] * a.AllWord[i].second;
-            	cnt[j] += a.AllWord[i].second;
-            }
+	for (i = 0; i < a.AllWord.size(); i++) {
+		Embeds vec = a.AllEmbed[i];
+		if (vec == NULL) continue;
+		for (j = 0; j < layer1_size; j++) {
+			//printf("%.6f ", vec[j]);
+			result[j] += vec[j] * a.AllWord[i].second;
+			cnt[j] += a.AllWord[i].second;
 		}
+		//cout << endl;
+	}
 	for (i = 0; i < layer1_size; i++)
-		result[i] /= cnt[j];
+		result[i] /= max(cnt[i], 1);
 	return result;
 }
 real WMD(const Document &a, const Document &b) {
 	unsigned lena, lenb;
 	lena = a.AllWord.size();
 	lenb = b.AllWord.size();
-	if (lena > MAX_DOC_LENGTH) lena = MAX_DOC_LENGTH;
-	if (lenb > MAX_DOC_LENGTH) lenb = MAX_DOC_LENGTH;
 	unsigned i, j;
 	real *DA = new real[lena];
 	real *DB = new real[lenb];
@@ -61,20 +62,15 @@ real WMD(const Document &a, const Document &b) {
 		cost[i] = new real[lenb];
 	for (i = 0; i < lena; i++) {
 		for (j = 0; j < lenb; j++) {
-			//cout << "\ni = " << i << " j = " << j << endl;
 			Embeds veca, vecb;
 			veca = a.AllEmbed[i];
 			vecb = b.AllEmbed[j];
 			cost[i][j] = WordDistance(veca, vecb);
-			//printf("%.6f ", cost[i][j]);
 		}
-		//cout << endl;
 	}
-	//cout << "fuck" << endl;
 	signature_t doca = signature_t{lena, IDA, DA};
 	signature_t docb = signature_t{lenb, IDB, DB};
 	real result = emd(&doca, &docb, _Cost, 0, 0);
-	//printf("%.6f\n", result);
 	if (!isfinite(result)) result = 1e9;
 	return result;
 }
@@ -90,12 +86,14 @@ real RWMD(const Document &a, const Document &b) {
 	unsigned i;
 	for (i = 0; i < a.AllWord.size(); i++) {
 		Embeds vec = a.AllEmbed[i];
+		if (vec == NULL) continue;
 		temp += a.AllWord[i].second * Nearest(vec, b);
 	}
 	if (result > temp) result = temp;
 	temp = 0;
 	for (i = 0; i < b.AllWord.size(); i++) {
 		Embeds vec = b.AllEmbed[i];
+		if (vec == NULL) continue;
 		temp += b.AllWord[i].second * Nearest(vec, a);
 	}
 	if (result > temp) result = temp;

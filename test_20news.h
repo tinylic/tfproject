@@ -108,7 +108,7 @@ public:
 		//for (int i = 0; i < tot_doc; i++)
 			//printf("%d\n", Groups[i].AllEmbed.size());
 		//RunMethodBrown(max_w);
-		//RunMethod1(&Cluster);
+		RunMethod1(&Cluster);
 		clock_t cluster_time = clock();
 		fprintf(frepo, "Clustering : %.6lf seconds.\n", (double)(cluster_time - read_news_time) / CLOCKS_PER_SEC);
 		pthread_t *pt = (pthread_t *)malloc(MAX_THREADS * sizeof(pthread_t));

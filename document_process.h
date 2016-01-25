@@ -28,7 +28,13 @@ public:
 		//delete mDict;
 	}
 
-
+	vector<Upair> GetAllWord() {
+		AllWord.clear();
+		for (Umap :: iterator Uit = mWordCount.begin(); Uit != mWordCount.end(); Uit++) {
+			AllWord.push_back(make_pair(Uit -> first, Uit -> second));
+		}
+		return AllWord;
+	}
 	void ReadFile(const int Tag, const char *fn){
 		//read from a file that represents a document
 		//Read 20_news
@@ -55,6 +61,7 @@ public:
 				} else mWordCount[index] ++;
 
 			}
+		GetAllWord();
 	}
 
 	void ReadCorpus(Char *document) {
@@ -113,13 +120,7 @@ public:
 			} else mWordCount[index] += cnt;
 		}
 	}
-	vector<Upair> GetAllWord() {
-		AllWord.clear();
-		for (Umap :: iterator Uit = mWordCount.begin(); Uit != mWordCount.end(); Uit++) {
-			AllWord.push_back(make_pair(Uit -> first, Uit -> second));
-		}
-		return AllWord;
-	}
+
 };
 
 class Corpus {
