@@ -31,6 +31,7 @@ public:
 	vector<Upair> GetAllWord() {
 		AllWord.clear();
 		for (Umap :: iterator Uit = mWordCount.begin(); Uit != mWordCount.end(); Uit++) {
+			if (AllEmbed[Uit -> first] == NULL) continue;
 			AllWord.push_back(make_pair(Uit -> first, Uit -> second));
 		}
 		return AllWord;
@@ -61,7 +62,7 @@ public:
 				} else mWordCount[index] ++;
 
 			}
-		GetAllWord();
+		//GetAllWord();
 	}
 
 	void ReadCorpus(Char *document) {

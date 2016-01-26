@@ -8,7 +8,6 @@ real *Transform(const int &clcn, const vector<Upair> &doc){
 		for (i = 0; i < clcn; i++)
 			ans[i] = 0;
 		for (i = 0; i < len; i++) {
-			//cout << cl[doc[i].first] << endl;
 			ans[mWordEmbedding ->mWordEmbeds[doc[i].first].cl] += doc[i].second;
 			total += doc[i].second;
 		}
@@ -24,7 +23,6 @@ real *Transform(const int &clcn, const vector<Upair> &doc){
 		NewAll.clear();
 		for (int i = 0; i < (int)All.size(); i++) {
             Char *mWord = Doc -> mDict -> GetWord(All[i].first);
-            //cout << mWord << endl;
             // Word in the document
             int index = mWordEmbedding -> SearchVocab(mWord);
             if (index == -1) continue;

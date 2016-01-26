@@ -39,7 +39,7 @@ void *RunMethod(void *arg) {
 	for (int j = 0; j < num; j++) {
 		int k = QUERY_DOC + id * num + j;
 		//real sum = DistCluster(i, k);
-		real sum = RWMD(Groups[i], Groups[k]);
+		real sum = WMD(Groups[i], Groups[k]);
 		dis[i][k - QUERY_DOC] = DocCmp(k, sum);
 	}
 	pthread_exit(NULL);
@@ -48,7 +48,7 @@ void *RunMethod(void *arg) {
 class test_20news {
 public:
 	FILE *fout = fopen("result.txt", "w");
-	FILE *frepo = fopen("RWMDResult.txt", "w");
+	FILE *frepo = fopen("WMDResult.txt", "w");
 	cluster Cluster;
 	real MAP(int doc_id) {
 		int len = MAX_DOCS - QUERY_DOC;
@@ -93,7 +93,8 @@ public:
 					doc.Init();
 					doc.ReadFile(tag_count, curaddr);
 					Cluster.GetAllEmbedding(&doc);
-					//cout << doc.AllWord.size() << endl;
+					//doc.GetAllWord();
+					cout << doc.AllWord.size() << endl;
 					Groups.push_back(doc);
 					tot_doc ++;
 					doc_count ++;
@@ -108,7 +109,7 @@ public:
 		//for (int i = 0; i < tot_doc; i++)
 			//printf("%d\n", Groups[i].AllEmbed.size());
 		//RunMethodBrown(max_w);
-		RunMethod1(&Cluster);
+		//RunMethod1(&Cluster);
 		clock_t cluster_time = clock();
 		fprintf(frepo, "Clustering : %.6lf seconds.\n", (double)(cluster_time - read_news_time) / CLOCKS_PER_SEC);
 		pthread_t *pt = (pthread_t *)malloc(MAX_THREADS * sizeof(pthread_t));
@@ -131,7 +132,10 @@ public:
 			//cout << endl;
 			real tmap = MAP(i);
 			total += tmap;
+			if (i % 10 == 0) cout << i << endl;
 			fprintf(frepo, "MAP = %.6f\n", tmap);
+			printf("Current MAP : %.6f\n", tmap);
+			printf("Average MAP : %.6f\n", total / (i + 1));
 		}
 		fprintf(frepo, "Average MAP : %.6f\n", total / QUERY_DOC);
 		clock_t dist_time = clock();

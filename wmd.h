@@ -1,12 +1,10 @@
 #include "emd.c"
 
-real _Cost(int *i, int *j) {
-	return cost[*i][*j];
-}
+
 real Nearest(const Embeds &a, const Document &doc) {
 	real result = 1e9;;
-	unsigned i;
-	for (i = 0; i < doc.AllWord.size(); i++) {
+	unsigned i, len = doc.AllWord.size();
+	for (i = 0; i < len; i++) {
 		Embeds vec = doc.AllEmbed[i];
 		real temp = WordDistance(a, vec);
 		if (temp < result) result = temp;
@@ -39,20 +37,18 @@ real WMD(const Document &a, const Document &b) {
 	unsigned lena, lenb;
 	lena = a.AllWord.size();
 	lenb = b.AllWord.size();
+	if (lena > MAX_DOC_LENGTH) lena = MAX_DOC_LENGTH;
+	if (lenb > MAX_DOC_LENGTH) lenb = MAX_DOC_LENGTH;
 	unsigned i, j;
 	real *DA = new real[lena];
 	real *DB = new real[lenb];
 	int *IDA = new int[lena];
 	int *IDB = new int[lenb];
 	real suma = 0, sumb = 0;
-	for (i = 0; i < lena; i++) {
+	for (i = 0; i < lena; i++)
 		suma += a.AllWord[i].second;
-		IDA[i] = i;
-	}
-	for (i = 0; i < lenb; i++) {
+	for (i = 0; i < lenb; i++)
 		sumb += b.AllWord[i].second;
-		IDB[i] = i;
-	}
 	for (i = 0; i < lena; i++)
 		DA[i] = (real)a.AllWord[i].second / suma;
 	for (i = 0; i < lenb; i++)
@@ -68,9 +64,9 @@ real WMD(const Document &a, const Document &b) {
 			cost[i][j] = WordDistance(veca, vecb);
 		}
 	}
-	signature_t doca = signature_t{lena, IDA, DA};
-	signature_t docb = signature_t{lenb, IDB, DB};
-	real result = emd(&doca, &docb, _Cost, 0, 0);
+	signature_t doca = signature_t{lena, DA};
+	signature_t docb = signature_t{lenb, DB};
+	real result = emd(&doca, &docb, cost, 0, 0);
 	if (!isfinite(result)) result = 1e9;
 	return result;
 }
@@ -84,18 +80,36 @@ real RWMD(const Document &a, const Document &b) {
 	real result = 1e9;
 	real temp = 0;
 	unsigned i;
-	for (i = 0; i < a.AllWord.size(); i++) {
+	unsigned lena = a.AllWord.size();
+	unsigned lenb = b.AllWord.size();
+	real *DA = new real[lena];
+	real *DB = new real[lenb];
+	int *IDA = new int[lena];
+	int *IDB = new int[lenb];
+	real suma = 0, sumb = 0;
+	for (i = 0; i < lena; i++)
+		suma += a.AllWord[i].second;
+	for (i = 0; i < lenb; i++)
+		sumb += b.AllWord[i].second;
+	for (i = 0; i < lena; i++)
+		DA[i] = (real)a.AllWord[i].second / suma;
+	for (i = 0; i < lenb; i++)
+		DB[i] = (real)b.AllWord[i].second / sumb;
+
+	for (i = 0; i < lena; i++) {
 		Embeds vec = a.AllEmbed[i];
 		if (vec == NULL) continue;
-		temp += a.AllWord[i].second * Nearest(vec, b);
+		temp += DA[i] * Nearest(vec, b);
 	}
 	if (result > temp) result = temp;
+
 	temp = 0;
-	for (i = 0; i < b.AllWord.size(); i++) {
+	for (i = 0; i < lenb; i++) {
 		Embeds vec = b.AllEmbed[i];
 		if (vec == NULL) continue;
-		temp += b.AllWord[i].second * Nearest(vec, a);
+		temp += DB[i] * Nearest(vec, a);
 	}
 	if (result > temp) result = temp;
+	//printf("%.6f\n", result);
 	return result;
 }

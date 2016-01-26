@@ -108,24 +108,30 @@ public:
 		}
 
 	void GetAllEmbedding(Document *Doc) {
-		vector<Upair> All = Doc -> GetAllWord();
-		Doc -> AllEmbed.resize(All.size());
-		for (int i = 0; i < (int)All.size(); i++) {
-			Doc -> AllEmbed[i] = NULL;
-            Char *mWord = Doc -> mDict -> GetWord(All[i].first);
-            //cout << mWord << endl;
+		int cnt = 0, cntvalid = 0;
+		Doc -> AllWord.clear();
+		for (Umap :: iterator Uit = Doc->mWordCount.begin(); Uit != Doc->mWordCount.end(); Uit++) {
+
+			cnt ++;
+			Char *mWord = Doc -> mDict -> GetWord(Uit -> first);
             // Word in the document
             int index = mWordEmbedding -> SearchVocab(mWord);
             if (index == -1) continue;
             // Word ID in the Embedding
-            Doc -> AllEmbed[i] = new real[layer1_size];
+            cntvalid++;
+            Doc -> AllWord.push_back(make_pair(Uit -> first, Uit -> second));
+            int AllIndex = Doc -> AllWord.size() - 1;
+            Embeds vec = new real[layer1_size];
             real *mEmbed = (*mWordEmbedding).GetEmbedding(index);
-            for (int j = 0; j < All[i].second; j++) {
+            for (int j = 0; j < Uit -> second; j++) {
             	vectors.push_back(mEmbed);
             	IDvectors.push_back(index);
             }
             for (int j = 0; j < layer1_size; j++)
-            	Doc -> AllEmbed[i][j] = mEmbed[j];
+            	vec[j] = mEmbed[j];
+            Doc ->AllEmbed.push_back(vec);
 		}
+		printf("%d valid\n%d in total\n word contained ratio: %.6lf\n", cntvalid, cnt, (double)cntvalid / cnt);
+		printf("AllWord Size: %d\n", Doc -> AllWord.size());
 	}
 };

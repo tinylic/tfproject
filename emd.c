@@ -64,7 +64,7 @@ static float _maxC;
 
 /* DECLARATION OF FUNCTIONS */
 static float init(signature_t *Signature1, signature_t *Signature2,
-		  float (*Dist)(feature_t *, feature_t *));
+		  float **cost);
 static void findBasicVariables(node1_t *U, node1_t *V);
 static int isOptimal(node1_t *U, node1_t *V);
 static int findLoop(node2_t **Loop);
@@ -99,17 +99,17 @@ where
 ******************************************************************************/
 
 float emd(signature_t *Signature1, signature_t *Signature2,
-	  float (*Dist)(feature_t *, feature_t *),
+	  float **cost,
 	  flow_t *Flow, int *FlowSize)
 {
-  int itr;
+  int itr = 0;
   double totalCost;
   float w;
   node2_t *XP;
   flow_t *FlowP;
   node1_t U[MAX_SIG_SIZE1], V[MAX_SIG_SIZE1];
 
-  w = init(Signature1, Signature2, Dist);
+  w = init(Signature1, Signature2, cost);
 
 #if DEBUG_LEVEL > 1
   printf("\nINITIAL SOLUTION:\n");
@@ -183,7 +183,7 @@ float emd(signature_t *Signature1, signature_t *Signature2,
    init
 **********************/
 static float init(signature_t *Signature1, signature_t *Signature2, 
-		  float (*Dist)(feature_t *, feature_t *))
+		  float **cost)
 {
   int i, j;
   double sSum, dSum, diff;
@@ -201,10 +201,10 @@ static float init(signature_t *Signature1, signature_t *Signature2,
   
   /* COMPUTE THE DISTANCE MATRIX */
   _maxC = 0;
-  for(i=0, P1=Signature1->Features; i < _n1; i++, P1++)
-    for(j=0, P2=Signature2->Features; j < _n2; j++, P2++) 
+  for(i=0; i < _n1; i++)
+    for(j=0; j < _n2; j++)
       {
-	_C[i][j] = Dist(P1, P2);
+	_C[i][j] = cost[i][j];
 	if (_C[i][j] > _maxC)
 	  _maxC = _C[i][j];
       }

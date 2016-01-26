@@ -18,8 +18,8 @@
 
 
 /* DEFINITIONS */
-#define MAX_SIG_SIZE   100
-#define MAX_ITERATIONS 500
+#define MAX_SIG_SIZE   500
+#define MAX_ITERATIONS 5000
 #define INFINITY       1e20
 #define EPSILON        1e-9
 
@@ -32,7 +32,6 @@ typedef int feature_t;
 typedef struct
 {
   int n;                /* Number of features in the signature */
-  feature_t *Features;  /* Pointer to the features vector */
   float *Weights;       /* Pointer to the weights of the features */
 } signature_t;
 
@@ -47,7 +46,7 @@ typedef struct
 
 
 float emd(signature_t *Signature1, signature_t *Signature2,
-	  float (*func)(feature_t *, feature_t *),
+	  float **cost,
 	  flow_t *Flow, int *FlowSize);
 
 #endif
