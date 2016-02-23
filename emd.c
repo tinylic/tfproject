@@ -187,7 +187,6 @@ static float init(signature_t *Signature1, signature_t *Signature2,
 {
   int i, j;
   double sSum, dSum, diff;
-  feature_t *P1, *P2;
   double S[MAX_SIG_SIZE1], D[MAX_SIG_SIZE1];
  
   _n1 = Signature1->n;

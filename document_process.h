@@ -86,7 +86,7 @@ public:
 			int cnt = 0;
 			for (; isdigit(document[i]); i++)
 				cnt = cnt * 10 + document[i] - '0';
-			if (strlen(word) < 3) continue;
+			if (strlen(word) < MIN_WORDS) continue;
 
 			//add to dictionary
 			total_word += cnt;

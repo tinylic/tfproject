@@ -1,7 +1,7 @@
 real *Transform(const int &clcn, const vector<Upair> &doc){
 		// Documents are represented in word_id
 		unsigned len = doc.size();
-		unsigned i;
+		int i;
 		long long total = 0;
 		int *ans = new int[clcn];
 		real *result = new real[clcn];

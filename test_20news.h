@@ -5,12 +5,12 @@
 
 const char rootaddr[] = "20_newsgroups";
 vector < Document > Groups;
-
+real *embeds[MAX_TAGS * MAX_DOC_PER_TAG];
 #include "Method1.h"
 #include "BrownCluster.h"
 #include "distance.h"
 #include "../brown/wcluster.h"
-
+#include "TF_IDF.h"
 
 struct DocCmp {
 	int doc_id;
@@ -39,7 +39,7 @@ void *RunMethod(void *arg) {
 	for (int j = 0; j < num; j++) {
 		int k = QUERY_DOC + id * num + j;
 		//real sum = DistCluster(i, k);
-		real sum = WMD(Groups[i], Groups[k]);
+		real sum = DistTFIDF(i, k);
 		dis[i][k - QUERY_DOC] = DocCmp(k, sum);
 	}
 	pthread_exit(NULL);
@@ -48,7 +48,7 @@ void *RunMethod(void *arg) {
 class test_20news {
 public:
 	FILE *fout = fopen("result.txt", "w");
-	FILE *frepo = fopen("WMDResult.txt", "w");
+	FILE *frepo = fopen("WMD1Result.txt", "w");
 	cluster Cluster;
 	real MAP(int doc_id) {
 		int len = MAX_DOCS - QUERY_DOC;
@@ -110,6 +110,7 @@ public:
 			//printf("%d\n", Groups[i].AllEmbed.size());
 		//RunMethodBrown(max_w);
 		//RunMethod1(&Cluster);
+		Calc_TF_IDF();
 		clock_t cluster_time = clock();
 		fprintf(frepo, "Clustering : %.6lf seconds.\n", (double)(cluster_time - read_news_time) / CLOCKS_PER_SEC);
 		pthread_t *pt = (pthread_t *)malloc(MAX_THREADS * sizeof(pthread_t));
