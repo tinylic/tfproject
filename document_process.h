@@ -4,13 +4,16 @@
 using namespace std;
 
 class Document {
-public:
+private:
 	int mtag;
-	int total_word;
+	int TotalWord;
 	Dictionary* mDict;
-	Umap mWordCount;
-	vector<Upair> AllWord;
 	AllEmbeds AllEmbed;
+	vector<Upair> AllWord;
+public:
+	Umap mWordCount;
+
+
 	void Init() {
 		// Initialization
 		mDict = new Dictionary;
@@ -18,7 +21,7 @@ public:
 		mWordCount.clear();
 		AllWord.clear();
 		mtag = -1;
-		total_word = 0;
+		TotalWord = 0;
 		AllEmbed.clear();
 	}
 	Document(){
@@ -28,6 +31,52 @@ public:
 		//delete mDict;
 	}
 
+	int Getmtag() {
+		return mtag;
+	}
+
+	int GetTotalWord() {
+		return TotalWord;
+	}
+
+	void AddTotalWord(int delta) {
+		TotalWord += delta;
+	}
+
+	Char* GetWord(int hash) {
+		return mDict -> GetWord(hash);
+	}
+
+	int SearchVocab(Char *word) {
+		return mDict -> SearchVocab(word);
+	}
+
+	int GetWordCount(int index) {
+		return mWordCount[index];
+	}
+
+	Embeds GetEmbed(int index) {
+		return AllEmbed[index];
+	}
+
+	int GetWordSize() {
+		return AllWord.size();
+	}
+
+	void AddToAllWord(Upair node) {
+		AllWord.push_back(node);
+	}
+
+	void CleanAllWord() {
+		AllWord.clear();
+	}
+
+	Upair GetAllWordByID(int index) {
+		return AllWord[index];
+	}
+	void AddEmbed(Embeds vec) {
+		AllEmbed.push_back(vec);
+	}
 	vector<Upair> GetAllWord() {
 		AllWord.clear();
 		for (Umap :: iterator Uit = mWordCount.begin(); Uit != mWordCount.end(); Uit++) {
@@ -54,7 +103,7 @@ public:
 				if (feof(fin)) break;
 				ReadWord(word, fin);
 				if (strlen(word) < MIN_WORDS) continue;
-				total_word ++;
+				AddTotalWord(1);
 				int index = mDict -> SearchVocab(word);
 				if (index == -1) {
 					int a = mDict -> AddWordToVocab(word);
@@ -89,7 +138,7 @@ public:
 			if (strlen(word) < MIN_WORDS) continue;
 
 			//add to dictionary
-			total_word += cnt;
+			AddTotalWord(cnt);
 			int index = mDict -> SearchVocab(word);
 			if (index == -1) {
 				a = mDict -> AddWordToVocab(word);
@@ -113,7 +162,7 @@ public:
 			ReadWord(word, fin);
 			fscanf(fin, "%d", &cnt);
 			if (strlen(word) < MIN_WORDS) continue;
-			total_word += cnt;
+			AddTotalWord(cnt);
 			int index = mDict -> SearchVocab(word);
 			if (index == -1) {
 				int a = mDict -> AddWordToVocab(word);

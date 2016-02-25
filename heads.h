@@ -1,3 +1,6 @@
+#ifndef _HEADS_H_
+#define _HEADS_H_
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -23,7 +26,7 @@
 #define MAX_DOC_PER_TAG 100
 #define MIN_WORDS 3
 #define MAX_TAGS 20
-#define MAX_KEY_WORDS 200
+#define MAX_KEY_WORDS 2000
 #define QUERY_DOC 500
 #define MAX_DOCS ((MAX_TAGS) * (MAX_DOC_PER_TAG))
 #define check printf("here is ok\n")
@@ -36,7 +39,7 @@ typedef char Char;
 typedef pair<unsigned, unsigned> Upair;
 typedef map<unsigned, unsigned> Umap;
 typedef real* Embeds;
-typedef vector<real *> AllEmbeds;
+typedef vector<Embeds> AllEmbeds;
 
 
 char train_file[MAX_STRING], output_file[MAX_STRING];
@@ -59,7 +62,6 @@ char totalinput[] = "input.txt";
 int hs = 0, negative = 5;
 const int table_size = 1e8;
 int *table;
-
 real SQR(real x) {
 	return x * x;
 }
@@ -80,3 +82,4 @@ void ReadWord(Char *word, FILE *f) {
 	}
 	word[a] = 0;
 }
+#endif

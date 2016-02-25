@@ -54,7 +54,7 @@ public:
 		int len = MAX_DOCS - QUERY_DOC;
 		real result = 0;
 		for (int i = 1; i < len; i++)
-			if (Groups[dis[doc_id][i].doc_id].mtag == Groups[doc_id].mtag)
+			if (Groups[dis[doc_id][i].doc_id].Getmtag() == Groups[doc_id].Getmtag())
 				result += 1 / (real)(i + 1);
 		return result;
 	}
@@ -94,7 +94,7 @@ public:
 					doc.ReadFile(tag_count, curaddr);
 					Cluster.GetAllEmbedding(&doc);
 					//doc.GetAllWord();
-					cout << doc.AllWord.size() << endl;
+					cout << doc.GetWordSize() << endl;
 					Groups.push_back(doc);
 					tot_doc ++;
 					doc_count ++;

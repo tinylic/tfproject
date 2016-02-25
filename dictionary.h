@@ -17,7 +17,6 @@ private:
 
 public:
 
-
 	void Init() {
 		vocab = new vocab_word[dict_hash_size];
 		vocab_hash = new int[dict_hash_size];

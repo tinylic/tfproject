@@ -22,7 +22,7 @@ real *Transform(const int &clcn, const vector<Upair> &doc){
 		vector<Upair> NewAll;
 		NewAll.clear();
 		for (int i = 0; i < (int)All.size(); i++) {
-            Char *mWord = Doc -> mDict -> GetWord(All[i].first);
+            Char *mWord = Doc -> GetWord(All[i].first);
             // Word in the document
             int index = mWordEmbedding -> SearchVocab(mWord);
             if (index == -1) continue;
