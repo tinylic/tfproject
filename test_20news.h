@@ -28,7 +28,7 @@ struct DocCmp {
 	}
 };
 
-DocCmp dis[MAX_DOCS][MAX_DOCS];
+DocCmp dis[MAX_DOCS];
 int query_id;
 
 
@@ -38,9 +38,10 @@ void *RunMethod(void *arg) {
 	int num = (Groups.size() - QUERY_DOC) / MAX_THREADS;
 	for (int j = 0; j < num; j++) {
 		int k = QUERY_DOC + id * num + j;
+		//real sum = RWMD(&Groups[i], &Groups[j]);
 		//real sum = DistCluster(i, k);
 		real sum = DistTFIDF(i, k);
-		dis[i][k - QUERY_DOC] = DocCmp(k, sum);
+		dis[k - QUERY_DOC] = DocCmp(k, sum);
 	}
 	pthread_exit(NULL);
 }
@@ -54,7 +55,7 @@ public:
 		int len = MAX_DOCS - QUERY_DOC;
 		real result = 0;
 		for (int i = 1; i < len; i++)
-			if (Groups[dis[doc_id][i].doc_id].Getmtag() == Groups[doc_id].Getmtag())
+			if (Groups[dis[i].doc_id].Getmtag() == Groups[doc_id].Getmtag())
 				result += 1 / (real)(i + 1);
 		return result;
 	}
@@ -106,31 +107,41 @@ public:
 		random_shuffle(Groups.begin(), Groups.end());
 		clock_t read_news_time = clock();
 		fprintf(frepo, "Reading 20news : %.6lf seconds.\n", (double)(read_news_time - read_corpus_time) / CLOCKS_PER_SEC);
-		//for (int i = 0; i < tot_doc; i++)
-			//printf("%d\n", Groups[i].AllEmbed.size());
-		//RunMethodBrown(max_w);
 		//RunMethod1(&Cluster);
-		Calc_TF_IDF();
+		//Calc_TF_IDF();
 		clock_t cluster_time = clock();
 		fprintf(frepo, "Clustering : %.6lf seconds.\n", (double)(cluster_time - read_news_time) / CLOCKS_PER_SEC);
 		pthread_t *pt = (pthread_t *)malloc(MAX_THREADS * sizeof(pthread_t));
 		real total = 0;
 		for (int i = 0; i < QUERY_DOC; i++) {
 			query_id = i;
-			for (int j = 0; j < MAX_THREADS; j++) {
-				pthread_create(&pt[j], NULL, RunMethod, (void *)j);
-			}
-			for (int j = 0; j < MAX_THREADS; j++)
-				pthread_join(pt[j], NULL);
-			//for (int j = QUERY_DOC; j < tot_doc; j++) {
-				//real sum = DistCluster(i, j);
-				//printf("%.6f\n", sum);
-				//dis[i].push_back(DocCmp(j, sum));
+			memset(dis, 0, sizeof dis);
+			//for (int j = 0; j < MAX_THREADS; j++) {
+			//	pthread_create(&pt[j], NULL, RunMethod, (void *)j);
 			//}
-			sort(dis[i], dis[i] + MAX_DOCS - QUERY_DOC);
-			//for (int j = 0; j < dis[i].size(); j++)
-				//printf("%d ", dis[i][j].doc_id);
-			//cout << endl;
+			//for (int j = 0; j < MAX_THREADS; j++)
+			//	pthread_join(pt[j], NULL);
+			//sort(dis, dis + Groups.size() - QUERY_DOC);
+			for (int j = QUERY_DOC; j < Groups.size(); j++)
+				dis[j - QUERY_DOC] = DocCmp(j, WCD(&Groups[i], &Groups[j]));
+			sort(dis, dis + Groups.size() - QUERY_DOC);
+			for (int j = 0; j < THRESHOLD_K; j++)
+				dis[j] = DocCmp(dis[j].doc_id, WMD(&Groups[i], &Groups[dis[j].doc_id]));
+			sort(dis, dis + THRESHOLD_K);
+			for (int j = THRESHOLD_K; j < Groups.size() - QUERY_DOC; j++) {
+				real LowerBound = RWMD(&Groups[i], &Groups[dis[j].doc_id]);
+				if (LowerBound <= dis[THRESHOLD_K - 1].distance) {
+					dis[j].distance = WMD(&Groups[i], &Groups[dis[j].doc_id]);
+					if (dis[j].distance <= dis[THRESHOLD_K - 1].distance) {
+						swap(dis[j], dis[THRESHOLD_K - 1]);
+						sort(dis, dis + THRESHOLD_K);
+					}
+				}
+			}
+			sort(dis + THRESHOLD_K, dis + Groups.size() - QUERY_DOC);
+			/*for (int j = QUERY_DOC; j < Groups.size(); j++)
+				dis[j - QUERY_DOC] = DocCmp(j, WMD(&Groups[i], &Groups[j]));
+			sort(dis, dis + Groups.size() - QUERY_DOC);*/
 			real tmap = MAP(i);
 			total += tmap;
 			if (i % 10 == 0) cout << i << endl;
@@ -141,6 +152,5 @@ public:
 		fprintf(frepo, "Average MAP : %.6f\n", total / QUERY_DOC);
 		clock_t dist_time = clock();
 		fprintf(frepo, "Calculating Similarities : %.6lf seconds.\n", (double)(dist_time - cluster_time) / CLOCKS_PER_SEC);
-		//WMD(Groups[0], Groups[0]);
 	}
 };

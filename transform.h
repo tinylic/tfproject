@@ -8,7 +8,8 @@ real *Transform(const int &clcn, const vector<Upair> &doc){
 		for (i = 0; i < clcn; i++)
 			ans[i] = 0;
 		for (i = 0; i < len; i++) {
-			ans[mWordEmbedding ->mWordEmbeds[doc[i].first].cl] += doc[i].second;
+			int index = (mWordEmbedding -> GetEmbedWord(doc[i].first)).cl;
+			ans[index] += doc[i].second;
 			total += doc[i].second;
 		}
 		total ++;//Avoid total == 0
@@ -16,7 +17,8 @@ real *Transform(const int &clcn, const vector<Upair> &doc){
 			result[i] = (real)ans[i] / total;
 		return result;
 	}
-	real *Transform(const int &clcn, Document *Doc) {
+
+real *Transform(const int &clcn, Document *Doc) {
 		// Read documents in the form of <w1, c1>
 		vector<Upair> All = Doc -> GetAllWord();
 		vector<Upair> NewAll;

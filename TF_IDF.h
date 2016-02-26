@@ -18,7 +18,7 @@ real IDF(char *word) {
 	real result = Groups.size();
 	//debug("%.6f\n", result);
 	int cnt = 1;
-	for (int i = 0; i < Groups.size(); i++)
+	for (int i = 0; i < (int)Groups.size(); i++)
 		if (Groups[i].SearchVocab(word) != -1)
 			cnt ++;
 	result /= cnt;
@@ -53,10 +53,10 @@ void Calc_TF_IDF() {
 			real tTF = TF(word, &Groups[i]);
 			real tIDF = IDF(word);
 			int k;
-			for (k = 0; k < Twords.size(); k++)
+			for (k = 0; k < (int)Twords.size(); k++)
 				if (strcmp(Twords[k].word, word) == 0)
 					break;
-			if (k == Twords.size()) {
+			if (k == (int)Twords.size()) {
 				Twords.push_back(TF_IDF_node{word, tTF * tIDF});
 			}
 			else  if (Twords[k].TF_IDF < (tTF * tIDF)){

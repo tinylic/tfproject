@@ -11,17 +11,13 @@ struct embed_word {
 		int word_id;
 	};
 class WordEmbedding {
-public:
+private:
 	unsigned nDim;  //the dimensionality of word embedding
-	embed_word *mWordEmbeds;
-
 	int *word_hash;
 	int word_size;
-
-
+	embed_word *mWordEmbeds;
 	AllEmbeds All;
-
-
+public:
 
 	int GetWordHash(Char *word) {
 		unsigned long long hash = 0;
@@ -54,6 +50,14 @@ public:
 		// Return the embedding in position hash
 		if (hash == -1) return NULL;
 		return mWordEmbeds[hash].embedding;
+	}
+
+	embed_word GetEmbedWord(int index) {
+		return mWordEmbeds[index];
+	}
+
+	void ChangeEmbedWordCl(int index, int cl) {
+		mWordEmbeds[index].cl = cl;
 	}
 
 	int AddWordToVocab(Char *word) {
@@ -143,6 +147,7 @@ public:
 			AddEmbedding(vocab, M);
 		}
 	}
+
 	int AddEmbedding(Char* word, real embedding[]){
 		// Insert the embedding to the dict and return the index
 		int index = SearchVocab(word);
@@ -156,6 +161,7 @@ public:
 		//cout << word << " " << index << endl;
 		return index;
 	}
+
 	int AddCluster(Char* word, int cluster_id){
 		// Insert the embedding to the dict and return the index
 

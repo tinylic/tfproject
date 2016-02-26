@@ -6,8 +6,8 @@
 using namespace std;
 WordEmbedding *mWordEmbedding;
 struct cluster{
-public:
 
+private:
 	unsigned clcn, iter, closeid;
 	// clcn : class number
 	// closeid : closest cluster
@@ -19,11 +19,14 @@ public:
 	// cent : coordinates of the cluster centroid
 	AllEmbeds vectors;
 	vector<int> IDvectors;
+public:
+
 	void Init() {
 		mWordEmbedding = new WordEmbedding;
 		vectors.clear();
 		IDvectors.clear();
 	}
+
 	cluster(){
 		// Initialization
 		Init();
@@ -90,7 +93,7 @@ public:
 				}
 			}
 			for (a = 0; a < vec_size; a++)
-				mWordEmbedding -> mWordEmbeds[IDvectors[a]].cl = cl[a];
+				mWordEmbedding -> ChangeEmbedWordCl(IDvectors[a], cl[a]);
 			cout << "End Kmeans" << endl;
 		}
 		vector<real *> GetCentroid() {

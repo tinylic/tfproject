@@ -71,6 +71,10 @@ public:
 		AllWord.clear();
 	}
 
+	int GetEmbedSize() {
+		return AllEmbed.size();
+	}
+
 	Upair GetAllWordByID(int index) {
 		return AllWord[index];
 	}

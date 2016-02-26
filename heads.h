@@ -28,6 +28,7 @@
 #define MAX_TAGS 20
 #define MAX_KEY_WORDS 2000
 #define QUERY_DOC 500
+#define THRESHOLD_K 500
 #define MAX_DOCS ((MAX_TAGS) * (MAX_DOC_PER_TAG))
 #define check printf("here is ok\n")
 #define debug(...) fprintf(stderr, __VA_ARGS__)

@@ -3,7 +3,7 @@
 
 real Nearest(const Embeds &a, Document *doc) {
 	real result = 1e9;;
-	unsigned i, len = doc -> GetWordSize();
+	unsigned i, len = doc -> GetEmbedSize();
 	for (i = 0; i < len; i++) {
 		Embeds vec = doc -> GetEmbed(i);
 		real temp = WordDistance(a, vec);
@@ -16,18 +16,15 @@ Embeds GetDocCenter(Document *a) {
 	result = new real[layer1_size];
 	int *cnt = new int[layer1_size];
 	unsigned i, j;
-	//cout << a.AllWord.size() << endl;
 	for (i = 0; i < layer1_size; i++)
 		result[i] = cnt[i] = 0;
-	for (i = 0; i < a -> GetWordSize(); i++) {
+	for (i = 0; i < a -> GetEmbedSize(); i++) {
 		Embeds vec = a -> GetEmbed(i);
 		if (vec == NULL) continue;
 		for (j = 0; j < layer1_size; j++) {
-			//printf("%.6f ", vec[j]);
-			result[j] += vec[j] * a -> GetAllWordByID(i).second;
+			result[j] += vec[j] * (a -> GetAllWordByID(i)).second;
 			cnt[j] += a -> GetAllWordByID(i).second;
 		}
-		//cout << endl;
 	}
 	for (i = 0; i < layer1_size; i++)
 		result[i] /= max(cnt[i], 1);
@@ -35,8 +32,8 @@ Embeds GetDocCenter(Document *a) {
 }
 real WMD(Document *a, Document *b) {
 	unsigned lena, lenb;
-	lena = a -> GetWordSize();
-	lenb = b -> GetWordSize();
+	lena = a -> GetEmbedSize();
+	lenb = b -> GetEmbedSize();
 	if (lena > MAX_DOC_LENGTH) lena = MAX_DOC_LENGTH;
 	if (lenb > MAX_DOC_LENGTH) lenb = MAX_DOC_LENGTH;
 	unsigned i, j;
@@ -77,11 +74,11 @@ real WCD(Document *a, Document *b) {
 	return WordDistance(CentA, CentB);
 }
 real RWMD(Document *a, Document *b) {
-	real result = 1e9;
+	real result = 0;
 	real temp = 0;
 	unsigned i;
-	unsigned lena = a -> GetWordSize();
-	unsigned lenb = b -> GetWordSize();
+	unsigned lena = a -> GetEmbedSize();
+	unsigned lenb = b -> GetEmbedSize();
 	real *DA = new real[lena];
 	real *DB = new real[lenb];
 	int *IDA = new int[lena];
@@ -92,16 +89,16 @@ real RWMD(Document *a, Document *b) {
 	for (i = 0; i < lenb; i++)
 		sumb += b -> GetAllWordByID(i).second;
 	for (i = 0; i < lena; i++)
-		DA[i] = (real)a -> GetAllWordByID(i).second / suma;
+		DA[i] = (real)(a -> GetAllWordByID(i).second) / suma;
 	for (i = 0; i < lenb; i++)
-		DB[i] = (real)b -> GetAllWordByID(i).second / sumb;
+		DB[i] = (real)(b -> GetAllWordByID(i).second) / sumb;
 
 	for (i = 0; i < lena; i++) {
 		Embeds vec = a -> GetEmbed(i);
 		if (vec == NULL) continue;
 		temp += DA[i] * Nearest(vec, b);
 	}
-	if (result > temp) result = temp;
+	if (result < temp) result = temp;
 
 	temp = 0;
 	for (i = 0; i < lenb; i++) {
@@ -109,7 +106,7 @@ real RWMD(Document *a, Document *b) {
 		if (vec == NULL) continue;
 		temp += DB[i] * Nearest(vec, a);
 	}
-	if (result > temp) result = temp;
+	if (result < temp) result = temp;
 	//printf("%.6f\n", result);
 	return result;
 }
