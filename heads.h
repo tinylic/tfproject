@@ -14,9 +14,10 @@
 #include <algorithm>
 #include <pthread.h>
 #include <cstdint>
+#include <cassert>
 
 #define MAX_THREADS 1
-#define DIS_INF 100
+#define DIS_INF 1000
 #define MAX_STRING 1000
 #define EXP_TABLE_SIZE 1000
 #define MAX_EXP 6
@@ -28,7 +29,7 @@
 #define MAX_TAGS 20
 #define MAX_KEY_WORDS 2000
 #define QUERY_DOC 500
-#define THRESHOLD_K 500
+#define THRESHOLD_K 50
 #define MAX_DOCS ((MAX_TAGS) * (MAX_DOC_PER_TAG))
 #define check printf("here is ok\n")
 #define debug(...) fprintf(stderr, __VA_ARGS__)
@@ -71,7 +72,7 @@ real WordDistance(const Embeds &a, const Embeds &b) {
 	if (a == NULL || b == NULL) return DIS_INF;
 	for (int i = 0; i < layer1_size; i++)
 		result += SQR(a[i] - b[i]);
-	return sqrt(result);
+	return result;
 }
 void ReadWord(Char *word, FILE *f) {
 	int a = 0;

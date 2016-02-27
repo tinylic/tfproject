@@ -96,7 +96,8 @@ public:
 				mWordEmbedding -> ChangeEmbedWordCl(IDvectors[a], cl[a]);
 			cout << "End Kmeans" << endl;
 		}
-		vector<real *> GetCentroid() {
+
+	vector<real *> GetCentroid() {
 			// Return the centroid coordinates
 			vector<real *> result;
 			result.clear();

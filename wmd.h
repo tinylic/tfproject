@@ -110,3 +110,6 @@ real RWMD(Document *a, Document *b) {
 	//printf("%.6f\n", result);
 	return result;
 }
+
+
+

@@ -1,7 +1,7 @@
+#include <document.h>
 #include <cstdio>
 #include <algorithm>
 
-#include "document_process.h"
 
 using namespace std;
 struct embed_word {
@@ -9,7 +9,9 @@ struct embed_word {
 		real *embedding;
 		int cl;
 		int word_id;
-	};
+};
+
+
 class WordEmbedding {
 private:
 	unsigned nDim;  //the dimensionality of word embedding
