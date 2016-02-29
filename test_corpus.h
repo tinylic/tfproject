@@ -29,7 +29,7 @@ struct DocCmp {
 };
 
 DocCmp dis[MAX_DOCS];
-int query_id;
+
 
 class test_corpus {
 private:
@@ -43,6 +43,8 @@ private:
 	pthread_t *pt;
 
 public:
+	static int query_id;
+
 	FILE *fout = fopen("result.txt", "w");
 	FILE *frepo = fopen("WMD_100NearestResult.txt", "w");
 	cluster Cluster;
@@ -74,6 +76,7 @@ public:
 
 		//RunMethod1(&Cluster);
 		//Calc_TF_IDF();
+		//RunMethodBrown(max_w, "output.txt");
 
 		clock_t cluster_time = clock();
 		fprintf(frepo, "Clustering : %.6lf seconds.\n", (double)(cluster_time - read_news_time) / CLOCKS_PER_SEC);
@@ -86,13 +89,15 @@ public:
 			assert(Groups[i].GetEmbedSize() == Groups[i].GetWordSize());
 
 			//Run Method1 or tf-idf with multi threads
-			Run_Threads();
+			//Run_Threads();
+
+			//WMD method
 
 			//prefetch & prune
 
 			Run_WMD_Prefetch_And_Prune(query_id);
 
-			//all wmd calculated
+			//or calculate all wmd
 
 			//Run_WMD_Brute(query_id);
 
@@ -130,7 +135,6 @@ public:
 					doc.Init();
 					doc.ReadFile(tag_count, curaddr);
 					Cluster.GetAllEmbedding(&doc);
-					//doc.GetAllWord();
 					cout << doc.GetWordSize() << endl;
 					Groups.push_back(doc);
 					tot_doc ++;
@@ -149,8 +153,8 @@ public:
 		for (int j = 0; j < num; j++) {
 			int k = QUERY_DOC + id * num + j;
 			//real sum = RWMD(&Groups[i], &Groups[j]);
-			//real sum = DistCluster(i, k);
-			real sum = DistTFIDF(i, k);
+			real sum = DistCluster(i, k);
+			//real sum = DistTFIDF(i, k);
 			dis[k - QUERY_DOC] = DocCmp(k, sum);
 		}
 		pthread_exit(NULL);
@@ -168,6 +172,7 @@ public:
 
 
 	void Run_WMD_Prefetch_And_Prune(int i) {
+		//select nearest threshold_k documents
 		for (int j = QUERY_DOC; j < Groups.size(); j++)
 			dis[j - QUERY_DOC] = DocCmp(j, WCD(&Groups[i], &Groups[j]));
 		sort(dis, dis + Groups.size() - QUERY_DOC);
@@ -209,4 +214,5 @@ public:
 
 };
 
+int test_corpus::query_id = 0;
 

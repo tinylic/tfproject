@@ -1,13 +1,13 @@
 #include <stdlib.h>
 #include <string.h>
-char brownoutput[] = "output.txt";
-void RunMethodBrown(const int &classes) {
+
+void RunMethodBrown(const int &classes, char *BrownClusterResultFile) {
 	char word[255];
 	int ID;
 	//memset(opt2, 0, sizeof opt2);
 	//sprintf(opt2, "/brown-cluster/./wcluster --text %s --c %d", browninput, classes);
 	mWordEmbedding -> Init();
-	FILE *infile = fopen(brownoutput, "r");
+	FILE *infile = fopen(BrownClusterResultFile, "r");
 	while (1) {
 		fscanf(infile, "%d%s", &ID, word);
 		if (feof(infile)) break;

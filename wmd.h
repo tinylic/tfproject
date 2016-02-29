@@ -39,8 +39,6 @@ real WMD(Document *a, Document *b) {
 	unsigned i, j;
 	real *DA = new real[lena];
 	real *DB = new real[lenb];
-	int *IDA = new int[lena];
-	int *IDB = new int[lenb];
 	real suma = 0, sumb = 0;
 	for (i = 0; i < lena; i++)
 		suma += a -> GetAllWordByID(i).second;
@@ -81,8 +79,6 @@ real RWMD(Document *a, Document *b) {
 	unsigned lenb = b -> GetEmbedSize();
 	real *DA = new real[lena];
 	real *DB = new real[lenb];
-	int *IDA = new int[lena];
-	int *IDB = new int[lenb];
 	real suma = 0, sumb = 0;
 	for (i = 0; i < lena; i++)
 		suma += a -> GetAllWordByID(i).second;
@@ -107,7 +103,6 @@ real RWMD(Document *a, Document *b) {
 		temp += DB[i] * Nearest(vec, a);
 	}
 	if (result < temp) result = temp;
-	//printf("%.6f\n", result);
 	return result;
 }
 

@@ -81,6 +81,7 @@ public:
 	void AddEmbed(Embeds vec) {
 		AllEmbed.push_back(vec);
 	}
+
 	vector<Upair> GetAllWord() {
 		AllWord.clear();
 		for (Umap :: iterator Uit = mWordCount.begin(); Uit != mWordCount.end(); Uit++) {
