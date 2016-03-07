@@ -6,9 +6,6 @@
 #include "CEmbeddingHistogramInformationRetrieval.h"
 #include "CInformationRetrieval.h"
 
-vector<Document> Groups;
-real *embeds[MAX_TAGS * MAX_DOC_PER_TAG];
-
 class test_corpus {
 private:
 	WordLibrary& mDict;
@@ -98,7 +95,7 @@ public:
 		for (int i = 0; i < tag_count; i++) {
 			int count = mTagCorpus[i] -> size();
 			int numQuery = floor(count * ratio);
-			random_shuffle(mTagCorpus[i ]-> begin(), mTagCorpus[i] -> end());
+			random_shuffle(mTagCorpus[i]-> begin(), mTagCorpus[i] -> end());
 			for (int j = 0; j < count; j++) {
 				if (j <= numQuery) {
 					queryCorpus -> addDocument(mTagCorpus[i] -> at(j));
@@ -114,6 +111,14 @@ public:
 		CEmbeddingHistogramInformationRetrieval * pIR =
 				new CEmbeddingHistogramInformationRetrieval(mDict,
 						*trainCorpus);
+		real TotalMAP = 0;
+		for (int i = 0; i < queryCorpus -> size(); i++) {
+			Document* queryDoc = queryCorpus ->getDocument(i);
+			real curMAP = (pIR -> GetMAPScore(queryDoc));
+			TotalMAP += curMAP;
+			printf("%d MAP = %.6f\n", i, curMAP);
+			printf("Average MAP = %.6f\n", TotalMAP / (i + 1));
+		}
 	}
 	inline Corpus* getTrainCorpus() {
 		return trainCorpus;
@@ -121,15 +126,6 @@ public:
 	inline Corpus* getQueryCorpus() {
 		return queryCorpus;
 	}
-
-	/*real MAP(int doc_id) {
-		int len = MAX_DOCS - QUERY_DOC;
-		real result = 0;
-		for (int i = 1; i < len; i++)
-			if (Groups[dis[i].doc_id].Getmtag() == Groups[doc_id].Getmtag())
-				result += 1 / (real) (i + 1);
-		return result;
-	}*/
 
 };
 

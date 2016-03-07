@@ -29,6 +29,7 @@ CEmbeddingHistogramInformationRetrieval::CEmbeddingHistogramInformationRetrieval
 		trainCorpus.getDocument(i) -> Transform(max_w);
 		cout << i << " Transform Finished" << endl;
 	}
+	cout << "Transform Finished" << endl;
 }
 
 CEmbeddingHistogramInformationRetrieval::~CEmbeddingHistogramInformationRetrieval() {
@@ -39,5 +40,6 @@ real CEmbeddingHistogramInformationRetrieval::distance(const Document* doc1,
 		const Document* doc2) {
 	real* vec1 = doc1->GetTransformed();
 	real* vec2 = doc2->GetTransformed();
+	if (vec1 == NULL || vec2 == NULL) cout << "fuck\n";
 	return SquaredEuclideanDistance(vec1, vec2, max_w);
 }

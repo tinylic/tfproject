@@ -33,8 +33,7 @@ struct DocCmp {
 		doc = _doc;
 		distance = _distance;
 	}
-
-	friend bool operator <(DocCmp a, DocCmp b) {
+	friend bool operator <(const DocCmp &a, const DocCmp &b) {
 		return a.distance < b.distance;
 	}
 };
@@ -44,11 +43,12 @@ protected:
 	WordLibrary& mDict;
 	Corpus& trainCorpus;
 	//Corpus& queryCorpus;
-	DocCmp dis[MAX_DOCS];
-
+	vector<DocCmp> dis;
 	pthread_t *pt;
 
 	void* RunMethod(void *arg);
+
+	real MAP(Document* queryDoc);
 public:
 	CInformationRetrieval(WordLibrary& dict, Corpus& train);
 	virtual ~CInformationRetrieval();
@@ -59,7 +59,9 @@ public:
 
 	virtual real distance(const Document* doc1, const Document* doc2) = 0;
 
-	vector<Document*> rank(Document* queryDoc);
+	void rank(Document* queryDoc);
+
+	real GetMAPScore(Document* queryDoc);
 };
 
 #endif /* TFPROJECT_CINFORMATIONRETRIEVAL_H_ */
