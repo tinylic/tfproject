@@ -20,13 +20,13 @@ CEmbeddingHistogramInformationRetrieval::CEmbeddingHistogramInformationRetrieval
 
 	mDict.ClearAllLabels(); //clear all the cluster assignment of the words in the library
 
-	int* cl = pCluster -> GetLabels();
+	int* cl = pCluster->GetLabels();
 	for (unsigned a = 0; a < vecEmbeddings.size(); a++)
 		mDict.ChangeEmbedWordCl(vecIDs[a], cl[a]);
 	cout << "End Labels" << endl;
 	cout << trainCorpus.size() << endl;
 	for (unsigned i = 0; i < trainCorpus.size(); i++) {
-		trainCorpus.getDocument(i) -> Transform(max_w);
+		trainCorpus.getDocument(i)->Transform(max_w);
 		cout << i << " Transform Finished" << endl;
 	}
 	cout << "Transform Finished" << endl;
@@ -40,6 +40,5 @@ real CEmbeddingHistogramInformationRetrieval::distance(const Document* doc1,
 		const Document* doc2) {
 	real* vec1 = doc1->GetTransformed();
 	real* vec2 = doc2->GetTransformed();
-	if (vec1 == NULL || vec2 == NULL) cout << "fuck\n";
 	return SquaredEuclideanDistance(vec1, vec2, max_w);
 }

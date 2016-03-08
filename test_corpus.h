@@ -26,6 +26,7 @@ private:
 		struct dirent *curptr;
 		struct stat info;
 		tot_doc = 0;
+		tag_count = 0;
 		dir = opendir(rootaddr.c_str());
 		while ((ptr = readdir(dir)) != NULL) {
 			if (ptr->d_name[0] == '.')
@@ -43,15 +44,8 @@ private:
 					char *curaddr = (char *) calloc(255, sizeof(char));
 					sprintf(curaddr, "%s/%s", addr, curptr->d_name);
 					cout << curaddr << endl;
-
-					//read_file(curaddr, totalinput);
-
 					Document* doc = new Document(mDict, tag_count, curaddr);
 					mCorpus.push_back(doc);
-
-					//Cluster.GetAllEmbedding(&doc);
-					//cout << doc.GetWordSize() << endl;
-
 					tot_doc++;
 					doc_count++;
 					if (doc_count >= MAX_DOC_PER_TAG)
@@ -71,17 +65,19 @@ private:
 	}
 
 public:
-	static int query_id;
 
 	cluster *Cluster;
 
 	test_corpus(WordLibrary& dict, const string& dir) :
-			mDict(dict), rootaddr(dir), trainCorpus(NULL), queryCorpus(NULL), Cluster(NULL){
+			mDict(dict), rootaddr(dir), trainCorpus(NULL), queryCorpus(NULL), Cluster(
+					NULL) {
 		ReadCorpus();
 	}
 
 	virtual ~test_corpus() {
-
+		//delete Cluster;
+		//delete trainCorpus;
+		//delete queryCorpus;
 	}
 
 	void HeldOut(real ratio) {
@@ -93,14 +89,14 @@ public:
 		trainCorpus = new Corpus(mDict);
 
 		for (int i = 0; i < tag_count; i++) {
-			int count = mTagCorpus[i] -> size();
+			int count = mTagCorpus[i]->size();
 			int numQuery = floor(count * ratio);
-			random_shuffle(mTagCorpus[i]-> begin(), mTagCorpus[i] -> end());
+			random_shuffle(mTagCorpus[i]->begin(), mTagCorpus[i]->end());
 			for (int j = 0; j < count; j++) {
 				if (j <= numQuery) {
-					queryCorpus -> addDocument(mTagCorpus[i] -> at(j));
+					queryCorpus->addDocument(mTagCorpus[i]->at(j));
 				} else {
-					trainCorpus -> addDocument(mTagCorpus[i] -> at(j));
+					trainCorpus->addDocument(mTagCorpus[i]->at(j));
 				}
 
 			}
@@ -112,9 +108,9 @@ public:
 				new CEmbeddingHistogramInformationRetrieval(mDict,
 						*trainCorpus);
 		real TotalMAP = 0;
-		for (int i = 0; i < queryCorpus -> size(); i++) {
-			Document* queryDoc = queryCorpus ->getDocument(i);
-			real curMAP = (pIR -> GetMAPScore(queryDoc));
+		for (int i = 0; i < queryCorpus->size(); i++) {
+			Document* queryDoc = queryCorpus->getDocument(i);
+			real curMAP = (pIR->GetMAPScore(queryDoc));
 			TotalMAP += curMAP;
 			printf("%d MAP = %.6f\n", i, curMAP);
 			printf("Average MAP = %.6f\n", TotalMAP / (i + 1));

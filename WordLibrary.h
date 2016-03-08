@@ -11,7 +11,7 @@ struct embed_word {
 	real *embedding; //the embedding
 	int cl;  //which cluster?
 	int word_id;  //identifier
-	embed_word(){
+	embed_word() {
 		word = NULL;
 		hasEmbedding = false;
 		embedding = NULL;
@@ -93,14 +93,14 @@ public:
 	}
 
 	int GetEmbedWordCl(int index) {
-		return mWordEmbeds[index] -> cl;
+		return mWordEmbeds[index]->cl;
 	}
 	void ChangeEmbedWordCl(int index, int cl) {
 		mWordEmbeds[index]->cl = cl;
 	}
 
 	WordLibrary() :
-			nDim(50) {
+		nDim(50) {
 		//Init();
 		//mWordEmbeds = new embed_word[vocab_hash_size];  //to be modified
 		word_size = 0;
@@ -243,9 +243,9 @@ public:
 
 	vector<real *> getAllEmbedding() {
 		vector<real *> embeds;
-		embeds.resize(word_size);
+		embeds.clear();
 		for (int i = 0; i < word_size; i++) {
-			embeds.push_back(mWordEmbeds[i]->embedding);
+			embeds.push_back(mWordEmbeds[i] -> embedding);
 		}
 		return embeds;
 		//return All;//to be rewritten

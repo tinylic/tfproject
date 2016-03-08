@@ -115,22 +115,19 @@ public:
 
 	void Transform(unsigned clcn) {
 		// Documents are represented in word_id
-		//unsigned len = doc.size();
 		hasTransformed = true;
-		int i;
+		unsigned i;
 		long long total = 0;
 		int *ans = new int[clcn];
 		mTransformed = new real[clcn];
 		for (i = 0; i < clcn; i++)
 			ans[i] = 0;
 
-		for (auto P = mWordCount.begin();
-				P != mWordCount.end(); P++) {
-			int id = P -> first;
+		for (auto P = mWordCount.begin(); P != mWordCount.end(); P++) {
+			int id = P->first;
 			int ClID = mDict.GetEmbedWordCl(id);
-			//int index = (mWordEmbedding -> GetEmbedWord(doc[i].first)).cl;
-			ans[ClID] += P -> second;
-			total += P -> second;
+			ans[ClID] += P->second;
+			total += P->second;
 		}
 		if (total == 0)
 			total++;
@@ -220,7 +217,7 @@ public:
 		vecIDs.clear();
 
 		set<unsigned> IDs;
-		for (int i = 0; i < mCorpus.size(); i++) {
+		for (unsigned i = 0; i < mCorpus.size(); i++) {
 			Document* doc = getDocument(i);
 			int cnt = 0, cntvalid = 0;
 			for (Umap::iterator Uit = doc->mWordCount.begin();
@@ -229,12 +226,13 @@ public:
 				int id = Uit->first;
 				if (mDict.hasEmbedding(id)) {
 					IDs.insert(id);
-					cntvalid ++;
+					cntvalid++;
 				}
-				printf("%d valid\n%d in total\n word contained ratio: %.6lf\n", cntvalid, cnt, (double)cntvalid / cnt);
+				printf("%d valid\n%d in total\n word contained ratio: %.6lf\n",
+						cntvalid, cnt, (double) cntvalid / cnt);
 			}
 		}
-		for (set<unsigned>::iterator P = IDs.begin(); P != IDs.end(); P++) {
+		for (auto P = IDs.begin(); P != IDs.end(); P++) {
 			vecIDs.push_back(*P);
 			vecEmbeddings.push_back(mDict.GetEmbedding(*P));
 		}

@@ -31,8 +31,6 @@ protected:
 	//vector<int> IDvectors;
 public:
 
-
-
 	cluster(unsigned nClusters, unsigned iterations, AllEmbeds& vecEmbeddings) :
 			numClusters(nClusters), numIterations(iterations), vectors(
 					vecEmbeddings) {
@@ -49,9 +47,9 @@ public:
 	}
 
 	~cluster() {
-		delete centcn;
-		delete cent;
-		delete cl;
+		//delete centcn;
+		//delete cent;
+		//delete cl;
 	}
 
 	void Kmeans() {

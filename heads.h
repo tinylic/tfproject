@@ -49,6 +49,4 @@ typedef map<unsigned, unsigned> Umap;
 typedef real* Embeds;
 typedef vector<Embeds> AllEmbeds;
 
-
-
 #endif
