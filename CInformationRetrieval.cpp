@@ -68,7 +68,8 @@ void CInformationRetrieval::rank(Document* queryDoc) {
 
 	//sort(dis, dis + Groups.size() - QUERY_DOC);
 	dis.clear();
-	queryDoc->Transform(max_w);
+	Transform(queryDoc);
+	//queryDoc->ClusterTransform(max_w);
 	for (unsigned i = 0; i < trainCorpus.size(); i++) {
 		real dist = distance(trainCorpus.getDocument(i), queryDoc);
 		//printf("%.6f\n", dist);

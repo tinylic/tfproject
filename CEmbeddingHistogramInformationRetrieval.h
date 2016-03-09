@@ -14,19 +14,11 @@
 
 class CEmbeddingHistogramInformationRetrieval: public CInformationRetrieval {
 protected:
-	real SquaredEuclideanDistance(real* vec1, real* vec2, int size) {
-		real result = 0;
-		if (vec1 == NULL || vec2 == NULL)
-			return DIS_INF;
-		for (int i = 0; i < size; i++) {
-			result += (vec1[i] - vec2[i]) * (vec1[i] - vec2[i]);
-		}
-		return result;
-	}
+	real SquaredEuclideanDistance(real* vec1, real* vec2, int size);
 public:
 	CEmbeddingHistogramInformationRetrieval(WordLibrary& dict, Corpus& train);
 	virtual ~CEmbeddingHistogramInformationRetrieval();
-
+	virtual void Transform(Document *querydoc);
 	virtual real distance(const Document* doc1, const Document* doc2);
 };
 

@@ -5,6 +5,7 @@
 #include "Document.h"
 #include "CEmbeddingHistogramInformationRetrieval.h"
 #include "CInformationRetrieval.h"
+#include "CTFIDFInformationRetrieval.h"
 
 class test_corpus {
 private:
@@ -34,7 +35,7 @@ private:
 			char *addr = (char *) calloc(255, sizeof(char));
 			sprintf(addr, "%s/%s", rootaddr.c_str(), ptr->d_name);
 			stat(addr, &info);
-			cout << addr << endl;
+			cerr << addr << endl;
 			if (S_ISDIR(info.st_mode)) {   //if the entry is an subdirectory
 				curdir = opendir(addr);
 				doc_count = 0;
@@ -43,7 +44,7 @@ private:
 						continue;
 					char *curaddr = (char *) calloc(255, sizeof(char));
 					sprintf(curaddr, "%s/%s", addr, curptr->d_name);
-					cout << curaddr << endl;
+					cerr << curaddr << endl;
 					Document* doc = new Document(mDict, tag_count, curaddr);
 					mCorpus.push_back(doc);
 					tot_doc++;
@@ -104,16 +105,20 @@ public:
 	}
 
 	void doExperiment() {
-		CEmbeddingHistogramInformationRetrieval * pIR =
-				new CEmbeddingHistogramInformationRetrieval(mDict,
-						*trainCorpus);
+		//CEmbeddingHistogramInformationRetrieval * pIR =
+		//		new CEmbeddingHistogramInformationRetrieval(mDict,
+		//				*trainCorpus);
+		CTFIDFInformationRetrieval * pIR =
+						new CTFIDFInformationRetrieval(mDict,
+								*trainCorpus);
 		real TotalMAP = 0;
 		for (int i = 0; i < queryCorpus->size(); i++) {
 			Document* queryDoc = queryCorpus->getDocument(i);
 			real curMAP = (pIR->GetMAPScore(queryDoc));
 			TotalMAP += curMAP;
-			printf("%d MAP = %.6f\n", i, curMAP);
-			printf("Average MAP = %.6f\n", TotalMAP / (i + 1));
+			cout << i << " MAP = " <<  curMAP << endl;
+			cout << "Average MAP = " << TotalMAP / (i + 1) << endl;
+			//printf("Average MAP = %.6f\n", TotalMAP / (i + 1));
 		}
 	}
 	inline Corpus* getTrainCorpus() {

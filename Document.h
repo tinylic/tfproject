@@ -51,6 +51,7 @@ public:
 				continue;
 			AddTotalWord(1);
 			int id = mDict.AddWordToVocab(word);
+			mDict.SetInCorpus(id, true);
 			map<unsigned, unsigned>::iterator P = mWordCount.find(id);
 			if (P != mWordCount.end()) {
 				P->second += 1;
@@ -112,12 +113,20 @@ public:
 	int GetWordSize() {
 		return mWordCount.size();		//AllWord.size();
 	}
+	inline real GetTF(int id) {
+		real result = mWordCount[id];
+		return result / TotalWord;
+	}
 
-	void Transform(unsigned clcn) {
+	inline bool HasWord(int id) {
+		map<unsigned, unsigned>::iterator P = mWordCount.find(id);
+		return (P != mWordCount.end());
+	}
+	void ClusterTransform(unsigned clcn) {
 		// Documents are represented in word_id
 		hasTransformed = true;
 		unsigned i;
-		long long total = 0;
+		int total = 0;
 		int *ans = new int[clcn];
 		mTransformed = new real[clcn];
 		for (i = 0; i < clcn; i++)
@@ -135,6 +144,21 @@ public:
 			mTransformed[i] = (real) ans[i] / total;
 
 		//return result;
+	}
+	void TFIDFTransform(const vector<embed_word*> &KeyWords, int KeyNum) {
+		hasTransformed = true;
+		mTransformed = new real[KeyNum];
+		int total = 0;
+		for (int i = 0; i < KeyNum; i++) {
+			mTransformed[i] = 0;
+			if (HasWord(KeyWords[i] -> word_id)) {
+				int mCnt = GetWordCount(KeyWords[i] -> word_id);
+				mTransformed[i] = mCnt;;
+				total += mCnt;
+			}
+		}
+		for (int i = 0; i < KeyNum; i++)
+			mTransformed[i] /= total;
 	}
 
 	inline real* GetTransformed() const {
@@ -228,8 +252,8 @@ public:
 					IDs.insert(id);
 					cntvalid++;
 				}
-				printf("%d valid\n%d in total\n word contained ratio: %.6lf\n",
-						cntvalid, cnt, (double) cntvalid / cnt);
+				//printf("%d valid\n%d in total\n word contained ratio: %.6lf\n",
+						//cntvalid, cnt, (double) cntvalid / cnt);
 			}
 		}
 		for (auto P = IDs.begin(); P != IDs.end(); P++) {

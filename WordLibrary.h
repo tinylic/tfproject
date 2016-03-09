@@ -3,7 +3,6 @@
 #include <cstdio>
 #include <algorithm>
 #include "heads.h"
-
 using namespace std;
 struct embed_word {
 	Char *word;   //the word form
@@ -11,15 +10,25 @@ struct embed_word {
 	real *embedding; //the embedding
 	int cl;  //which cluster?
 	int word_id;  //identifier
+	bool InCorpus;
+	real IDF;
+	real TF_IDF;
 	embed_word() {
 		word = NULL;
 		hasEmbedding = false;
+		InCorpus = false;
 		embedding = NULL;
 		cl = word_id = -1;
+		IDF = 0;
+		TF_IDF = -1e9;
+
 	}
 
 };
 
+static bool cmp(const embed_word *a, const embed_word *b) {
+	return a->TF_IDF > b->TF_IDF;
+}
 ////////////////////////////////////////
 /// This class serves as a dictionary
 ////////////////////////////////////////
@@ -66,6 +75,9 @@ public:
 		return mWordEmbeds[id]->word;
 	}
 
+	inline int size() {
+		return word_size;
+	}
 	inline real* GetEmbedding(int id) {
 		// Return the embedding in position hash
 		if (id == -1)
@@ -88,8 +100,12 @@ public:
 	}
 
 	inline void ClearAllLabels() {
-		for (int i = 0; i < mWordEmbeds.size(); i++)
+		for (unsigned i = 0; i < mWordEmbeds.size(); i++)
 			mWordEmbeds[i]->cl = -1;
+	}
+
+	inline real GetIDF(int id) {
+		return mWordEmbeds[id] -> IDF;
 	}
 
 	int GetEmbedWordCl(int index) {
@@ -99,14 +115,31 @@ public:
 		mWordEmbeds[index]->cl = cl;
 	}
 
+	void ChangeIDF(int index, real mIDF) {
+		mWordEmbeds[index] -> IDF = mIDF;
+	}
+	void UpdateTFIDF(int index, real mTFIDF) {
+		if (mWordEmbeds[index] -> TF_IDF < mTFIDF)
+			mWordEmbeds[index] -> TF_IDF = mTFIDF;
+	}
+
+	void SetInCorpus(int index, bool flag) {
+		mWordEmbeds[index]->InCorpus = flag;
+	}
+
+	bool IsInCorpus(int index) {
+		return mWordEmbeds[index]->InCorpus;
+	}
+
 	WordLibrary() :
 		nDim(50) {
 		//Init();
 		//mWordEmbeds = new embed_word[vocab_hash_size];  //to be modified
 		word_size = 0;
 		word_hash = new int[vocab_hash_size];
-		for (int i = 0; i < vocab_hash_size; i++)
+		for (int i = 0; i < vocab_hash_size; i++) {
 			word_hash[i] = -1;
+		}
 	}
 
 	~WordLibrary() {
@@ -181,7 +214,7 @@ public:
 
 			//wordcnt ++;
 			if (word_size % 100000 == 0) {
-				cout << word_size << endl;
+				cerr << word_size << endl;
 			}
 
 			AddWordEmbedding(vocab, M);
@@ -191,11 +224,11 @@ public:
 	int AddWordEmbedding(Char* word, real embedding[]) {
 		// Insert the embedding to the dict and return the index
 		int index = AddWordToVocab(word); //SearchVocab(word);   //whether word exists in vocabulary?
-		if (index == -1) {  //if not found
-			mWordEmbeds.push_back(new embed_word);
-			index = AddWordToVocab(word);
+		//if (index == -1) {  //if not found
+			//mWordEmbeds.push_back(new embed_word);
+			//index = AddWordToVocab(word);
 			//All.push_back(embedding);
-		}
+		//}
 
 		//mWordEmbeds[index].embedding = new real[layer1_size];
 		if (mWordEmbeds[index]->hasEmbedding == false) {
@@ -217,7 +250,8 @@ public:
 
 		if (index == -1) {
 			embed_word * p_ew = new embed_word;
-			p_ew->word = word;
+			p_ew -> word = word;
+			p_ew -> word_id = word_size;
 			mWordEmbeds.push_back(p_ew);
 			word_size++;
 
@@ -250,6 +284,8 @@ public:
 		return embeds;
 		//return All;//to be rewritten
 	}
+
+
 
 };
 #endif

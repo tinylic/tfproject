@@ -59,6 +59,8 @@ public:
 
 	virtual real distance(const Document* doc1, const Document* doc2) = 0;
 
+	virtual void Transform(Document *querydoc) = 0;
+
 	void rank(Document* queryDoc);
 
 	real GetMAPScore(Document* queryDoc);

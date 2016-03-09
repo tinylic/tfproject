@@ -37,7 +37,7 @@ public:
 
 		vec_size = (int) vectors.size();  //the number of embeddings
 
-		cout << "vec_size == " << vec_size << endl;
+		cerr << "vec_size == " << vec_size << endl;
 		centcn = new int[numClusters];
 		cl = new int[vec_size];
 		cent = new real[numClusters * layer1_size];
@@ -95,7 +95,7 @@ public:
 				}
 				cl[c] = closeid;
 			}
-			cout << a << endl;
+			cerr << a << endl;
 		}
 
 		//for (a = 0; a < vec_size; a++)
