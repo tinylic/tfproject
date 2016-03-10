@@ -7,6 +7,7 @@
 #include "CInformationRetrieval.h"
 #include "CTFIDFInformationRetrieval.h"
 #include "CBrownInformationRetrieval.h"
+#include "CWMDInformationRetrieval.h"
 
 class test_corpus {
 private:
@@ -112,10 +113,13 @@ public:
 		//CTFIDFInformationRetrieval * pIR =
 		//				new CTFIDFInformationRetrieval(mDict,
 		//						*trainCorpus);
-		string BrownInput = "BrownOutput.txt";
-		CBrownInformationRetrieval * pIR =
-						new CBrownInformationRetrieval(mDict,
-								*trainCorpus, BrownInput);
+		//string BrownInput = "BrownOutput.txt";
+		//CBrownInformationRetrieval * pIR =
+		//				new CBrownInformationRetrieval(mDict,
+		//						*trainCorpus, BrownInput);
+		CWMDInformationRetrieval * pIR =
+						new CWMDInformationRetrieval(mDict,
+								*trainCorpus);
 		real TotalMAP = 0;
 		for (int i = 0; i < queryCorpus->size(); i++) {
 			Document* queryDoc = queryCorpus->getDocument(i);

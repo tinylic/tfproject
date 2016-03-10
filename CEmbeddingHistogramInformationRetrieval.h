@@ -17,7 +17,7 @@ public:
 	CEmbeddingHistogramInformationRetrieval(WordLibrary& dict, Corpus& train);
 	virtual ~CEmbeddingHistogramInformationRetrieval();
 	virtual void Transform(Document *querydoc);
-	virtual real distance(const Document* doc1, const Document* doc2);
+	virtual real distance(Document* doc1, Document* doc2);
 };
 
 #endif /* TFPROJECT_CEMBEDDINGHISTOGRAMINFORMATIONRETRIEVAL_H_ */

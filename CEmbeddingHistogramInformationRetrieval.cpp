@@ -39,8 +39,8 @@ CEmbeddingHistogramInformationRetrieval::~CEmbeddingHistogramInformationRetrieva
 void CEmbeddingHistogramInformationRetrieval::Transform(Document *querydoc) {
 	querydoc->ClusterTransform(max_w);
 }
-real CEmbeddingHistogramInformationRetrieval::distance(const Document* doc1,
-		const Document* doc2) {
+real CEmbeddingHistogramInformationRetrieval::distance(Document* doc1,
+		Document* doc2) {
 	real* vec1 = doc1->GetTransformed();
 	real* vec2 = doc2->GetTransformed();
 	return SquaredEuclideanDistance(vec1, vec2, max_w);
