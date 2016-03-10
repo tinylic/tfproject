@@ -7,15 +7,6 @@
 
 #include "CEmbeddingHistogramInformationRetrieval.h"
 
-real CEmbeddingHistogramInformationRetrieval::SquaredEuclideanDistance(real* vec1, real* vec2, int size) {
-	real result = 0;
-	if (vec1 == NULL || vec2 == NULL)
-		return DIS_INF;
-	for (int i = 0; i < size; i++) {
-		result += (vec1[i] - vec2[i]) * (vec1[i] - vec2[i]);
-	}
-	return result;
-}
 
 CEmbeddingHistogramInformationRetrieval::CEmbeddingHistogramInformationRetrieval(
 		WordLibrary& dict, Corpus& train) :
@@ -35,7 +26,7 @@ CEmbeddingHistogramInformationRetrieval::CEmbeddingHistogramInformationRetrieval
 		mDict.ChangeEmbedWordCl(vecIDs[a], cl[a]);
 	cout << "End Labels" << endl;
 	cout << trainCorpus.size() << endl;
-	for (unsigned i = 0; i < trainCorpus.size(); i++) {
+	for (int i = 0; i < trainCorpus.size(); i++) {
 		trainCorpus.getDocument(i) -> ClusterTransform(max_w);
 	}
 	cerr << "Transform Finished" << endl;

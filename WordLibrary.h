@@ -1,6 +1,7 @@
 #ifndef TFPROJECT_WORDLIBRARY_H_
 #define TFPROJECT_WORDLIBRARY_H_
 #include <cstdio>
+#include "cstring"
 #include <algorithm>
 #include "heads.h"
 using namespace std;
@@ -21,7 +22,19 @@ struct embed_word {
 		cl = word_id = -1;
 		IDF = 0;
 		TF_IDF = -1e9;
+	}
 
+	embed_word(const embed_word &other) {
+		hasEmbedding = other.hasEmbedding;
+		InCorpus = other.InCorpus;
+		cl = other.cl;
+		word_id = other.word_id;
+		IDF = other.IDF;
+		TF_IDF = other.TF_IDF;
+		word = new Char[strlen(other.word)];
+		strcpy(word, other.word);
+		embedding = new real[sizeof(other.embedding) / sizeof(real)];
+		memcpy(embedding, other.embedding, sizeof(other.embedding) / sizeof(real));
 	}
 
 };
@@ -42,6 +55,7 @@ private:
 
 	vector<embed_word*> mWordEmbeds;
 	//AllEmbeds All;
+	WordLibrary(const WordLibrary &other);
 public:
 
 	int GetWordHash(Char *word) {
@@ -131,6 +145,7 @@ public:
 		return mWordEmbeds[index]->InCorpus;
 	}
 
+
 	WordLibrary() :
 		nDim(50) {
 		//Init();
@@ -156,7 +171,6 @@ public:
 		real *M;
 		char *vocab;
 		FILE *f;
-		int wordcnt = 0;
 		if (IsBinary) {
 			f = fopen(fn, "rb");
 		} else {

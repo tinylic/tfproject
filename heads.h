@@ -33,7 +33,7 @@
 #define THRESHOLD_K 50
 #define ITER 10
 #define vocab_hash_size 30000000 // Maximum 30 * 0.7 = 21M words in the vocabulary
-#define max_w 50   //dimensionality that represent document - cluster number
+#define max_w 200   //dimensionality that represent document - cluster number
 #define layer1_size 300
 
 #define MAX_DOCS ((MAX_TAGS) * (MAX_DOC_PER_TAG))

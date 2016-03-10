@@ -49,6 +49,8 @@ protected:
 	void* RunMethod(void *arg);
 
 	real MAP(Document* queryDoc);
+
+	real SquaredEuclideanDistance(real* vec1, real* vec2, int size);
 public:
 	CInformationRetrieval(WordLibrary& dict, Corpus& train);
 	virtual ~CInformationRetrieval();

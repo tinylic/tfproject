@@ -7,6 +7,17 @@
 
 #include "CInformationRetrieval.h"
 
+real CInformationRetrieval::SquaredEuclideanDistance(real* vec1, real* vec2, int size) {
+	real result = 0;
+	if (vec1 == NULL || vec2 == NULL)
+		return DIS_INF;
+	for (int i = 0; i < size; i++) {
+		result += (vec1[i] - vec2[i]) * (vec1[i] - vec2[i]);
+	}
+	return result;
+}
+
+
 CInformationRetrieval::CInformationRetrieval(WordLibrary& dict, Corpus& train) :
 		mDict(dict), trainCorpus(train) {
 	pt = (pthread_t *) malloc(MAX_THREADS * sizeof(pthread_t));
@@ -70,7 +81,7 @@ void CInformationRetrieval::rank(Document* queryDoc) {
 	dis.clear();
 	Transform(queryDoc);
 	//queryDoc->ClusterTransform(max_w);
-	for (unsigned i = 0; i < trainCorpus.size(); i++) {
+	for (int i = 0; i < trainCorpus.size(); i++) {
 		real dist = distance(trainCorpus.getDocument(i), queryDoc);
 		//printf("%.6f\n", dist);
 		DocCmp mDocCmp = DocCmp(trainCorpus.getDocument(i), dist);

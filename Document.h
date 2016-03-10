@@ -25,6 +25,7 @@ private:
 		}
 		word[a] = 0;
 	}
+	Document(const Document &other);
 public:
 	Umap mWordCount;
 
@@ -63,7 +64,7 @@ public:
 	}
 
 	Document(WordLibrary& dict, Char *document) :
-			mDict(dict), mTag(-1), TotalWord(0), hasTransformed(false) {
+			mDict(dict), mTag(-1), TotalWord(0), hasTransformed(false){
 		/*		int cnt;
 		 //Char word[MAX_STRING];
 		 //FILE *fin = fopen(fn, "r");
@@ -135,6 +136,7 @@ public:
 		for (auto P = mWordCount.begin(); P != mWordCount.end(); P++) {
 			int id = P->first;
 			int ClID = mDict.GetEmbedWordCl(id);
+			if (ClID == -1) continue;
 			ans[ClID] += P->second;
 			total += P->second;
 		}
@@ -142,7 +144,6 @@ public:
 			total++;
 		for (i = 0; i < clcn; i++)
 			mTransformed[i] = (real) ans[i] / total;
-
 		//return result;
 	}
 	void TFIDFTransform(const vector<embed_word*> &KeyWords, int KeyNum) {
@@ -216,12 +217,14 @@ class Corpus {
 private:
 	vector<Document*> mCorpus;
 	WordLibrary& mDict;
+
 public:
 
 	Corpus(WordLibrary& dict) :
 			mDict(dict) {
 		mCorpus.clear();
 	}
+
 
 	inline void addDocument(Document* doc) {
 		mCorpus.push_back(doc);

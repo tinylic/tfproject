@@ -10,6 +10,8 @@ using namespace std;
 
 struct cluster {
 
+private:
+	cluster(const cluster &other);
 protected:
 	unsigned numClusters, numIterations;
 	// clcn : specified number of clusters
@@ -25,7 +27,7 @@ protected:
 	real *cent;
 	// cent : coordinates of the cluster centroid
 
-	int vec_size;
+	unsigned vec_size;
 	AllEmbeds& vectors;
 
 	//vector<int> IDvectors;
@@ -35,7 +37,7 @@ public:
 			numClusters(nClusters), numIterations(iterations), vectors(
 					vecEmbeddings) {
 
-		vec_size = (int) vectors.size();  //the number of embeddings
+		vec_size = vectors.size();  //the number of embeddings
 
 		cerr << "vec_size == " << vec_size << endl;
 		centcn = new int[numClusters];

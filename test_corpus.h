@@ -6,6 +6,7 @@
 #include "CEmbeddingHistogramInformationRetrieval.h"
 #include "CInformationRetrieval.h"
 #include "CTFIDFInformationRetrieval.h"
+#include "CBrownInformationRetrieval.h"
 
 class test_corpus {
 private:
@@ -64,7 +65,7 @@ private:
 			mTagCorpus[doc->Getmtag()]->push_back(doc);
 		}
 	}
-
+	test_corpus(test_corpus &other);
 public:
 
 	cluster *Cluster;
@@ -108,9 +109,13 @@ public:
 		//CEmbeddingHistogramInformationRetrieval * pIR =
 		//		new CEmbeddingHistogramInformationRetrieval(mDict,
 		//				*trainCorpus);
-		CTFIDFInformationRetrieval * pIR =
-						new CTFIDFInformationRetrieval(mDict,
-								*trainCorpus);
+		//CTFIDFInformationRetrieval * pIR =
+		//				new CTFIDFInformationRetrieval(mDict,
+		//						*trainCorpus);
+		string BrownInput = "BrownOutput.txt";
+		CBrownInformationRetrieval * pIR =
+						new CBrownInformationRetrieval(mDict,
+								*trainCorpus, BrownInput);
 		real TotalMAP = 0;
 		for (int i = 0; i < queryCorpus->size(); i++) {
 			Document* queryDoc = queryCorpus->getDocument(i);
