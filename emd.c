@@ -13,6 +13,8 @@
  E-Mail: rubner@cs.stanford.edu   URL: http://vision.stanford.edu/~rubner
  */
 
+#ifndef _EMD_C_
+#define _EMD_C_
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
@@ -764,4 +766,5 @@ static void printSolution() {
 
 	printf("COST = %f\n", totalCost);
 }
+#endif
 
