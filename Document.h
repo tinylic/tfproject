@@ -51,6 +51,7 @@ public:
 			if (strlen(word) < MIN_WORDS)
 				continue;
 			AddTotalWord(1);
+			if (GetTotalWord() > MAX_DOC_WORDS) break;
 			int id = mDict.AddWordToVocab(word);
 			mDict.SetInCorpus(id, true);
 			map<unsigned, unsigned>::iterator P = mWordCount.find(id);

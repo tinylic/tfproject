@@ -88,6 +88,7 @@ real CWMDInformationRetrieval::WMD(Document *a, Document *b) {
 	int lena = a->GetWordSize();
 	int lenb = b->GetWordSize();
 
+	cout << "lena = " << lena << " lenb = " << lenb << endl;
 	real *DA = new real[lena];
 	real *DB = new real[lenb];
 
@@ -97,27 +98,35 @@ real CWMDInformationRetrieval::WMD(Document *a, Document *b) {
 		DA[cnta ++] = a->GetTF(P -> first);
 	for (auto P = b->mWordCount.begin(); P != b->mWordCount.end(); P++)
 		DB[cntb ++] = b->GetTF(P -> first);
+
 	real **cost = new real *[lena];
 	for (int i = 0; i < lena; i++)
 		cost[i] = new real[lenb];
 
 	cnta = cntb = 0;
 	for (auto P = a->mWordCount.begin(); P != a->mWordCount.end(); P++) {
+		cntb = 0;
 		for (auto Q = b->mWordCount.begin(); Q != b->mWordCount.end(); Q++) {
 			Embeds veca, vecb;
-			veca = mDict.GetEmbedding(P -> first);
+			//cerr << "P = " << P -> first << " Q = " << Q -> first << endl;
+ 			veca = mDict.GetEmbedding(P -> first);
 			vecb = mDict.GetEmbedding(Q -> first);
 			cost[cnta][cntb] = SquaredEuclideanDistance(veca, vecb, layer1_size);
+			//cerr << "cost = " << cost[cnta][cntb] << endl;
+			//cerr << "cntb = " << cntb << endl;
 			cntb++;
 		}
+		//cerr << "cnta = " << cnta << endl;
 		cnta ++;
 	}
-
+	cerr << "fuck" << endl;
 	signature_t doca = signature_t { lena, DA };
 	signature_t docb = signature_t { lenb, DB };
+	check;
 	real result = emd(&doca, &docb, cost, 0, 0);
 	if (!isfinite(result))
 		result = 1e9;
+	cerr << result << endl;
 	return result;
 }
 

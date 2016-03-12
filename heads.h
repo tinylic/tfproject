@@ -22,7 +22,7 @@
 #define MAX_STRING 1000
 #define EXP_TABLE_SIZE 1000
 #define MAX_EXP 6
-#define MAX_DOC_LENGTH 400
+#define MAX_DOC_WORDS 800
 #define MAX_SENTENCE_LENGTH 1000
 #define MAX_CODE_LENGTH 40
 #define MAX_DOC_PER_TAG 100
@@ -37,7 +37,7 @@
 #define layer1_size 300
 
 #define MAX_DOCS ((MAX_TAGS) * (MAX_DOC_PER_TAG))
-#define check printf("here is ok\n")
+#define check perror("here is ok\n")
 #define debug(...) fprintf(stderr, __VA_ARGS__)
 
 using namespace std;

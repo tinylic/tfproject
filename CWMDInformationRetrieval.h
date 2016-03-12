@@ -9,7 +9,7 @@
 #define TFPROJECT_CWMDINFORMATIONRETRIEVAL_H_
 
 #include "CInformationRetrieval.h"
-#include "emd.c"
+#include "emd.h"
 
 class CWMDInformationRetrieval: public CInformationRetrieval {
 

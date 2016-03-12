@@ -17,7 +17,7 @@
  */
 
 /* DEFINITIONS */
-#define MAX_SIG_SIZE   500
+#define MAX_SIG_SIZE   800
 #define MAX_ITERATIONS 5000
 #define INFINITY       1e20
 #define EPSILON        1e-9
@@ -38,7 +38,7 @@ typedef struct {
 	float amount; /* Amount of flow from "from" to "to" */
 } flow_t;
 
-float emd(signature_t *Signature1, signature_t *Signature2, float **cost,
+extern float emd(signature_t *Signature1, signature_t *Signature2, float **cost,
 		flow_t *Flow, int *FlowSize);
 
 #endif
