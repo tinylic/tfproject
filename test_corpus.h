@@ -127,7 +127,7 @@ public:
 			TotalMAP += curMAP;
 			cout << i << " MAP = " <<  curMAP << endl;
 			cout << "Average MAP = " << TotalMAP / (i + 1) << endl;
-			//printf("Average MAP = %.6f\n", TotalMAP / (i + 1));
+			cerr << "Average MAP = " << TotalMAP / (i + 1) << endl;
 		}
 	}
 	inline Corpus* getTrainCorpus() {
