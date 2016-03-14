@@ -9,6 +9,7 @@ private:
 	WordLibrary& mDict;
 	int mTag;   //tag of document
 	int TotalWord;
+
 	real* mTransformed;
 	bool hasTransformed;
 
@@ -53,6 +54,7 @@ public:
 			AddTotalWord(1);
 			if (GetTotalWord() > MAX_DOC_WORDS) break;
 			int id = mDict.AddWordToVocab(word);
+			if (mDict.hasEmbedding(id) == false) continue;
 			mDict.SetInCorpus(id, true);
 			map<unsigned, unsigned>::iterator P = mWordCount.find(id);
 			if (P != mWordCount.end()) {
