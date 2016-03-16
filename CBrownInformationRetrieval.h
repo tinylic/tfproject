@@ -19,6 +19,7 @@ public:
 	virtual ~CBrownInformationRetrieval();
 	virtual void Transform(Document *querydoc);
 	virtual real distance(Document* doc1, Document* doc2);
+	virtual void rank(Document* queryDoc);
 };
 
 #endif /* TFPROJECT_CBROWNINFORMATIONRETRIEVAL_H_ */

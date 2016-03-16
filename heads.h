@@ -16,8 +16,9 @@
 #include <cstdint>
 #include <cassert>
 #include <iostream>
+#include <thread>
 
-#define MAX_THREADS 1
+#define MAX_THREADS 4
 #define DIS_INF 1000
 #define MAX_STRING 1000
 #define EXP_TABLE_SIZE 1000

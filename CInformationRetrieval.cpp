@@ -7,7 +7,8 @@
 
 #include "CInformationRetrieval.h"
 
-real CInformationRetrieval::SquaredEuclideanDistance(real* vec1, real* vec2, int size) {
+real CInformationRetrieval::SquaredEuclideanDistance(real* vec1, real* vec2,
+		int size) {
 	real result = 0;
 	if (vec1 == NULL || vec2 == NULL)
 		return DIS_INF;
@@ -17,81 +18,48 @@ real CInformationRetrieval::SquaredEuclideanDistance(real* vec1, real* vec2, int
 	return result;
 }
 
-
 CInformationRetrieval::CInformationRetrieval(WordLibrary& dict, Corpus& train) :
-		mDict(dict), trainCorpus(train) {
-	pt = (pthread_t *) malloc(MAX_THREADS * sizeof(pthread_t));
-
+		mDict(dict), trainCorpus(train){
+		dis = new DocCmp[trainCorpus.size()];
 }
 
 CInformationRetrieval::~CInformationRetrieval() {
 	// TODO Auto-generated destructor stub
 }
-/*
- void* CInformationRetrieval::RunMethod(void *arg) {
- //int i = query_id;
- //int id = (intptr_t)arg;
- pair<Document*, int>* temp = (pair<Document*, int>*) arg;
- Document* doc = temp->first;
- int id = temp->second;
 
- //int num = (Groups.size() - QUERY_DOC) / MAX_THREADS;
- int num = trainCorpus.size() / MAX_THREADS;
- int start = id * num;
- int end = (id + 1) * num - 1;
- if (id == MAX_THREADS - 1)
- end = trainCorpus.size();
+void CInformationRetrieval::ThreadFunction(Document* queryDoc, int thread_id) {
 
- for (int j = start; j <= end; j++) {
- //int k = QUERY_DOC + id * num + j;
- //real sum = RWMD(&Groups[i], &Groups[j]);
- real dist = distance(trainCorpus.getDocument(j), doc);
- //real sum = DistTFIDF(i, k);
- //dis[k - QUERY_DOC] = DocCmp(k, sum);
- dis[j] = DocCmp(j, dist);
- }
- pthread_exit(NULL);
- }
- */
+	int num = trainCorpus.size() / MAX_THREADS;
+	int start = thread_id * num;
+	int end = (thread_id + 1) * num;
+	debug("%d %d %d\n", num, start, end);
+	if (thread_id == MAX_THREADS - 1)
+		end = trainCorpus.size();
+
+	for (int j = start; j < end; j++) {
+		real dist = distance(trainCorpus.getDocument(j), queryDoc);
+		DocCmp mDocCmp = DocCmp(trainCorpus.getDocument(j), dist);
+		dis[j] = mDocCmp;
+	}
+}
+
 real CInformationRetrieval::MAP(Document* queryDoc) {
-	int queryTag = queryDoc -> Getmtag();
+	int queryTag = queryDoc->Getmtag();
 	real result = 0;
-	for (unsigned i = 0; i < dis.size(); i++) {
+	for (unsigned i = 0; i < trainCorpus.size(); i++) {
 		Document* mDoc = dis[i].doc;
-		if (mDoc -> Getmtag() == queryTag)
+		cerr << i << endl;
+		if (mDoc == NULL) cerr << "fuck" << endl;
+		if (mDoc->Getmtag() == queryTag)
 			result += 1 / (real) (i + 1);
 	}
 	return result;
 }
-void CInformationRetrieval::rank(Document* queryDoc) {
-	/*vector<pair<Document*, int>*> vecArgs;
-	 for (int j = 0; j < MAX_THREADS; j++) {
-	 pair<Document*, int>* args = new pair<Document*, int>;
-	 args->first = queryDoc;
-	 args->second = j;
-	 vecArgs.push_back(args);
-	 }
-	 for (int j = 0; j < MAX_THREADS; j++) {
-	 pthread_create(&pt[j], NULL, &RunMethod, (void *) vecArgs[j]);
-	 }
-	 for (int j = 0; j < MAX_THREADS; j++)
-	 pthread_join(pt[j], NULL);*/
 
-	//sort(dis, dis + Groups.size() - QUERY_DOC);
-	dis.clear();
-	Transform(queryDoc);
-	for (int i = 0; i < trainCorpus.size(); i++) {
-		real dist = distance(trainCorpus.getDocument(i), queryDoc);
-		//printf("%.6f\n", dist);
-		DocCmp mDocCmp = DocCmp(trainCorpus.getDocument(i), dist);
-		dis.push_back(mDocCmp);
-	}
-	sort(dis.begin(), dis.end());
-	return;
-}
 
 real CInformationRetrieval::GetMAPScore(Document* queryDoc) {
 	rank(queryDoc);
 	real curMAP = MAP(queryDoc);
+	cerr << curMAP << endl;
 	return curMAP;
 }

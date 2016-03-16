@@ -60,6 +60,24 @@ CTFIDFInformationRetrieval::~CTFIDFInformationRetrieval() {
 void CTFIDFInformationRetrieval::Transform(Document *querydoc) {
 	querydoc->TFIDFTransform(KeyWords, MAX_KEY_WORDS);
 }
+
+void CTFIDFInformationRetrieval::rank(Document* queryDoc) {
+	std::thread mThreads[MAX_THREADS];
+	Transform(queryDoc);
+	/*for (int i = 0; i < trainCorpus.size(); i++) {
+		real dist = distance(trainCorpus.getDocument(i), queryDoc);
+		//printf("%.6f\n", dist);
+		DocCmp mDocCmp = DocCmp(trainCorpus.getDocument(i), dist);
+		dis.push_back(mDocCmp);
+	}*/
+	for (int i = 0; i < MAX_THREADS; i++)
+		mThreads[i] = std::thread(&CInformationRetrieval::ThreadFunction, *this, queryDoc, i);
+	for (int i = 0; i < MAX_THREADS; i++)
+		mThreads[i].join();
+	sort(dis, dis + trainCorpus.size());
+	return;
+}
+
 real CTFIDFInformationRetrieval::distance(Document* doc1,
 		Document* doc2) {
 	real* vec1 = doc1->GetTransformed();

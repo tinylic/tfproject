@@ -10,6 +10,10 @@
 
 #include <Document.h>
 #include <vector>
+#include <iostream>
+#include <thread>
+#include <chrono>
+#include <pthread.h>
 #include "heads.h"
 #include "WordLibrary.h"
 
@@ -43,27 +47,25 @@ protected:
 	WordLibrary& mDict;
 	Corpus& trainCorpus;
 	//Corpus& queryCorpus;
-	vector<DocCmp> dis;
-	pthread_t *pt;
-
-	void* RunMethod(void *arg);
+	DocCmp* dis;
 
 	real MAP(Document* queryDoc);
 
 	real SquaredEuclideanDistance(real* vec1, real* vec2, int size);
+
+
 public:
 	CInformationRetrieval(WordLibrary& dict, Corpus& train);
-	virtual ~CInformationRetrieval();
 
-	//real distance(int trainID, int queryID) {
-	//	return distance(trainCorpus.getDocument(trainID), queryCorpus.getDocument(queryID));
-	//}
+	virtual ~CInformationRetrieval();
 
 	virtual real distance(Document* doc1, Document* doc2) = 0;
 
 	virtual void Transform(Document *querydoc) = 0;
 
-	void rank(Document* queryDoc);
+	void ThreadFunction(Document* QueryDoc, int thread_id);
+
+	virtual void rank(Document* queryDoc) = 0;
 
 	real GetMAPScore(Document* queryDoc);
 };

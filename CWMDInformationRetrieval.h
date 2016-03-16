@@ -27,6 +27,8 @@ public:
 
 	virtual void Transform(Document *querydoc);
 
+	virtual void rank(Document* queryDoc);
+
 	real WCD(Document *a, Document *b);
 
 	real RWMD(Document *a, Document *b);

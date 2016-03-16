@@ -18,6 +18,7 @@ public:
 	virtual ~CEmbeddingHistogramInformationRetrieval();
 	virtual void Transform(Document *querydoc);
 	virtual real distance(Document* doc1, Document* doc2);
+	virtual void rank(Document* queryDoc);
 };
 
 #endif /* TFPROJECT_CEMBEDDINGHISTOGRAMINFORMATIONRETRIEVAL_H_ */

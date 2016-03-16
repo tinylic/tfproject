@@ -88,7 +88,7 @@ real CWMDInformationRetrieval::WMD(Document *a, Document *b) {
 	int lena = a->GetWordSize();
 	int lenb = b->GetWordSize();
 
-	cerr << "lena = " << lena << " lenb = " << lenb << endl;
+	//cerr << "lena = " << lena << " lenb = " << lenb << endl;
 	real *DA = new real[lena];
 	real *DB = new real[lenb];
 
@@ -117,11 +117,10 @@ real CWMDInformationRetrieval::WMD(Document *a, Document *b) {
 	}
 	signature_t doca = signature_t { lena, DA };
 	signature_t docb = signature_t { lenb, DB };
-	check;
 	real result = emd(&doca, &docb, cost, 0, 0);
 	if (!isfinite(result))
 		result = 1e9;
-	cerr << result << endl;
+	//cerr << result << endl;
 	return result;
 }
 
@@ -130,5 +129,21 @@ real CWMDInformationRetrieval::distance(Document* doc1, Document* doc2) {
 }
 
 void CWMDInformationRetrieval::Transform(Document *querydoc) {
-
+	return;
+}
+void CWMDInformationRetrieval::rank(Document* queryDoc) {
+	std::thread mThreads[MAX_THREADS];
+	Transform(queryDoc);
+	/*for (int i = 0; i < trainCorpus.size(); i++) {
+		real dist = distance(trainCorpus.getDocument(i), queryDoc);
+		//printf("%.6f\n", dist);
+		DocCmp mDocCmp = DocCmp(trainCorpus.getDocument(i), dist);
+		dis.push_back(mDocCmp);
+	}*/
+	for (int i = 0; i < MAX_THREADS; i++)
+		mThreads[i] = std::thread(&CInformationRetrieval::ThreadFunction, *this, queryDoc, i);
+	for (int i = 0; i < MAX_THREADS; i++)
+		mThreads[i].join();
+	sort(dis, dis + trainCorpus.size());
+	return;
 }

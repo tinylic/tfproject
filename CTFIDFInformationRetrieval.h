@@ -21,6 +21,7 @@ public:
 	virtual ~CTFIDFInformationRetrieval();
 	virtual real distance(Document* doc1, Document* doc2);
 	virtual void Transform(Document *querydoc);
+	virtual void rank(Document* queryDoc);
 };
 
 #endif /* TFPROJECT_CTFIDFINFORMATIONRETRIEVAL_H_ */
