@@ -77,7 +77,7 @@ real CWMDInformationRetrieval::RWMD(Document *a, Document *b) {
 		int id = P -> first;
 		Embeds vec = mDict.GetEmbedding(id);
 		if (vec == NULL)	continue;
-		temp += a->GetTF(id) * Nearest(vec, a);
+		temp += b->GetTF(id) * Nearest(vec, a);
 	}
 	if (result < temp)
 		result = temp;
@@ -117,7 +117,8 @@ real CWMDInformationRetrieval::WMD(Document *a, Document *b) {
 	}
 	signature_t doca = signature_t { lena, DA };
 	signature_t docb = signature_t { lenb, DB };
-	real result = emd(&doca, &docb, cost, 0, 0);
+	emd_node mEmd_node;
+	real result = mEmd_node.emd(&doca, &docb, cost, 0, 0);
 	if (!isfinite(result))
 		result = 1e9;
 	//cerr << result << endl;

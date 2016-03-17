@@ -32,7 +32,6 @@ void CInformationRetrieval::ThreadFunction(Document* queryDoc, int thread_id) {
 	int num = trainCorpus.size() / MAX_THREADS;
 	int start = thread_id * num;
 	int end = (thread_id + 1) * num;
-	debug("%d %d %d\n", num, start, end);
 	if (thread_id == MAX_THREADS - 1)
 		end = trainCorpus.size();
 
@@ -48,8 +47,6 @@ real CInformationRetrieval::MAP(Document* queryDoc) {
 	real result = 0;
 	for (unsigned i = 0; i < trainCorpus.size(); i++) {
 		Document* mDoc = dis[i].doc;
-		cerr << i << endl;
-		if (mDoc == NULL) cerr << "fuck" << endl;
 		if (mDoc->Getmtag() == queryTag)
 			result += 1 / (real) (i + 1);
 	}
@@ -60,6 +57,5 @@ real CInformationRetrieval::MAP(Document* queryDoc) {
 real CInformationRetrieval::GetMAPScore(Document* queryDoc) {
 	rank(queryDoc);
 	real curMAP = MAP(queryDoc);
-	cerr << curMAP << endl;
 	return curMAP;
 }
