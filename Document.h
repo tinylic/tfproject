@@ -36,19 +36,23 @@ public:
 		//Read 20_news
 		Char word[MAX_STRING];
 		FILE *fin = fopen(fDoc, "r");
+
+		//useless headers
+		/*
 		while (1) {
 			if (fgetc(fin) == '\n') {
 				char ch = fgetc(fin);
 				if (ch == '<' || ch == '\n')
 					break;
 			}
-		}
+		}*/
 		mTag = Tag;
 
 		while (1) {
 			if (feof(fin))
 				break;
 			ReadWord(word, fin);
+			//cerr << word << endl;
 			if (strlen(word) < MIN_WORDS)
 				continue;
 			AddTotalWord(1);
