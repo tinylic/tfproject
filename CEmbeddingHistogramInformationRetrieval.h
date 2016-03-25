@@ -13,6 +13,9 @@
 #include "WordLibrary.h"
 
 class CEmbeddingHistogramInformationRetrieval: public CInformationRetrieval {
+private:
+	real **DistanceMatrix;
+	real ImprovedDistance(real* vec1, real* vec2,	int size);
 public:
 	CEmbeddingHistogramInformationRetrieval(WordLibrary& dict, Corpus& train);
 	virtual ~CEmbeddingHistogramInformationRetrieval();

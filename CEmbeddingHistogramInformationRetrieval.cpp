@@ -19,6 +19,28 @@ CEmbeddingHistogramInformationRetrieval::CEmbeddingHistogramInformationRetrieval
 
 	cluster* pCluster = new cluster(max_w, 10, vecEmbeddings);
 
+	vector<pair<real, int>> RelativeDistance;//<distance to cur node, index>
+	for (int i = 0; i < max_w; i++)
+		RelativeDistance.push_back(make_pair(0.0, i));
+	DistanceMatrix = new real*[max_w];
+	for (int i = 0; i < max_w; i++) {
+		DistanceMatrix[i] = new real[max_w];
+		for (int j = 0; j < max_w; j++) {
+			real tDistance = pCluster->CalcDistance(i, j, layer1_size);
+			RelativeDistance[j] = make_pair(tDistance, j);
+		}
+		sort(RelativeDistance.begin(), RelativeDistance.end());
+		debug("\n i = %d\n", i);
+		for (int j = 0; j < 5; j++)
+			debug("%d : %.6f\n", RelativeDistance[j].second, RelativeDistance[j].first);
+		real DistCoef = max_w * DIST_STEP;//1;
+		for (int j = 0; j < max_w; j++) {
+			DistanceMatrix[i][RelativeDistance[j].second] = DistCoef;// / (j + 1);
+			//DistCoef -= DIST_STEP;
+			DistCoef /= 2;
+			//DistanceMatrix[i][j] = i == j;
+		}
+	}
 	mDict.ClearAllLabels(); //clear all the cluster assignment of the words in the library
 
 	int* cl = pCluster -> GetLabels();
@@ -59,5 +81,27 @@ real CEmbeddingHistogramInformationRetrieval::distance(Document* doc1,
 		Document* doc2) {
 	real* vec1 = doc1->GetTransformed();
 	real* vec2 = doc2->GetTransformed();
-	return SquaredEuclideanDistance(vec1, vec2, max_w);
+	return ImprovedDistance(vec1, vec2, max_w);
+}
+
+real CEmbeddingHistogramInformationRetrieval::ImprovedDistance(real* vec1, real* vec2,	int size) {
+	if (vec1 == NULL || vec2 == NULL)
+		return DIS_INF;
+
+	real* vec = new real[size];
+	for (int i = 0; i < size; i++)
+		vec[i] = vec1[i] - vec2[i];
+
+	real* left_hand = new real[size];
+	for (int i = 0; i < size; i++) {
+		left_hand[i] = 0;
+		for (int j = 0; j < size; j++)
+			left_hand[i] += vec[j] * DistanceMatrix[i][j];
+	}
+
+	real result = 0;
+	for (int i = 0; i < size; i++)
+		result += left_hand[i] * vec[i];
+
+	return result;
 }

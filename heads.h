@@ -19,14 +19,14 @@
 #include <thread>
 
 #define MAX_THREADS 4
-#define DIS_INF 1000
+#define DIS_INF 10000
 #define MAX_STRING 1000
 #define EXP_TABLE_SIZE 1000
 #define MAX_EXP 6
 #define MAX_DOC_WORDS 400
 #define MAX_SENTENCE_LENGTH 1000
 #define MAX_CODE_LENGTH 40
-#define MAX_DOC_PER_TAG 100
+#define MAX_DOC_PER_TAG 75
 #define MIN_WORDS 3
 #define MAX_TAGS 20
 #define MAX_KEY_WORDS 2000
@@ -36,6 +36,7 @@
 #define vocab_hash_size 30000000 // Maximum 30 * 0.7 = 21M words in the vocabulary
 #define max_w 200   //dimensionality that represent document - cluster number
 #define layer1_size 300
+#define DIST_STEP 10
 
 #define MAX_DOCS ((MAX_TAGS) * (MAX_DOC_PER_TAG))
 #define check perror("here is ok\n")

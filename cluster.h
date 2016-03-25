@@ -22,6 +22,7 @@ protected:
 
 	int *centcn;
 	int *cl;
+	real **centroid;
 
 	real closev, x;
 	real *cent;
@@ -105,17 +106,17 @@ public:
 		cout << "End Kmeans" << endl;
 	}
 
-	vector<real *> GetCentroid() {
+	real* GetCentroid(int index) {
 		// Return the centroid coordinates
-		vector<real *> result;
-		result.clear();
-		unsigned i;
-		for (i = 0; i < numClusters; i++) {
-			real *centroid = new real[layer1_size];
-			for (int j = 0; j < layer1_size; j++)
-				centroid[j] = cent[i * layer1_size + j];
-			result.push_back(centroid);
-		}
+		return cent + (index * layer1_size);
+	}
+
+	real CalcDistance(int a, int b, int size) {
+		real result = 0;
+		real *veca = GetCentroid(a);
+		real *vecb = GetCentroid(b);
+		for (int i = 0; i < size; i++)
+			result += (veca[i] - vecb[i]) * (veca[i] - vecb[i]);
 		return result;
 	}
 

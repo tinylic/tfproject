@@ -38,6 +38,7 @@ private:
 			sprintf(addr, "%s/%s", rootaddr.c_str(), ptr->d_name);
 			stat(addr, &info);
 			cerr << addr << endl;
+			cerr << info.st_nlink << endl;
 			if (S_ISDIR(info.st_mode)) {   //if the entry is an subdirectory
 				curdir = opendir(addr);
 				doc_count = 0;
@@ -107,9 +108,9 @@ public:
 	}
 
 	void doExperiment() {
-		//CEmbeddingHistogramInformationRetrieval * pIR =
-		//		new CEmbeddingHistogramInformationRetrieval(mDict,
-		//				*trainCorpus);
+		CEmbeddingHistogramInformationRetrieval * pIR =
+				new CEmbeddingHistogramInformationRetrieval(mDict,
+						*trainCorpus);
 		//CTFIDFInformationRetrieval * pIR =
 		//				new CTFIDFInformationRetrieval(mDict,
 		//						*trainCorpus);
@@ -117,15 +118,16 @@ public:
 		//CBrownInformationRetrieval * pIR =
 		//				new CBrownInformationRetrieval(mDict,
 		//						*trainCorpus, BrownInput);
-		CWMDInformationRetrieval * pIR =
-						new CWMDInformationRetrieval(mDict,
-								*trainCorpus);
+		//CWMDInformationRetrieval * pIR =
+		//				new CWMDInformationRetrieval(mDict,
+		//						*trainCorpus);
 		real TotalMAP = 0;
 		for (int i = 0; i < queryCorpus->size(); i++) {
 			Document* queryDoc = queryCorpus->getDocument(i);
 			real curMAP = (pIR->GetMAPScore(queryDoc));
 			TotalMAP += curMAP;
 			cout << i << " MAP = " <<  curMAP << endl;
+			cerr << i << " MAP = " <<  curMAP << endl;
 			cout << "Average MAP = " << TotalMAP / (i + 1) << endl;
 			cerr << "Average MAP = " << TotalMAP / (i + 1) << endl;
 		}
