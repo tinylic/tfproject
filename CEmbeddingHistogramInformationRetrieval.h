@@ -16,6 +16,8 @@ class CEmbeddingHistogramInformationRetrieval: public CInformationRetrieval {
 private:
 	real **DistanceMatrix;
 	real ImprovedDistance(real* vec1, real* vec2,	int size);
+	real CenterDistance(Document* vec1, Document* vec2, int cluster_size, int embedding_size);
+	cluster *pCluster;
 public:
 	CEmbeddingHistogramInformationRetrieval(WordLibrary& dict, Corpus& train);
 	virtual ~CEmbeddingHistogramInformationRetrieval();

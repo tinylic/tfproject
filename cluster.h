@@ -25,7 +25,7 @@ protected:
 	real **centroid;
 
 	real closev, x;
-	real *cent;
+
 	// cent : coordinates of the cluster centroid
 
 	unsigned vec_size;
@@ -33,7 +33,7 @@ protected:
 
 	//vector<int> IDvectors;
 public:
-
+	real *cent;
 	cluster(unsigned nClusters, unsigned iterations, AllEmbeds& vecEmbeddings) :
 			numClusters(nClusters), numIterations(iterations), vectors(
 					vecEmbeddings) {

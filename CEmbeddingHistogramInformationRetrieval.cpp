@@ -17,7 +17,7 @@ CEmbeddingHistogramInformationRetrieval::CEmbeddingHistogramInformationRetrieval
 
 	trainCorpus.GetAllEmbeddings(vecEmbeddings, vecIDs);
 
-	cluster* pCluster = new cluster(max_w, 10, vecEmbeddings);
+	pCluster = new cluster(max_w, 10, vecEmbeddings);
 
 	vector<pair<real, int>> RelativeDistance;//<distance to cur node, index>
 	for (int i = 0; i < max_w; i++)
@@ -79,9 +79,10 @@ void CEmbeddingHistogramInformationRetrieval::rank(Document* queryDoc) {
 }
 real CEmbeddingHistogramInformationRetrieval::distance(Document* doc1,
 		Document* doc2) {
-	real* vec1 = doc1->GetTransformed();
-	real* vec2 = doc2->GetTransformed();
-	return ImprovedDistance(vec1, vec2, max_w);
+	//real* vec1 = doc1->GetTransformed();
+	//real* vec2 = doc2->GetTransformed();
+	//return ImprovedDistance(vec1, vec2, max_w);
+	return CenterDistance(doc1, doc2, max_w, layer1_size);
 }
 
 real CEmbeddingHistogramInformationRetrieval::ImprovedDistance(real* vec1, real* vec2,	int size) {
@@ -104,4 +105,21 @@ real CEmbeddingHistogramInformationRetrieval::ImprovedDistance(real* vec1, real*
 		result += left_hand[i] * vec[i];
 
 	return result;
+}
+real CEmbeddingHistogramInformationRetrieval::CenterDistance(Document* doc1, Document* doc2, int cluster_size, int embedding_size) {
+	real* ClusterVec1 = doc1->GetTransformed();
+	real* ClusterVec2 = doc2->GetTransformed();
+	real* vec1 = new real[embedding_size];
+	for (int i = 0; i < embedding_size; i++) {
+		vec1[i] = 0;
+		for (int j = 0; j < cluster_size; j++)
+			vec1[i] += ClusterVec1[j] * ((pCluster->GetCentroid(j))[i]);
+	}
+	real* vec2 = new real[embedding_size];
+	for (int i = 0; i < embedding_size; i++) {
+		vec2[i] = 0;
+		for (int j = 0; j < cluster_size; j++)
+			vec2[i] += ClusterVec2[j] * ((pCluster->GetCentroid(j))[i]);
+	}
+	return SquaredEuclideanDistance(vec1, vec2, embedding_size);
 }
