@@ -18,7 +18,7 @@
 #include <iostream>
 #include <thread>
 
-#define MAX_THREADS 4
+#define MAX_THREADS 6
 #define DIS_INF 10000
 #define MAX_STRING 1000
 #define EXP_TABLE_SIZE 1000
@@ -34,7 +34,7 @@
 #define THRESHOLD_K 50
 #define ITER 10
 #define vocab_hash_size 30000000 // Maximum 30 * 0.7 = 21M words in the vocabulary
-#define max_w 500   //dimensionality that represent document - cluster number
+#define max_w 300   //dimensionality that represent document - cluster number
 #define layer1_size 300
 #define DIST_STEP 10
 

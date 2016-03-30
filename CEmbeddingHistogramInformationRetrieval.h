@@ -11,12 +11,14 @@
 #include "cluster.h"
 #include "CInformationRetrieval.h"
 #include "WordLibrary.h"
+#include "emd.h"
 
 class CEmbeddingHistogramInformationRetrieval: public CInformationRetrieval {
 private:
 	real **DistanceMatrix;
 	real ImprovedDistance(real* vec1, real* vec2,	int size);
-	real CenterDistance(Document* vec1, Document* vec2, int cluster_size, int embedding_size);
+	real WMDDistance(Document* doc1, Document* doc2, int cluster_size, int embedding_size);
+	real CenterDistance(Document* doc1, Document* doc2, int cluster_size, int embedding_size);
 	cluster *pCluster;
 public:
 	CEmbeddingHistogramInformationRetrieval(WordLibrary& dict, Corpus& train);

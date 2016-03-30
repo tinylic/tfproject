@@ -18,7 +18,7 @@ CEmbeddingHistogramInformationRetrieval::CEmbeddingHistogramInformationRetrieval
 	trainCorpus.GetAllEmbeddings(vecEmbeddings, vecIDs);
 
 	pCluster = new cluster(max_w, 10, vecEmbeddings);
-
+/*
 	vector<pair<real, int>> RelativeDistance;//<distance to cur node, index>
 	for (int i = 0; i < max_w; i++)
 		RelativeDistance.push_back(make_pair(0.0, i));
@@ -40,7 +40,7 @@ CEmbeddingHistogramInformationRetrieval::CEmbeddingHistogramInformationRetrieval
 			DistCoef /= 2;
 			//DistanceMatrix[i][j] = i == j;
 		}
-	}
+	}*/
 	mDict.ClearAllLabels(); //clear all the cluster assignment of the words in the library
 
 	int* cl = pCluster -> GetLabels();
@@ -82,7 +82,8 @@ real CEmbeddingHistogramInformationRetrieval::distance(Document* doc1,
 	//real* vec1 = doc1->GetTransformed();
 	//real* vec2 = doc2->GetTransformed();
 	//return ImprovedDistance(vec1, vec2, max_w);
-	return CenterDistance(doc1, doc2, max_w, layer1_size);
+	//return CenterDistance(doc1, doc2, max_w, layer1_size);
+	return WMDDistance(doc1, doc2, max_w, layer1_size);
 }
 
 real CEmbeddingHistogramInformationRetrieval::ImprovedDistance(real* vec1, real* vec2,	int size) {
@@ -122,4 +123,25 @@ real CEmbeddingHistogramInformationRetrieval::CenterDistance(Document* doc1, Doc
 			vec2[i] += ClusterVec2[j] * ((pCluster->GetCentroid(j))[i]);
 	}
 	return SquaredEuclideanDistance(vec1, vec2, embedding_size);
+}
+
+real CEmbeddingHistogramInformationRetrieval::WMDDistance(Document* doc1, Document* doc2, int cluster_size, int embedding_size) {
+	real* DA = doc1->GetTransformed();
+	real* DB = doc2->GetTransformed();
+	real **cost = new real *[cluster_size];
+	for (int i = 0; i < cluster_size; i++) {
+		cost[i] = new real[cluster_size];
+		for (int j = 0; j < cluster_size; j++)
+			cost[i][j] = pCluster->CalcDistance(i, j, layer1_size);
+	}
+
+	signature_t doca = signature_t { cluster_size, DA };
+	signature_t docb = signature_t { cluster_size, DB };
+	emd_node mEmd_node;
+	real result = mEmd_node.emd(&doca, &docb, cost, 0, 0);
+	if (!isfinite(result))
+		result = 1e9;
+	//cerr << result << endl;
+	return result;
+
 }
