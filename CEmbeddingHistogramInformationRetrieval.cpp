@@ -13,27 +13,27 @@ CEmbeddingHistogramInformationRetrieval::CEmbeddingHistogramInformationRetrieval
 		CInformationRetrieval(dict, train) {
 	// TODO Auto-generated constructor stub
 	vector<unsigned> vecIDs;
-	vector<real*> vecEmbeddings;
+	vector<Real*> vecEmbeddings;
 
 	trainCorpus.GetAllEmbeddings(vecEmbeddings, vecIDs);
 
 	pCluster = new cluster(max_w, 10, vecEmbeddings);
 /*
-	vector<pair<real, int>> RelativeDistance;//<distance to cur node, index>
+	vector<pair<Real, int>> RelativeDistance;//<distance to cur node, index>
 	for (int i = 0; i < max_w; i++)
 		RelativeDistance.push_back(make_pair(0.0, i));
-	DistanceMatrix = new real*[max_w];
+	DistanceMatrix = new Real*[max_w];
 	for (int i = 0; i < max_w; i++) {
-		DistanceMatrix[i] = new real[max_w];
+		DistanceMatrix[i] = new Real[max_w];
 		for (int j = 0; j < max_w; j++) {
-			real tDistance = pCluster->CalcDistance(i, j, layer1_size);
+			Real tDistance = pCluster->CalcDistance(i, j, layer1_size);
 			RelativeDistance[j] = make_pair(tDistance, j);
 		}
 		sort(RelativeDistance.begin(), RelativeDistance.end());
 		debug("\n i = %d\n", i);
 		for (int j = 0; j < 5; j++)
 			debug("%d : %.6f\n", RelativeDistance[j].second, RelativeDistance[j].first);
-		real DistCoef = max_w * DIST_STEP;//1;
+		Real DistCoef = max_w * DIST_STEP;//1;
 		for (int j = 0; j < max_w; j++) {
 			DistanceMatrix[i][RelativeDistance[j].second] = DistCoef;// / (j + 1);
 			//DistCoef -= DIST_STEP;
@@ -65,7 +65,7 @@ void CEmbeddingHistogramInformationRetrieval::rank(Document* queryDoc) {
 	std::thread mThreads[MAX_THREADS];
 	Transform(queryDoc);
 	/*for (int i = 0; i < trainCorpus.size(); i++) {
-		real dist = distance(trainCorpus.getDocument(i), queryDoc);
+		Real dist = distance(trainCorpus.getDocument(i), queryDoc);
 		//printf("%.6f\n", dist);
 		DocCmp mDocCmp = DocCmp(trainCorpus.getDocument(i), dist);
 		dis.push_back(mDocCmp);
@@ -77,46 +77,46 @@ void CEmbeddingHistogramInformationRetrieval::rank(Document* queryDoc) {
 	sort(dis, dis + trainCorpus.size());
 	return;
 }
-real CEmbeddingHistogramInformationRetrieval::distance(Document* doc1,
+Real CEmbeddingHistogramInformationRetrieval::distance(Document* doc1,
 		Document* doc2) {
-	//real* vec1 = doc1->GetTransformed();
-	//real* vec2 = doc2->GetTransformed();
+	//Real* vec1 = doc1->GetTransformed();
+	//Real* vec2 = doc2->GetTransformed();
 	//return ImprovedDistance(vec1, vec2, max_w);
 	//return CenterDistance(doc1, doc2, max_w, layer1_size);
 	return WMDDistance(doc1, doc2, max_w, layer1_size);
 }
 
-real CEmbeddingHistogramInformationRetrieval::ImprovedDistance(real* vec1, real* vec2,	int size) {
+Real CEmbeddingHistogramInformationRetrieval::ImprovedDistance(Real* vec1, Real* vec2,	int size) {
 	if (vec1 == NULL || vec2 == NULL)
 		return DIS_INF;
 
-	real* vec = new real[size];
+	Real* vec = new Real[size];
 	for (int i = 0; i < size; i++)
 		vec[i] = vec1[i] - vec2[i];
 
-	real* left_hand = new real[size];
+	Real* left_hand = new Real[size];
 	for (int i = 0; i < size; i++) {
 		left_hand[i] = 0;
 		for (int j = 0; j < size; j++)
 			left_hand[i] += vec[j] * DistanceMatrix[i][j];
 	}
 
-	real result = 0;
+	Real result = 0;
 	for (int i = 0; i < size; i++)
 		result += left_hand[i] * vec[i];
 
 	return result;
 }
-real CEmbeddingHistogramInformationRetrieval::CenterDistance(Document* doc1, Document* doc2, int cluster_size, int embedding_size) {
-	real* ClusterVec1 = doc1->GetTransformed();
-	real* ClusterVec2 = doc2->GetTransformed();
-	real* vec1 = new real[embedding_size];
+Real CEmbeddingHistogramInformationRetrieval::CenterDistance(Document* doc1, Document* doc2, int cluster_size, int embedding_size) {
+	Real* ClusterVec1 = doc1->GetTransformed();
+	Real* ClusterVec2 = doc2->GetTransformed();
+	Real* vec1 = new Real[embedding_size];
 	for (int i = 0; i < embedding_size; i++) {
 		vec1[i] = 0;
 		for (int j = 0; j < cluster_size; j++)
 			vec1[i] += ClusterVec1[j] * ((pCluster->GetCentroid(j))[i]);
 	}
-	real* vec2 = new real[embedding_size];
+	Real* vec2 = new Real[embedding_size];
 	for (int i = 0; i < embedding_size; i++) {
 		vec2[i] = 0;
 		for (int j = 0; j < cluster_size; j++)
@@ -125,12 +125,12 @@ real CEmbeddingHistogramInformationRetrieval::CenterDistance(Document* doc1, Doc
 	return SquaredEuclideanDistance(vec1, vec2, embedding_size);
 }
 
-real CEmbeddingHistogramInformationRetrieval::WMDDistance(Document* doc1, Document* doc2, int cluster_size, int embedding_size) {
-	real* DA = doc1->GetTransformed();
-	real* DB = doc2->GetTransformed();
-	real **cost = new real *[cluster_size];
+Real CEmbeddingHistogramInformationRetrieval::WMDDistance(Document* doc1, Document* doc2, int cluster_size, int embedding_size) {
+	Real* DA = doc1->GetTransformed();
+	Real* DB = doc2->GetTransformed();
+	Real **cost = new Real *[cluster_size];
 	for (int i = 0; i < cluster_size; i++) {
-		cost[i] = new real[cluster_size];
+		cost[i] = new Real[cluster_size];
 		for (int j = 0; j < cluster_size; j++)
 			cost[i][j] = pCluster->CalcDistance(i, j, layer1_size);
 	}
@@ -138,7 +138,7 @@ real CEmbeddingHistogramInformationRetrieval::WMDDistance(Document* doc1, Docume
 	signature_t doca = signature_t { cluster_size, DA };
 	signature_t docb = signature_t { cluster_size, DB };
 	emd_node mEmd_node;
-	real result = mEmd_node.emd(&doca, &docb, cost, 0, 0);
+	Real result = mEmd_node.emd(&doca, &docb, cost, 0, 0);
 	if (!isfinite(result))
 		result = 1e9;
 	//cerr << result << endl;

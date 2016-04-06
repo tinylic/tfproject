@@ -17,6 +17,19 @@
 #include <cassert>
 #include <iostream>
 #include <thread>
+#include "libcluster.h"
+#include "distributions.h"
+
+
+//
+// Namespaces
+//
+
+using namespace std;
+using namespace Eigen;
+using namespace libcluster;
+using namespace distributions;
+
 
 #define MAX_THREADS 6
 #define DIS_INF 10000
@@ -34,7 +47,7 @@
 #define THRESHOLD_K 50
 #define ITER 10
 #define vocab_hash_size 30000000 // Maximum 30 * 0.7 = 21M words in the vocabulary
-#define max_w 300   //dimensionality that represent document - cluster number
+#define max_w 100   //dimensionality that represent document - cluster number
 #define layer1_size 300
 #define DIST_STEP 10
 
@@ -44,11 +57,11 @@
 
 using namespace std;
 
-typedef float real;                    // Precision of float numbers
+typedef float Real;                    // Precision of float numbers
 typedef char Char;
 typedef pair<unsigned, unsigned> Upair;
 typedef map<unsigned, unsigned> Umap;
-typedef real* Embeds;
+typedef Real* Embeds;
 typedef vector<Embeds> AllEmbeds;
 
 #endif

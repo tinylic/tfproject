@@ -17,13 +17,13 @@ CWMDInformationRetrieval::~CWMDInformationRetrieval() {
 	// TODO Auto-generated destructor stub
 }
 
-real CWMDInformationRetrieval::Nearest(const Embeds &a, Document *doc) {
-	real result = 1e9;
+Real CWMDInformationRetrieval::Nearest(const Embeds &a, Document *doc) {
+	Real result = 1e9;
 
 	for (auto P = doc->mWordCount.begin(); P != doc->mWordCount.end(); P++) {
 		int id = P->first;
 		Embeds vec = mDict.GetEmbedding(id);
-		real temp = SquaredEuclideanDistance(a, vec, layer1_size);
+		Real temp = SquaredEuclideanDistance(a, vec, layer1_size);
 		if (temp < result)
 			result = temp;
 	}
@@ -32,7 +32,7 @@ real CWMDInformationRetrieval::Nearest(const Embeds &a, Document *doc) {
 
 Embeds CWMDInformationRetrieval::GetDocCenter(Document *doc) {
 	Embeds result;
-	result = new real[layer1_size];
+	result = new Real[layer1_size];
 	int *cnt = new int[layer1_size];
 	for (int i = 0; i < layer1_size; i++)
 		result[i] = cnt[i] = 0;
@@ -52,16 +52,16 @@ Embeds CWMDInformationRetrieval::GetDocCenter(Document *doc) {
 	return result;
 }
 
-real CWMDInformationRetrieval::WCD(Document *a, Document *b) {
+Real CWMDInformationRetrieval::WCD(Document *a, Document *b) {
 	Embeds CentA, CentB;
 	CentA = GetDocCenter(a);
 	CentB = GetDocCenter(b);
 	return SquaredEuclideanDistance(CentA, CentB, layer1_size);
 }
 
-real CWMDInformationRetrieval::RWMD(Document *a, Document *b) {
-	real result = 0;
-	real temp = 0;
+Real CWMDInformationRetrieval::RWMD(Document *a, Document *b) {
+	Real result = 0;
+	Real temp = 0;
 
 	for (auto P = a->mWordCount.begin(); P != a->mWordCount.end(); P++) {
 		int id = P -> first;
@@ -84,13 +84,13 @@ real CWMDInformationRetrieval::RWMD(Document *a, Document *b) {
 	return result;
 }
 
-real CWMDInformationRetrieval::WMD(Document *a, Document *b) {
+Real CWMDInformationRetrieval::WMD(Document *a, Document *b) {
 	int lena = a->GetWordSize();
 	int lenb = b->GetWordSize();
 
 	//cerr << "lena = " << lena << " lenb = " << lenb << endl;
-	real *DA = new real[lena];
-	real *DB = new real[lenb];
+	Real *DA = new Real[lena];
+	Real *DB = new Real[lenb];
 
 	int cnta, cntb;
 	cnta = cntb = 0;
@@ -99,9 +99,9 @@ real CWMDInformationRetrieval::WMD(Document *a, Document *b) {
 	for (auto P = b->mWordCount.begin(); P != b->mWordCount.end(); P++)
 		DB[cntb ++] = b->GetTF(P -> first);
 
-	real **cost = new real *[lena];
+	Real **cost = new Real *[lena];
 	for (int i = 0; i < lena; i++)
-		cost[i] = new real[lenb];
+		cost[i] = new Real[lenb];
 
 	cnta = cntb = 0;
 	for (auto P = a->mWordCount.begin(); P != a->mWordCount.end(); P++) {
@@ -118,14 +118,14 @@ real CWMDInformationRetrieval::WMD(Document *a, Document *b) {
 	signature_t doca = signature_t { lena, DA };
 	signature_t docb = signature_t { lenb, DB };
 	emd_node mEmd_node;
-	real result = mEmd_node.emd(&doca, &docb, cost, 0, 0);
+	Real result = mEmd_node.emd(&doca, &docb, cost, 0, 0);
 	if (!isfinite(result))
 		result = 1e9;
 	//cerr << result << endl;
 	return result;
 }
 
-real CWMDInformationRetrieval::distance(Document* doc1, Document* doc2) {
+Real CWMDInformationRetrieval::distance(Document* doc1, Document* doc2) {
 	return WMD(doc1, doc2);
 }
 
@@ -136,7 +136,7 @@ void CWMDInformationRetrieval::rank(Document* queryDoc) {
 	std::thread mThreads[MAX_THREADS];
 	Transform(queryDoc);
 	/*for (int i = 0; i < trainCorpus.size(); i++) {
-		real dist = distance(trainCorpus.getDocument(i), queryDoc);
+		Real dist = distance(trainCorpus.getDocument(i), queryDoc);
 		//printf("%.6f\n", dist);
 		DocCmp mDocCmp = DocCmp(trainCorpus.getDocument(i), dist);
 		dis.push_back(mDocCmp);

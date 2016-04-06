@@ -48,7 +48,7 @@ void CBrownInformationRetrieval::rank(Document* queryDoc) {
 	std::thread mThreads[MAX_THREADS];
 	Transform(queryDoc);
 	/*for (int i = 0; i < trainCorpus.size(); i++) {
-		real dist = distance(trainCorpus.getDocument(i), queryDoc);
+		Real dist = distance(trainCorpus.getDocument(i), queryDoc);
 		//printf("%.6f\n", dist);
 		DocCmp mDocCmp = DocCmp(trainCorpus.getDocument(i), dist);
 		dis.push_back(mDocCmp);
@@ -60,9 +60,9 @@ void CBrownInformationRetrieval::rank(Document* queryDoc) {
 	sort(dis, dis + trainCorpus.size());
 	return;
 }
-real CBrownInformationRetrieval::distance(Document* doc1,
+Real CBrownInformationRetrieval::distance(Document* doc1,
 		Document* doc2) {
-	real* vec1 = doc1->GetTransformed();
-	real* vec2 = doc2->GetTransformed();
+	Real* vec1 = doc1->GetTransformed();
+	Real* vec2 = doc2->GetTransformed();
 	return SquaredEuclideanDistance(vec1, vec2, max_w);
 }

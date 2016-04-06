@@ -14,7 +14,7 @@
 class CWMDInformationRetrieval: public CInformationRetrieval {
 
 protected:
-	real Nearest(const Embeds &a, Document *doc);
+	Real Nearest(const Embeds &a, Document *doc);
 
 	Embeds GetDocCenter(Document *a);
 
@@ -23,17 +23,17 @@ public:
 
 	virtual ~CWMDInformationRetrieval();
 
-	virtual real distance(Document* doc1, Document* doc2);
+	virtual Real distance(Document* doc1, Document* doc2);
 
 	virtual void Transform(Document *querydoc);
 
 	virtual void rank(Document* queryDoc);
 
-	real WCD(Document *a, Document *b);
+	Real WCD(Document *a, Document *b);
 
-	real RWMD(Document *a, Document *b);
+	Real RWMD(Document *a, Document *b);
 
-	real WMD(Document *a, Document *b);
+	Real WMD(Document *a, Document *b);
 
 
 

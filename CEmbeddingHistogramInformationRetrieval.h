@@ -15,16 +15,16 @@
 
 class CEmbeddingHistogramInformationRetrieval: public CInformationRetrieval {
 private:
-	real **DistanceMatrix;
-	real ImprovedDistance(real* vec1, real* vec2,	int size);
-	real WMDDistance(Document* doc1, Document* doc2, int cluster_size, int embedding_size);
-	real CenterDistance(Document* doc1, Document* doc2, int cluster_size, int embedding_size);
+	Real **DistanceMatrix;
+	Real ImprovedDistance(Real* vec1, Real* vec2,	int size);
+	Real WMDDistance(Document* doc1, Document* doc2, int cluster_size, int embedding_size);
+	Real CenterDistance(Document* doc1, Document* doc2, int cluster_size, int embedding_size);
 	cluster *pCluster;
 public:
 	CEmbeddingHistogramInformationRetrieval(WordLibrary& dict, Corpus& train);
 	virtual ~CEmbeddingHistogramInformationRetrieval();
 	virtual void Transform(Document *querydoc);
-	virtual real distance(Document* doc1, Document* doc2);
+	virtual Real distance(Document* doc1, Document* doc2);
 	virtual void rank(Document* queryDoc);
 };
 

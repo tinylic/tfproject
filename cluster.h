@@ -22,9 +22,9 @@ protected:
 
 	int *centcn;
 	int *cl;
-	real **centroid;
+	Real **centroid;
 
-	real closev, x;
+	Real closev, x;
 
 	// cent : coordinates of the cluster centroid
 
@@ -33,7 +33,7 @@ protected:
 
 	//vector<int> IDvectors;
 public:
-	real *cent;
+	Real *cent;
 	cluster(unsigned nClusters, unsigned iterations, AllEmbeds& vecEmbeddings) :
 			numClusters(nClusters), numIterations(iterations), vectors(
 					vecEmbeddings) {
@@ -43,7 +43,7 @@ public:
 		cerr << "vec_size == " << vec_size << endl;
 		centcn = new int[numClusters];
 		cl = new int[vec_size];
-		cent = new real[numClusters * layer1_size];
+		cent = new Real[numClusters * layer1_size];
 		if (cent == NULL)
 			perror("Memory fail\n");
 		Kmeans();
@@ -106,15 +106,15 @@ public:
 		cout << "End Kmeans" << endl;
 	}
 
-	real* GetCentroid(int index) {
+	Real* GetCentroid(int index) {
 		// Return the centroid coordinates
 		return cent + (index * layer1_size);
 	}
 
-	real CalcDistance(int a, int b, int size) {
-		real result = 0;
-		real *veca = GetCentroid(a);
-		real *vecb = GetCentroid(b);
+	Real CalcDistance(int a, int b, int size) {
+		Real result = 0;
+		Real *veca = GetCentroid(a);
+		Real *vecb = GetCentroid(b);
 		for (int i = 0; i < size; i++)
 			result += (veca[i] - vecb[i]) * (veca[i] - vecb[i]);
 		return result;

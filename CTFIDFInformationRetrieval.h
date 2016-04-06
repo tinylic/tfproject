@@ -12,6 +12,7 @@
 #include "cluster.h"
 #include "CInformationRetrieval.h"
 #include "WordLibrary.h"
+#include "heads.h"
 
 class CTFIDFInformationRetrieval : public CInformationRetrieval{
 protected:
@@ -19,7 +20,7 @@ protected:
 public:
 	CTFIDFInformationRetrieval(WordLibrary& dict, Corpus& train);
 	virtual ~CTFIDFInformationRetrieval();
-	virtual real distance(Document* doc1, Document* doc2);
+	virtual Real distance(Document* doc1, Document* doc2);
 	virtual void Transform(Document *querydoc);
 	virtual void rank(Document* queryDoc);
 };

@@ -16,7 +16,7 @@ CTFIDFInformationRetrieval::CTFIDFInformationRetrieval(WordLibrary& dict,
 	cerr << mDict.size() << endl;
 	for (int i = 0; i < mDict.size(); i++) {
 		if (mDict.IsInCorpus(i) == false) continue;
-		real result = train.size();
+		Real result = train.size();
 		int ContainCount = 0;
 		for (int j = 0; j < train.size(); j++) {
 			Document* doc = train.getDocument(j);
@@ -37,7 +37,7 @@ CTFIDFInformationRetrieval::CTFIDFInformationRetrieval(WordLibrary& dict,
 		for (auto mit = doc->mWordCount.begin(); mit != doc->mWordCount.end();
 				mit++) {
 			int index = mit->first;
-			real mTF_IDF = doc->GetTF(index) * mDict.GetIDF(index);
+			Real mTF_IDF = doc->GetTF(index) * mDict.GetIDF(index);
 			mDict.UpdateTFIDF(index, mTF_IDF);
 		}
 	}
@@ -78,10 +78,10 @@ void CTFIDFInformationRetrieval::rank(Document* queryDoc) {
 	return;
 }
 
-real CTFIDFInformationRetrieval::distance(Document* doc1,
+Real CTFIDFInformationRetrieval::distance(Document* doc1,
 		Document* doc2) {
-	real* vec1 = doc1->GetTransformed();
-	real* vec2 = doc2->GetTransformed();
+	Real* vec1 = doc1->GetTransformed();
+	Real* vec2 = doc2->GetTransformed();
 	if (vec1 == NULL || vec2 == NULL) cerr << "fuck" << endl;
 	return SquaredEuclideanDistance(vec1, vec2, MAX_KEY_WORDS);
 }

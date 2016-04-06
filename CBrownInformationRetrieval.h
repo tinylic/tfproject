@@ -18,7 +18,7 @@ public:
 	CBrownInformationRetrieval(WordLibrary& dict, Corpus& train, const string &BrownClusterResultFile);
 	virtual ~CBrownInformationRetrieval();
 	virtual void Transform(Document *querydoc);
-	virtual real distance(Document* doc1, Document* doc2);
+	virtual Real distance(Document* doc1, Document* doc2);
 	virtual void rank(Document* queryDoc);
 };
 

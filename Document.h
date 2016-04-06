@@ -10,7 +10,7 @@ private:
 	int mTag;   //tag of document
 	int TotalWord;
 
-	real* mTransformed;
+	Real* mTransformed;
 	bool hasTransformed;
 
 	void ReadWord(Char *word, FILE *f) {
@@ -121,8 +121,8 @@ public:
 	int GetWordSize() {
 		return mWordCount.size();		//AllWord.size();
 	}
-	inline real GetTF(int id) {
-		real result = mWordCount[id];
+	inline Real GetTF(int id) {
+		Real result = mWordCount[id];
 		return result / TotalWord;
 	}
 
@@ -136,7 +136,7 @@ public:
 		unsigned i;
 		int total = 0;
 		int *ans = new int[clcn];
-		mTransformed = new real[clcn];
+		mTransformed = new Real[clcn];
 		for (i = 0; i < clcn; i++)
 			ans[i] = 0;
 
@@ -150,12 +150,12 @@ public:
 		if (total == 0)
 			total++;
 		for (i = 0; i < clcn; i++)
-			mTransformed[i] = (real) ans[i] / total;
+			mTransformed[i] = (Real) ans[i] / total;
 		//return result;
 	}
 	void TFIDFTransform(const vector<embed_word*> &KeyWords, int KeyNum) {
 		hasTransformed = true;
-		mTransformed = new real[KeyNum];
+		mTransformed = new Real[KeyNum];
 		int total = 0;
 		for (int i = 0; i < KeyNum; i++) {
 			mTransformed[i] = 0;
@@ -169,7 +169,7 @@ public:
 			mTransformed[i] /= total;
 	}
 
-	inline real* GetTransformed() const {
+	inline Real* GetTransformed() const {
 		if (hasTransformed)
 			return mTransformed;
 		else
@@ -245,7 +245,7 @@ public:
 		return mCorpus.at(i);
 	}
 
-	void GetAllEmbeddings(vector<real*>& vecEmbeddings,
+	void GetAllEmbeddings(vector<Real*>& vecEmbeddings,
 			vector<unsigned>& vecIDs) {
 		vecEmbeddings.clear();
 		vecIDs.clear();

@@ -21,7 +21,7 @@ using namespace std;
 
 struct DocCmp {
 	Document* doc;
-	real distance;
+	Real distance;
 
 	DocCmp() {
 		doc = NULL;
@@ -33,7 +33,7 @@ struct DocCmp {
 		distance = dc.distance;
 	}
 
-	DocCmp(Document* _doc, real _distance) {
+	DocCmp(Document* _doc, Real _distance) {
 		doc = _doc;
 		distance = _distance;
 	}
@@ -49,9 +49,9 @@ protected:
 	//Corpus& queryCorpus;
 	DocCmp* dis;
 
-	real MAP(Document* queryDoc);
+	Real MAP(Document* queryDoc);
 
-	real SquaredEuclideanDistance(real* vec1, real* vec2, int size);
+	Real SquaredEuclideanDistance(Real* vec1, Real* vec2, int size);
 
 
 public:
@@ -59,7 +59,7 @@ public:
 
 	virtual ~CInformationRetrieval();
 
-	virtual real distance(Document* doc1, Document* doc2) = 0;
+	virtual Real distance(Document* doc1, Document* doc2) = 0;
 
 	virtual void Transform(Document *querydoc) = 0;
 
@@ -67,7 +67,7 @@ public:
 
 	virtual void rank(Document* queryDoc) = 0;
 
-	real GetMAPScore(Document* queryDoc);
+	Real GetMAPScore(Document* queryDoc);
 };
 
 #endif /* TFPROJECT_CINFORMATIONRETRIEVAL_H_ */

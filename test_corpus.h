@@ -84,7 +84,7 @@ public:
 		//delete queryCorpus;
 	}
 
-	void HeldOut(real ratio) {
+	void HeldOut(Real ratio) {
 		if (queryCorpus != NULL)
 			delete queryCorpus;
 		if (trainCorpus != NULL)
@@ -121,10 +121,10 @@ public:
 		//CWMDInformationRetrieval * pIR =
 		//				new CWMDInformationRetrieval(mDict,
 		//						*trainCorpus);
-		real TotalMAP = 0;
+		Real TotalMAP = 0;
 		for (int i = 0; i < queryCorpus->size(); i++) {
 			Document* queryDoc = queryCorpus->getDocument(i);
-			real curMAP = (pIR->GetMAPScore(queryDoc));
+			Real curMAP = (pIR->GetMAPScore(queryDoc));
 			TotalMAP += curMAP;
 			cout << i << " MAP = " <<  curMAP << endl;
 			cerr << i << " MAP = " <<  curMAP << endl;
