@@ -12,6 +12,7 @@ struct embed_word {
 	int cl;  //which cluster?
 	int word_id;  //identifier
 	bool InCorpus;
+	Real *distributions;
 	Real IDF;
 	Real TF_IDF;
 	embed_word() {
@@ -19,6 +20,7 @@ struct embed_word {
 		hasEmbedding = false;
 		InCorpus = false;
 		embedding = NULL;
+		distributions = NULL;
 		cl = word_id = -1;
 		IDF = 0;
 		TF_IDF = -1e9;
@@ -144,7 +146,14 @@ public:
 	bool IsInCorpus(int index) {
 		return mWordEmbeds[index]->InCorpus;
 	}
-
+	void SetDistributions(int index, Real *distri, int size) {
+		mWordEmbeds[index] -> distributions = new Real[size];
+		for (int i = 0; i < size; i++)
+			mWordEmbeds[index] -> distributions[i] = distri[i];
+	}
+	Real* GetDistributions(int index) {
+		return mWordEmbeds[index] -> distributions;
+	}
 
 	WordLibrary() :
 		nDim(50) {

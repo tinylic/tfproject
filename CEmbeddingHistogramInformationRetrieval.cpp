@@ -46,6 +46,37 @@ CEmbeddingHistogramInformationRetrieval::CEmbeddingHistogramInformationRetrieval
 	int* cl = pCluster -> GetLabels();
 	for (unsigned a = 0; a < vecEmbeddings.size(); a++)
 		mDict.ChangeEmbedWordCl(vecIDs[a], cl[a]);
+	//construct the observation matrix(N * D)
+	// N observations, embedding numbers
+	// D dimensions
+	MatrixXd Observations(vecEmbeddings.size(), layer1_size);
+	for (int i = 0; i < vecEmbeddings.size(); i++)
+		for (int j = 0; j < layer1_size; j++)
+			Observations(i, j) = vecEmbeddings[i][j];
+	//construct the prob matrix(N * K)
+	// N observations
+	// K cluster numbers
+	// initialize with k-means results
+	MatrixXd qZ;
+	cerr << Observations.size() << endl;
+	Dirichlet weights;
+	vector<GaussWish> clusters;
+
+	//Learn Bayesian GMM
+	double F = learnBGMM(Observations, qZ, weights, clusters, PRIORVAL, max_w, true);
+	for (int i = 0; i < vecEmbeddings.size(); i++) {
+		for (int j = 0; j < max_w; j++)
+			cerr << qZ(i, j) << " ";
+		cerr << endl;
+	}
+
+	//Assign Cluster Distributions
+	Real *tDistri = new Real[max_w];
+	for (int i = 0; i < vecEmbeddings.size(); i++) {
+		for (int j = 0; j < max_w; j++)
+			tDistri[j] = qZ(i, j);
+		mDict.SetDistributions(vecIDs[i], tDistri, max_w);
+	}
 	cout << "End Labels" << endl;
 	cout << trainCorpus.size() << endl;
 	for (int i = 0; i < trainCorpus.size(); i++) {

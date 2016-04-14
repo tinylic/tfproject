@@ -135,22 +135,23 @@ public:
 		hasTransformed = true;
 		unsigned i;
 		int total = 0;
-		int *ans = new int[clcn];
+		Real *ans = new Real[clcn];
 		mTransformed = new Real[clcn];
 		for (i = 0; i < clcn; i++)
 			ans[i] = 0;
 
 		for (auto P = mWordCount.begin(); P != mWordCount.end(); P++) {
 			int id = P->first;
-			int ClID = mDict.GetEmbedWordCl(id);
-			if (ClID == -1) continue;
-			ans[ClID] += P->second;
+			Real* mDistributions = mDict.GetDistributions(id);
+			if (mDistributions == NULL) continue;
+			for (int i = 0; i < clcn; i++)
+				ans[i] += mDistributions[i] * P->second;
 			total += P->second;
 		}
 		if (total == 0)
 			total++;
 		for (i = 0; i < clcn; i++)
-			mTransformed[i] = (Real) ans[i] / total;
+			mTransformed[i] = ans[i] / total;
 		//return result;
 	}
 	void TFIDFTransform(const vector<embed_word*> &KeyWords, int KeyNum) {

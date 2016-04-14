@@ -17,8 +17,7 @@
 #include <cassert>
 #include <iostream>
 #include <thread>
-#include "libcluster.h"
-#include "distributions.h"
+
 
 
 //
@@ -26,9 +25,6 @@
 //
 
 using namespace std;
-using namespace Eigen;
-using namespace libcluster;
-using namespace distributions;
 
 
 #define MAX_THREADS 6
