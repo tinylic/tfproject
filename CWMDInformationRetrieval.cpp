@@ -126,7 +126,7 @@ Real CWMDInformationRetrieval::WMD(Document *a, Document *b) {
 }
 
 Real CWMDInformationRetrieval::distance(Document* doc1, Document* doc2) {
-	return WMD(doc1, doc2);
+	return RWMD(doc1, doc2);
 }
 
 void CWMDInformationRetrieval::Transform(Document *querydoc) {

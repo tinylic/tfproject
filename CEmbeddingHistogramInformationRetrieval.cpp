@@ -49,34 +49,40 @@ CEmbeddingHistogramInformationRetrieval::CEmbeddingHistogramInformationRetrieval
 	//construct the observation matrix(N * D)
 	// N observations, embedding numbers
 	// D dimensions
-	MatrixXd Observations(vecEmbeddings.size(), layer1_size);
-	for (int i = 0; i < vecEmbeddings.size(); i++)
-		for (int j = 0; j < layer1_size; j++)
-			Observations(i, j) = vecEmbeddings[i][j];
+	//MatrixXd Observations(vecEmbeddings.size(), layer1_size);
+	//for (int i = 0; i < vecEmbeddings.size(); i++)
+	//	for (int j = 0; j < layer1_size; j++)
+	//		Observations(i, j) = vecEmbeddings[i][j];
 	//construct the prob matrix(N * K)
 	// N observations
 	// K cluster numbers
 	// initialize with k-means results
-	MatrixXd qZ;
-	cerr << Observations.size() << endl;
-	Dirichlet weights;
-	vector<GaussWish> clusters;
+	//MatrixXd qZ(vecEmbeddings.size(), max_w);
+	//for (int i = 0; i < vecEmbeddings.size(); i++) {
+	//	for (int j = 0; j < max_w; j++)
+	//		qZ(i, j) = 0.0;
+	//	qZ(i, cl[i]) = 1.0;
+	//}
+	//cerr << Observations.size() << endl;
+	//cerr << qZ.size() << endl;
+	//Dirichlet weights;
+	//vector<GaussWish> clusters;
 
 	//Learn Bayesian GMM
-	double F = learnBGMM(Observations, qZ, weights, clusters, PRIORVAL, max_w, true);
-	for (int i = 0; i < vecEmbeddings.size(); i++) {
-		for (int j = 0; j < max_w; j++)
-			cerr << qZ(i, j) << " ";
-		cerr << endl;
-	}
+	//double F = learnBGMM(Observations, qZ, weights, clusters, PRIORVAL, max_w, true);
+	//for (int i = 0; i < vecEmbeddings.size(); i++) {
+	//	for (int j = 0; j < max_w; j++)
+	//		cerr << qZ(i, j) << " ";
+	//	cerr << endl;
+	//}
 
 	//Assign Cluster Distributions
-	Real *tDistri = new Real[max_w];
-	for (int i = 0; i < vecEmbeddings.size(); i++) {
-		for (int j = 0; j < max_w; j++)
-			tDistri[j] = qZ(i, j);
-		mDict.SetDistributions(vecIDs[i], tDistri, max_w);
-	}
+	//Real *tDistri = new Real[max_w];
+	//for (int i = 0; i < vecEmbeddings.size(); i++) {
+	//	for (int j = 0; j < max_w; j++)
+	//		tDistri[j] = qZ(i, j);
+	//	mDict.SetDistributions(vecIDs[i], tDistri, max_w);
+	//}
 	cout << "End Labels" << endl;
 	cout << trainCorpus.size() << endl;
 	for (int i = 0; i < trainCorpus.size(); i++) {
@@ -110,11 +116,11 @@ void CEmbeddingHistogramInformationRetrieval::rank(Document* queryDoc) {
 }
 Real CEmbeddingHistogramInformationRetrieval::distance(Document* doc1,
 		Document* doc2) {
-	//Real* vec1 = doc1->GetTransformed();
-	//Real* vec2 = doc2->GetTransformed();
+	Real* vec1 = doc1->GetTransformed();
+	Real* vec2 = doc2->GetTransformed();
 	//return ImprovedDistance(vec1, vec2, max_w);
 	//return CenterDistance(doc1, doc2, max_w, layer1_size);
-	return WMDDistance(doc1, doc2, max_w, layer1_size);
+	return SquaredEuclideanDistance(vec1, vec2, max_w);
 }
 
 Real CEmbeddingHistogramInformationRetrieval::ImprovedDistance(Real* vec1, Real* vec2,	int size) {

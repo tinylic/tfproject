@@ -578,11 +578,11 @@ template <class W, class C> double cluster (
   omp_set_num_threads(nthreads);
 
   const unsigned int J = X.size();
-
+	cout << J << endl;
   // Initialise indicator variables to just one cluster
-  qZ.resize(J);
-  for (unsigned int j = 0; j < J; ++j)
-    qZ[j].setOnes(X[j].rows(), 1);
+  //qZ.resize(J);
+  //for (unsigned int j = 0; j < J; ++j)
+   // qZ[j].setOnes(X[j].rows(), 1);
 
   // Initialise free energy and other loop variables
   bool issplit = true;
@@ -676,11 +676,12 @@ double libcluster::learnBGMM (
     )
 {
   if (verbose == true)
-    cout << "Learning Bayesian GMM..." << endl; // Print start
+    cout << "Learning Bayesian GMM with " << maxclusters << " clusters..." << endl; // Print start
 
   // Make temporary vectors of data to use with cluster()
   vMatrixXd vecX(1, X);                   // copies :-(
   vMatrixXd vecqZ;
+  vecqZ.push_back(qZ);
   vector<Dirichlet> vecweights(1, weights);
 
   // Perform model learning and selection

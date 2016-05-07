@@ -141,11 +141,13 @@ public:
 			ans[i] = 0;
 
 		for (auto P = mWordCount.begin(); P != mWordCount.end(); P++) {
-			int id = P->first;
-			Real* mDistributions = mDict.GetDistributions(id);
-			if (mDistributions == NULL) continue;
-			for (int i = 0; i < clcn; i++)
-				ans[i] += mDistributions[i] * P->second;
+			int id = mDict.GetEmbedWordCl(P->first);
+			if (id == -1) continue;
+			//Real* mDistributions = mDict.GetDistributions(id);
+			//if (mDistributions == NULL) continue;
+			//for (int i = 0; i < clcn; i++)
+			//	ans[i] += mDistributions[i] * P->second;
+				ans[id] += P -> second;
 			total += P->second;
 		}
 		if (total == 0)

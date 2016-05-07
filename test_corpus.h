@@ -108,9 +108,9 @@ public:
 	}
 
 	void doExperiment() {
-		CEmbeddingHistogramInformationRetrieval * pIR =
-				new CEmbeddingHistogramInformationRetrieval(mDict,
-						*trainCorpus);
+		//CEmbeddingHistogramInformationRetrieval * pIR =
+		//		new CEmbeddingHistogramInformationRetrieval(mDict,
+		//				*trainCorpus);
 		//CTFIDFInformationRetrieval * pIR =
 		//				new CTFIDFInformationRetrieval(mDict,
 		//						*trainCorpus);
@@ -118,9 +118,9 @@ public:
 		//CBrownInformationRetrieval * pIR =
 		//				new CBrownInformationRetrieval(mDict,
 		//						*trainCorpus, BrownInput);
-		//CWMDInformationRetrieval * pIR =
-		//				new CWMDInformationRetrieval(mDict,
-		//						*trainCorpus);
+		CWMDInformationRetrieval * pIR =
+						new CWMDInformationRetrieval(mDict,
+								*trainCorpus);
 		Real TotalMAP = 0;
 		for (int i = 0; i < queryCorpus->size(); i++) {
 			Document* queryDoc = queryCorpus->getDocument(i);
