@@ -21,7 +21,7 @@
 #define MAX_SIG_SIZE   400
 #define MAX_ITERATIONS 5000
 #define INFINITY       1e20
-#define EPSILON        1e-9
+#define EPSILON        1e-19
 #define DEBUG_LEVEL 0
 /*
  DEBUG_LEVEL:
@@ -110,7 +110,16 @@ public:
 		node2_t *XP;
 		flow_t *FlowP;
 		node1_t U[MAX_SIG_SIZE1], V[MAX_SIG_SIZE1];
-
+		memset(_C, 0, sizeof _C);
+		memset(_X, 0, sizeof _X);
+		memset(_IsX, 0, sizeof _IsX);
+		memset(_RowsX, 0, sizeof _RowsX);
+		memset(_ColsX, 0, sizeof _ColsX);
+		_maxW = 0;
+		_maxC = 0;
+		memset(Delta, 0, sizeof Delta);
+		memset(Ur, 0, sizeof Ur);
+		memset(Vr, 0, sizeof Vr);
 		w = init(Signature1, Signature2, cost);
 
 #if DEBUG_LEVEL > 1
@@ -362,6 +371,7 @@ private:
 				}
 			}
 			if (!found) {
+				fprintf(stderr, "n1 = %d n2 = %d\n", _n1, _n2);
 				fprintf(stderr,
 						"emd: Unexpected error in findBasicVariables!\n");
 				fprintf(stderr,

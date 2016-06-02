@@ -10,7 +10,89 @@
 CWMDInformationRetrieval::CWMDInformationRetrieval(WordLibrary& dict, Corpus& train) :
 		CInformationRetrieval(dict, train) {
 	// TODO Auto-generated constructor stub
+	vector<unsigned> vecIDs;
+	vector<Real*> vecEmbeddings;
 
+	trainCorpus.GetAllEmbeddings(vecEmbeddings, vecIDs);
+	int vecsize = vecEmbeddings.size();
+	cluster *pCluster = new cluster(max_w, 10, vecEmbeddings);
+/*
+	vector<pair<Real, int>> RelativeDistance;//<distance to cur node, index>
+	for (int i = 0; i < max_w; i++)
+		RelativeDistance.push_back(make_pair(0.0, i));
+	DistanceMatrix = new Real*[max_w];
+	for (int i = 0; i < max_w; i++) {
+		DistanceMatrix[i] = new Real[max_w];
+		for (int j = 0; j < max_w; j++) {
+			Real tDistance = pCluster->CalcDistance(i, j, layer1_size);
+			RelativeDistance[j] = make_pair(tDistance, j);
+		}
+		sort(RelativeDistance.begin(), RelativeDistance.end());
+		debug("\n i = %d\n", i);
+		for (int j = 0; j < 5; j++)
+			debug("%d : %.6f\n", RelativeDistance[j].second, RelativeDistance[j].first);
+		Real DistCoef = max_w * DIST_STEP;//1;
+		for (int j = 0; j < max_w; j++) {
+			DistanceMatrix[i][RelativeDistance[j].second] = DistCoef;// / (j + 1);
+			//DistCoef -= DIST_STEP;
+			DistCoef /= 2;
+			//DistanceMatrix[i][j] = i == j;
+		}
+	}*/
+	/*mDict.ClearAllLabels(); //clear all the cluster assignment of the words in the library
+
+	int* cl = pCluster -> GetLabels();
+	for (unsigned a = 0; a < vecEmbeddings.size(); a++)
+		mDict.ChangeEmbedWordCl(vecIDs[a], cl[a]);*/
+	//construct the observation matrix(N * D)
+	// N observations, embedding numbers
+	// D dimensions
+	//MatrixXd Observations(vecEmbeddings.size(), layer1_size);
+	//for (int i = 0; i < vecEmbeddings.size(); i++)
+	//	for (int j = 0; j < layer1_size; j++)
+	//		Observations(i, j) = vecEmbeddings[i][j];
+	//construct the prob matrix(N * K)
+	// N observations
+	// K cluster numbers
+	// initialize with k-means results
+	//MatrixXd qZ(vecEmbeddings.size(), max_w);
+	//for (int i = 0; i < vecEmbeddings.size(); i++) {
+	//	for (int j = 0; j < max_w; j++)
+	//		qZ(i, j) = 0.0;
+	//	qZ(i, cl[i]) = 1.0;
+	//}
+	//cerr << Observations.size() << endl;
+	//cerr << qZ.size() << endl;
+	//Dirichlet weights;
+	//vector<GaussWish> clusters;
+
+	//Learn Bayesian GMM
+	//double F = learnBGMM(Observations, qZ, weights, clusters, PRIORVAL, max_w, true);
+	//for (int i = 0; i < vecEmbeddings.size(); i++) {
+	//	for (int j = 0; j < max_w; j++)
+	//		cerr << qZ(i, j) << " ";
+	//	cerr << endl;
+	//}
+
+	//Assign Cluster Distributions
+	//Real *tDistri = new Real[max_w];
+	//for (int i = 0; i < vecEmbeddings.size(); i++) {
+	//	for (int j = 0; j < max_w; j++)
+	//		tDistri[j] = qZ(i, j);
+	//	mDict.SetDistributions(vecIDs[i], tDistri, max_w);
+	//}
+/*	cout << "End Labels" << endl;
+	cout << trainCorpus.size() << endl;
+	for (int i = 0; i < trainCorpus.size(); i++) {
+		trainCorpus.getDocument(i) -> ClusterTransform(max_w);
+	}
+	cerr << "Transform Finished" << endl;
+	cost = new Real*[max_w];
+	for (int i = 0; i < max_w; i++)
+		cost[i] = new Real[max_w];
+	for (int i = 0; i < max_w; i++)
+		for (int j = 0; j < max_w; j++)
+			cost[i][j] = SquaredEuclideanDistance(pCluster->GetCentroid(i), pCluster->GetCentroid(j), layer1_size);*/
 }
 
 CWMDInformationRetrieval::~CWMDInformationRetrieval() {
@@ -85,7 +167,7 @@ Real CWMDInformationRetrieval::RWMD(Document *a, Document *b) {
 }
 
 Real CWMDInformationRetrieval::WMD(Document *a, Document *b) {
-	int lena = a->GetWordSize();
+	/*int lena = a->GetWordSize();
 	int lenb = b->GetWordSize();
 
 	//cerr << "lena = " << lena << " lenb = " << lenb << endl;
@@ -114,9 +196,11 @@ Real CWMDInformationRetrieval::WMD(Document *a, Document *b) {
 			cntb++;
 		}
 		cnta ++;
-	}
-	signature_t doca = signature_t { lena, DA };
-	signature_t docb = signature_t { lenb, DB };
+	}*/
+	a -> ClusterTransform(max_w);
+	b -> ClusterTransform(max_w);
+	signature_t doca = signature_t { max_w, a->GetTransformed() };
+	signature_t docb = signature_t { max_w, b->GetTransformed() };
 	emd_node mEmd_node;
 	Real result = mEmd_node.emd(&doca, &docb, cost, 0, 0);
 	if (!isfinite(result))
@@ -126,7 +210,7 @@ Real CWMDInformationRetrieval::WMD(Document *a, Document *b) {
 }
 
 Real CWMDInformationRetrieval::distance(Document* doc1, Document* doc2) {
-	return RWMD(doc1, doc2);
+	return WCD(doc1, doc2);
 }
 
 void CWMDInformationRetrieval::Transform(Document *querydoc) {
@@ -144,7 +228,7 @@ void CWMDInformationRetrieval::rank(Document* queryDoc) {
 	for (int i = 0; i < MAX_THREADS; i++)
 		mThreads[i] = std::thread(&CInformationRetrieval::ThreadFunction, *this, queryDoc, i);
 	for (int i = 0; i < MAX_THREADS; i++)
-		mThreads[i].join();
+		mThreads[i].std::thread::join();
 	sort(dis, dis + trainCorpus.size());
 	return;
 }

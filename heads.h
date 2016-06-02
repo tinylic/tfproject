@@ -27,7 +27,7 @@
 using namespace std;
 
 
-#define MAX_THREADS 6
+#define MAX_THREADS 1
 #define DIS_INF 10000
 #define MAX_STRING 1000
 #define EXP_TABLE_SIZE 1000
@@ -38,12 +38,13 @@ using namespace std;
 #define MAX_DOC_PER_TAG 75
 #define MIN_WORDS 3
 #define MAX_TAGS 20
-#define MAX_KEY_WORDS 2000
+#define MAX_KEY_WORDS 300
 #define QUERY_DOC 500
 #define THRESHOLD_K 50
 #define ITER 10
 #define vocab_hash_size 30000000 // Maximum 30 * 0.7 = 21M words in the vocabulary
-#define max_w 200   //dimensionality that represent document - cluster number
+#define max_w 100   //dimensionality that represent document
+#define max_c 10 	// cluster number
 #define layer1_size 300
 #define DIST_STEP 10
 

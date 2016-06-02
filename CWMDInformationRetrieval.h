@@ -10,7 +10,7 @@
 
 #include "CInformationRetrieval.h"
 #include "emd.h"
-
+#include "cluster.h"
 class CWMDInformationRetrieval: public CInformationRetrieval {
 
 protected:
@@ -18,6 +18,7 @@ protected:
 
 	Embeds GetDocCenter(Document *a);
 
+	Real **cost;
 public:
 	CWMDInformationRetrieval(WordLibrary& dict, Corpus& train);
 

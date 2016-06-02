@@ -130,32 +130,60 @@ public:
 		map<unsigned, unsigned>::iterator P = mWordCount.find(id);
 		return (P != mWordCount.end());
 	}
-	void ClusterTransform(unsigned clcn) {
+	void GMMTransform(unsigned clcn) {
 		// Documents are represented in word_id
 		hasTransformed = true;
 		unsigned i;
-		int total = 0;
+		Real total = 0;
 		Real *ans = new Real[clcn];
 		mTransformed = new Real[clcn];
 		for (i = 0; i < clcn; i++)
 			ans[i] = 0;
 
 		for (auto P = mWordCount.begin(); P != mWordCount.end(); P++) {
-			int id = mDict.GetEmbedWordCl(P->first);
-			if (id == -1) continue;
-			//Real* mDistributions = mDict.GetDistributions(id);
-			//if (mDistributions == NULL) continue;
-			//for (int i = 0; i < clcn; i++)
-			//	ans[i] += mDistributions[i] * P->second;
-				ans[id] += P -> second;
+			//int id = mDict.GetEmbedWordCl(P->first);
+			int index = P -> first;
+			//if (id == -1) continue;
+			double* mDistributions = mDict.GetDistributions(index);
+			if (mDistributions == NULL) continue;
+			for (int i = 0; i < clcn; i++)
+				ans[i] += mDistributions[i] * P->second;
+				//ans[id] += P -> second;
 			total += P->second;
 		}
 		if (total == 0)
-			total++;
+			total = 1e-2;
 		for (i = 0; i < clcn; i++)
 			mTransformed[i] = ans[i] / total;
 		//return result;
 	}
+	void ClusterTransform(unsigned clcn) {
+			// Documents are represented in word_id
+			hasTransformed = true;
+			unsigned i;
+			Real total = 0;
+			Real *ans = new Real[clcn];
+			mTransformed = new Real[clcn];
+			for (i = 0; i < clcn; i++)
+				ans[i] = 0;
+
+			for (auto P = mWordCount.begin(); P != mWordCount.end(); P++) {
+				int id = mDict.GetEmbedWordCl(P->first);
+				//int index = P -> first;
+				if (id == -1) continue;
+				//double* mDistributions = mDict.GetDistributions(index);
+				//if (mDistributions == NULL) continue;
+				//for (int i = 0; i < clcn; i++)
+					//ans[i] += mDistributions[i] * P->second;
+				ans[id] += P -> second;
+				total += P->second;
+			}
+			if (total == 0)
+				total = 1;
+			for (i = 0; i < clcn; i++)
+				mTransformed[i] = ans[i] / total;
+			//return result;
+		}
 	void TFIDFTransform(const vector<embed_word*> &KeyWords, int KeyNum) {
 		hasTransformed = true;
 		mTransformed = new Real[KeyNum];
@@ -178,7 +206,32 @@ public:
 		else
 			return NULL;
 	}
+	void GetAllEmbeddings(vector<Real*>& vecEmbeddings,
+			vector<unsigned>& vecIDs) {
+		vecEmbeddings.clear();
+		vecIDs.clear();
 
+		map<unsigned, unsigned> IDs;
+		int cnt = 0, cntvalid = 0;
+		for (Umap::iterator Uit = mWordCount.begin();
+			Uit != mWordCount.end(); Uit++) {
+			cnt++;
+			int id = Uit->first;
+			int WordCnt = Uit -> second;
+			if (mDict.hasEmbedding(id)) {
+				if(IDs.find(id) == IDs.end()) IDs[id] = 0;
+				IDs[id] += WordCnt;
+				cntvalid++;
+			}
+				//printf("%d valid\n%d in total\n word contained ratio: %.6lf\n",
+						//cntvalid, cnt, (double) cntvalid / cnt);
+		}
+		for (auto P = IDs.begin(); P != IDs.end(); P++) {
+			for (int i = 0; i < (P->second); i++)
+				vecIDs.push_back(P->first);
+				vecEmbeddings.push_back(mDict.GetEmbedding(P->first));
+		}
+	}
 //	vector<Upair> GetAllWord() {
 //		AllWord.clear();
 //		for (Umap :: iterator Uit = mWordCount.begin(); Uit != mWordCount.end(); Uit++) {

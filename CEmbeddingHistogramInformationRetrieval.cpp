@@ -16,8 +16,48 @@ CEmbeddingHistogramInformationRetrieval::CEmbeddingHistogramInformationRetrieval
 	vector<Real*> vecEmbeddings;
 
 	trainCorpus.GetAllEmbeddings(vecEmbeddings, vecIDs);
-
+	int vecsize = vecEmbeddings.size();
+	double *ArrayEmbeddings = new double[vecsize * layer1_size];
+	for (int i = 0; i < vecsize; i++) {
+		for (int j = 0; j < layer1_size; j++)
+			ArrayEmbeddings[i * layer1_size + j] = (double)vecEmbeddings[i][j];
+	}
 	pCluster = new cluster(max_w, 10, vecEmbeddings);
+	/*gmm -> Train(ArrayEmbeddings, vecsize);
+	for (int i = 0; i < max_w; i++) {
+		double* mmean = gmm -> Mean(i);
+		printf("\nthe %dth cluster mean is ", i);
+		for (int j = 0; j < layer1_size; j++)
+			printf("%f ", mmean[j]);
+	}
+	for (int i = 0; i < max_w; i++) {
+		double* mvar = gmm ->Variance(i);
+		printf("\nthe %dth cluster var is ", i);
+		for (int j = 0; j < layer1_size; j++) {
+			printf("%f ", mvar[j]);
+		}
+	}
+	for (int i = 0; i < vecsize; i++) {
+		double* mdistri = new double[max_w];
+		double* tEmbeddings = new double[layer1_size];
+		for (int j = 0; j < layer1_size; j++) {
+			tEmbeddings[j] = ArrayEmbeddings[i * layer1_size + j];
+		}
+		double probsum = 0;
+		for (int j = 0; j < max_w; j++) {
+			mdistri[j] = gmm ->GetProbability(tEmbeddings, j);
+			//printf("%d %.6lf\n", j, gmm ->GetProbability(tEmbeddings, j));
+			//GetProbability(sample, kcluster)
+			probsum += mdistri[j];
+		}
+		if (probsum == 0) probsum = 1e-9;
+		for (int j = 0; j < max_w; j++) {
+			mdistri[j] /= probsum;
+		//	printf("%.6lf ", mdistri[j]);
+		}
+		//printf("%f \n", probsum);
+		mDict.ChangeEmbedWordGMM(vecIDs[i], mdistri);
+	}*/
 /*
 	vector<pair<Real, int>> RelativeDistance;//<distance to cur node, index>
 	for (int i = 0; i < max_w; i++)
@@ -120,7 +160,8 @@ Real CEmbeddingHistogramInformationRetrieval::distance(Document* doc1,
 	Real* vec2 = doc2->GetTransformed();
 	//return ImprovedDistance(vec1, vec2, max_w);
 	//return CenterDistance(doc1, doc2, max_w, layer1_size);
-	return SquaredEuclideanDistance(vec1, vec2, max_w);
+	//return SquaredEuclideanDistance(vec1, vec2, max_w);
+	return WMDDistance(doc1, doc2, max_w, layer1_size);
 }
 
 Real CEmbeddingHistogramInformationRetrieval::ImprovedDistance(Real* vec1, Real* vec2,	int size) {

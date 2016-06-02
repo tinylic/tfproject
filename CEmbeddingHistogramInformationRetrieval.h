@@ -11,14 +11,12 @@
 #include "cluster.h"
 #include "CInformationRetrieval.h"
 #include "WordLibrary.h"
-#include <Eigen/Dense>
+
 #include "emd.h"
-#include "distributions.h"
-#include "libcluster.h"
-#include "probutils.h"
-using namespace Eigen;
-using namespace libcluster;
-using namespace distributions;
+
+#include "KMeans.h"
+#include "GMM.h"
+
 
 
 class CEmbeddingHistogramInformationRetrieval: public CInformationRetrieval {
