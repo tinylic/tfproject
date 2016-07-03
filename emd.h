@@ -21,7 +21,7 @@
 #define MAX_SIG_SIZE   400
 #define MAX_ITERATIONS 5000
 #define INFINITY       1e20
-#define EPSILON        1e-19
+#define EPSILON        1e-5
 #define DEBUG_LEVEL 0
 /*
  DEBUG_LEVEL:
@@ -51,14 +51,14 @@ typedef struct {
 
 typedef struct node1_t {
 	int i;
-	double val;
+	float val;
 	struct node1_t *Next;
 } node1_t;
 
 /* node1_t IS USED FOR DOUBLE-LINKED LISTS */
 typedef struct node2_t {
 	int i, j;
-	double val;
+	float val;
 	struct node2_t *NextC; /* NEXT COLUMN */
 	struct node2_t *NextR; /* NEXT ROW */
 } node2_t;
@@ -73,9 +73,9 @@ private:
 	node2_t *_EndX, *_EnterX;
 	char _IsX[MAX_SIG_SIZE1][MAX_SIG_SIZE1];
 	node2_t *_RowsX[MAX_SIG_SIZE1], *_ColsX[MAX_SIG_SIZE1];
-	double _maxW;
+	float _maxW;
 	float _maxC;
-	double Delta[MAX_SIG_SIZE1][MAX_SIG_SIZE1];
+	float Delta[MAX_SIG_SIZE1][MAX_SIG_SIZE1];
 	node1_t Ur[MAX_SIG_SIZE1], Vr[MAX_SIG_SIZE1];
 	/* DECLARATION OF FUNCTIONS */
 #if DEBUG_LEVEL > 0
@@ -105,7 +105,7 @@ public:
 	float emd(signature_t *Signature1, signature_t *Signature2, float **cost,
 			flow_t *Flow, int *FlowSize) {
 		int itr = 0;
-		double totalCost;
+		float totalCost;
 		float w;
 		node2_t *XP;
 		flow_t *FlowP;
@@ -115,6 +115,8 @@ public:
 		memset(_IsX, 0, sizeof _IsX);
 		memset(_RowsX, 0, sizeof _RowsX);
 		memset(_ColsX, 0, sizeof _ColsX);
+		memset(U, 0, sizeof U);
+		memset(V, 0, sizeof V);
 		_maxW = 0;
 		_maxC = 0;
 		memset(Delta, 0, sizeof Delta);
@@ -164,7 +166,7 @@ public:
 			if (XP->val == 0) /* ZERO FLOW */
 				continue;
 
-			totalCost += (double) XP->val * _C[XP->i][XP->j];
+			totalCost += (float) XP->val * _C[XP->i][XP->j];
 			if (Flow != NULL) {
 				FlowP->from = XP->i;
 				FlowP->to = XP->j;
@@ -189,8 +191,8 @@ private:
 	 **********************/
 	float init(signature_t *Signature1, signature_t *Signature2, float **cost) {
 		int i, j;
-		double sSum, dSum, diff;
-		double S[MAX_SIG_SIZE1], D[MAX_SIG_SIZE1];
+		float sSum, dSum, diff;
+		float S[MAX_SIG_SIZE1], D[MAX_SIG_SIZE1];
 
 		_n1 = Signature1->n;
 		_n2 = Signature2->n;
@@ -387,7 +389,7 @@ private:
 	 isOptimal
 	 **********************/
 	int isOptimal(node1_t *U, node1_t *V) {
-		double delta, deltaMin;
+		float delta, deltaMin;
 		int i, j, minI, minJ;
 
 		/* FIND THE MINIMAL Cij-Ui-Vj OVER ALL i,j */
@@ -428,7 +430,7 @@ private:
 	 **********************/
 	void newSol() {
 		int i, j, k;
-		double xMin;
+		float xMin;
 		int steps;
 		node2_t *Loop[2 * MAX_SIG_SIZE1], *CurX, *LeaveX;
 
@@ -578,9 +580,9 @@ private:
 	/**********************
 	 russel
 	 **********************/
-	void russel(double *S, double *D) {
+	void russel(float *S, float *D) {
 		int i, j, found, minI, minJ;
-		double deltaMin, oldVal, diff;
+		float deltaMin, oldVal, diff;
 
 		node1_t uHead, *CurU, *PrevU;
 		node1_t vHead, *CurV, *PrevV;
@@ -726,9 +728,9 @@ private:
 	/**********************
 	 addBasicVariable
 	 **********************/
-	void addBasicVariable(int minI, int minJ, double *S, double *D,
+	void addBasicVariable(int minI, int minJ, float *S, float *D,
 			node1_t *PrevUMinI, node1_t *PrevVMinJ, node1_t *UHead) {
-		double T;
+		float T;
 
 		if (fabs(S[minI] - D[minJ]) <= EPSILON * _maxW) /* DEGENERATE CASE */
 		{
@@ -771,7 +773,7 @@ private:
 	 **********************/
 	void printSolution() {
 		node2_t *P;
-		double totalCost;
+		float totalCost;
 
 		totalCost = 0;
 
@@ -783,7 +785,7 @@ private:
 #if DEBUG_LEVEL > 2
 				printf("%d\t%d\t%f\t%f\n", P->i, P->j, P->val, _C[P->i][P->j]);
 #endif
-				totalCost += (double) P->val * _C[P->i][P->j];
+				totalCost += (float) P->val * _C[P->i][P->j];
 			}
 
 		printf("COST = %f\n", totalCost);

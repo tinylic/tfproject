@@ -44,7 +44,8 @@ using namespace std;
 #define ITER 10
 #define vocab_hash_size 30000000 // Maximum 30 * 0.7 = 21M words in the vocabulary
 #define max_w 100   //dimensionality that represent document
-#define max_c 10 	// cluster number
+#define max_c 100 	// cluster number
+#define compress_ratio 1
 #define layer1_size 300
 #define DIST_STEP 10
 

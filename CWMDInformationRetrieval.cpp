@@ -167,7 +167,7 @@ Real CWMDInformationRetrieval::RWMD(Document *a, Document *b) {
 }
 
 Real CWMDInformationRetrieval::WMD(Document *a, Document *b) {
-	/*int lena = a->GetWordSize();
+	int lena = a->GetWordSize();
 	int lenb = b->GetWordSize();
 
 	//cerr << "lena = " << lena << " lenb = " << lenb << endl;
@@ -196,11 +196,13 @@ Real CWMDInformationRetrieval::WMD(Document *a, Document *b) {
 			cntb++;
 		}
 		cnta ++;
-	}*/
-	a -> ClusterTransform(max_w);
-	b -> ClusterTransform(max_w);
-	signature_t doca = signature_t { max_w, a->GetTransformed() };
-	signature_t docb = signature_t { max_w, b->GetTransformed() };
+	}
+	//a -> ClusterTransform(max_w);
+	//b -> ClusterTransform(max_w);
+	//signature_t doca = signature_t { max_w, a->GetTransformed() };
+	//signature_t docb = signature_t { max_w, b->GetTransformed() };
+	signature_t doca = signature_t { lena, DA};
+	signature_t docb = signature_t { lenb, DB};
 	emd_node mEmd_node;
 	Real result = mEmd_node.emd(&doca, &docb, cost, 0, 0);
 	if (!isfinite(result))
@@ -210,7 +212,7 @@ Real CWMDInformationRetrieval::WMD(Document *a, Document *b) {
 }
 
 Real CWMDInformationRetrieval::distance(Document* doc1, Document* doc2) {
-	return WCD(doc1, doc2);
+	return WMD(doc1, doc2);
 }
 
 void CWMDInformationRetrieval::Transform(Document *querydoc) {

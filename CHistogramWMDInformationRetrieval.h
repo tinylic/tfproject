@@ -13,7 +13,7 @@
 #include "CInformationRetrieval.h"
 #include "WordLibrary.h"
 #include "emd.h"
-
+#include "CWMDInformationRetrieval.h"
 class CHistogramWMDInformationRetrieval : public CInformationRetrieval{
 private:
 	cluster *aCluster, *bCluster;

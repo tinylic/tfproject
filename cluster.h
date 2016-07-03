@@ -41,6 +41,7 @@ public:
 		vec_size = vectors.size();  //the number of embeddings
 
 		//cerr << "vec_size == " << vec_size << endl;
+		//cerr << "nClusters == " << nClusters << endl;
 		centcn = new int[numClusters];
 		cl = new int[vec_size];
 		cent = new Real[numClusters * layer1_size];
@@ -126,7 +127,7 @@ public:
 				for (c = 0; c < layer1_size; c++)
 					cent[b * layer1_size + c] = 0;
 			for (b = 0; b < numClusters; b++)
-				centcn[b] = 1;
+				centcn[b] = 0;
 			for (c = 0; c < vec_size; c++) {
 				for (d = 0; d < layer1_size; d++)
 					cent[layer1_size * cl[c] + d] += vectors[c][d];
@@ -134,6 +135,7 @@ public:
 			}
 			for (b = 0; b < numClusters; b++) {
 				closev = 0;
+				centcn[b] = max(centcn[b], 1);
 				for (c = 0; c < layer1_size; c++) {
 					cent[layer1_size * b + c] /= centcn[b];
 					closev += cent[layer1_size * b + c]
@@ -160,6 +162,8 @@ public:
 			}
 			//cerr << a << endl;
 		}
+		//for (a = 0; a < vec_size; a++)
+		//	cerr << "vec = " << a << " cl = " << cl[a] << endl;
 
 		//for (a = 0; a < vec_size; a++)
 		//	mWordEmbedding -> ChangeEmbedWordCl(IDvectors[a], cl[a]);

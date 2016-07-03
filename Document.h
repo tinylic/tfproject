@@ -211,7 +211,8 @@ public:
 		vecEmbeddings.clear();
 		vecIDs.clear();
 
-		map<unsigned, unsigned> IDs;
+		//map<unsigned, unsigned> IDs;
+		//IDs.clear();
 		int cnt = 0, cntvalid = 0;
 		for (Umap::iterator Uit = mWordCount.begin();
 			Uit != mWordCount.end(); Uit++) {
@@ -219,18 +220,22 @@ public:
 			int id = Uit->first;
 			int WordCnt = Uit -> second;
 			if (mDict.hasEmbedding(id)) {
-				if(IDs.find(id) == IDs.end()) IDs[id] = 0;
-				IDs[id] += WordCnt;
+				//if(IDs.find(id) == IDs.end()) IDs[id] = 0;
+				for (int i = 0; i < (WordCnt); i++) {
+					vecIDs.push_back(id);
+					vecEmbeddings.push_back(mDict.GetEmbedding(id));
+				}
 				cntvalid++;
 			}
 				//printf("%d valid\n%d in total\n word contained ratio: %.6lf\n",
 						//cntvalid, cnt, (double) cntvalid / cnt);
 		}
-		for (auto P = IDs.begin(); P != IDs.end(); P++) {
-			for (int i = 0; i < (P->second); i++)
-				vecIDs.push_back(P->first);
-				vecEmbeddings.push_back(mDict.GetEmbedding(P->first));
-		}
+//		for (auto P = IDs.begin(); P != IDs.end(); P++) {
+//			for (int i = 0; i < (P->second); i++) {
+//				vecIDs.push_back(P->first);
+//				vecEmbeddings.push_back(mDict.GetEmbedding(P->first));
+//			}
+//		}
 	}
 //	vector<Upair> GetAllWord() {
 //		AllWord.clear();
