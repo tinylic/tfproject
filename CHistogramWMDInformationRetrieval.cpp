@@ -53,7 +53,7 @@ Real CHistogramWMDInformationRetrieval::distance(Document* doc1, Document* doc2)
 	aSum = max(aSum, 1);
 	for (unsigned i = 0; i < Anclusters; i++)
 		DA[i] /= aSum;
-	assert(DA[0] == 1.0);
+	//assert(DA[0] == 1.0);
 
 	// process on document 2
 	doc2->GetAllEmbeddings(bvecEmbeddings, bvecIDs);
@@ -74,7 +74,7 @@ Real CHistogramWMDInformationRetrieval::distance(Document* doc1, Document* doc2)
 	bSum = max(bSum, 1);
 	for (unsigned i = 0; i < Bnclusters; i++)
 		DB[i] /= bSum;
-	assert(DB[0] == 1.0);
+	//assert(DB[0] == 1.0);
 
 	//calculate the cost matrix
 	Real **cost = new Real *[Anclusters];
@@ -90,11 +90,11 @@ Real CHistogramWMDInformationRetrieval::distance(Document* doc1, Document* doc2)
 	Real result = mEmd_node.emd(&doca, &docb, cost, 0, 0);
 	if (!isfinite(result))
 		result = 1e9;
-	CWMDInformationRetrieval * WCDpIR =
-							new CWMDInformationRetrieval(mDict,
-									trainCorpus);
-	Real WCDResult = WCDpIR ->distance(doc1, doc2);
-	cerr <<"Histo = " << result << " WCD = " << WCDResult <<  endl;
-	assert(abs(WCDResult - result) <= 1e-6);
+	//CWMDInformationRetrieval * WCDpIR =
+	//						new CWMDInformationRetrieval(mDict,
+	//								trainCorpus);
+	//Real WCDResult = WCDpIR ->distance(doc1, doc2);
+	//cerr <<"Histo = " << result << " WCD = " << WCDResult <<  endl;
+	//assert(abs(WCDResult - result) <= 1e-6);
 	return result;
 }

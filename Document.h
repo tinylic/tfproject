@@ -192,7 +192,7 @@ public:
 			mTransformed[i] = 0;
 			if (HasWord(KeyWords[i] -> word_id)) {
 				int mCnt = GetWordCount(KeyWords[i] -> word_id);
-				mTransformed[i] = mCnt;;
+				mTransformed[i] = mCnt;
 				total += mCnt;
 			}
 		}

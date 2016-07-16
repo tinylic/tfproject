@@ -9,7 +9,7 @@
 #include "CBrownInformationRetrieval.h"
 #include "CWMDInformationRetrieval.h"
 #include "CHistogramWMDInformationRetrieval.h"
-
+#include <CTFIDFWMDInformationRetrieval.h>
 class test_corpus {
 private:
 	WordLibrary& mDict;
@@ -118,13 +118,16 @@ public:
 		//CTFIDFInformationRetrieval * pIR =
 		//				new CTFIDFInformationRetrieval(mDict,
 		//						*trainCorpus);
+		CTFIDFWMDInformationRetrieval * pIR =
+						new CTFIDFWMDInformationRetrieval(mDict,
+								*trainCorpus);
 		//string BrownInput = "BrownOutput.txt";
 		//CBrownInformationRetrieval * pIR =
 		//				new CBrownInformationRetrieval(mDict,
 		//						*trainCorpus, BrownInput);
-		CWMDInformationRetrieval * pIR =
-						new CWMDInformationRetrieval(mDict,
-								*trainCorpus);
+		//CWMDInformationRetrieval * pIR =
+		//				new CWMDInformationRetrieval(mDict,
+		//						*trainCorpus);
 		Real TotalMAP = 0;
 		for (int i = 0; i < queryCorpus->size(); i++) {
 			Document* queryDoc = queryCorpus->getDocument(i);
