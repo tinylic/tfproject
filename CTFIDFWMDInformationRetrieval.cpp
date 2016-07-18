@@ -74,25 +74,34 @@ Real CTFIDFWMDInformationRetrieval::WMD(Document *TrainDoc, Document *QueryDoc) 
 	for (int i = 0; i < LenTrain; i++)
 		cost[i] = new Real[LenQuery];
 
+	Real *TrainTFIDFWeights = new Real[LenTrain];
+	Real *QueryTFIDFWeights = new Real[LenQuery];
 	cnta = cntb = 0;
 	for (auto P = TrainDoc-> mWordCount.begin(); P != TrainDoc -> mWordCount.end(); P++) {
 		cntb = 0;
+		//Real TrainTFIDF = TrainDoc -> GetTF(P -> first) * mDict.GetIDF(P -> first);
+		//TrainTFIDFWeights[cnta] = TrainTFIDF;
 		for (auto Q = QueryDoc -> mWordCount.begin(); Q != QueryDoc -> mWordCount.end(); Q++) {
 			Embeds veca, vecb;
-			Real QueryTFIDF = QueryDoc -> GetTF(Q -> first) * mDict.GetIDF(Q -> first);
-			Real TrainTFIDF = TrainDoc -> GetTF(P -> first) * mDict.GetIDF(P -> first);
  			veca = mDict.GetEmbedding(P -> first);
 			vecb = mDict.GetEmbedding(Q -> first);
-			cost[cnta][cntb] = TrainTFIDF * SquaredEuclideanDistance(veca, vecb, layer1_size);
+			cost[cnta][cntb] = SquaredEuclideanDistance(veca, vecb, layer1_size);
 			cntb++;
 		}
 		cnta ++;
 	}
+	cntb = 0;
+	for (auto Q = QueryDoc -> mWordCount.begin(); Q != QueryDoc -> mWordCount.end(); Q++) {
+		Real QueryTFIDF = QueryDoc -> GetTF(Q -> first) * mDict.GetIDF(Q -> first);
+		QueryTFIDFWeights[cntb++] = QueryTFIDF;
+	}
 
 	signature_t DocTrain = signature_t { LenTrain, DTrain};
 	signature_t DocQuery = signature_t { LenQuery, DQuery};
-	emd_node mEmd_node;
-	Real result = mEmd_node.emd(&DocTrain, &DocQuery, cost, 0, 0);
+	signature_t TrainWeight = signature_t { LenTrain, TrainTFIDFWeights};
+	signature_t QueryWeight = signature_t { LenQuery, QueryTFIDFWeights};
+	weighted_emd_node mEmd_node;
+	Real result = mEmd_node.weighted_emd(&DocTrain, &DocQuery, &QueryWeight, cost, 0, 0);
 	if (!isfinite(result))
 		result = 1e9;
 	return result;

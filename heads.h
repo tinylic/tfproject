@@ -45,7 +45,7 @@ using namespace std;
 #define vocab_hash_size 30000000 // Maximum 30 * 0.7 = 21M words in the vocabulary
 #define max_w 100   //dimensionality that represent document
 #define max_c 100 	// cluster number
-#define compress_ratio 0.1
+#define compress_ratio 0.2
 #define layer1_size 300
 #define DIST_STEP 10
 

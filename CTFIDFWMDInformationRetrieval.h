@@ -9,7 +9,7 @@
 #define TFPROJECT_CTFIDFWMDINFORMATIONRETRIEVAL_H_
 
 #include "CInformationRetrieval.h"
-#include "emd.h"
+#include "WeightedEmd.h"
 #include "cluster.h"
 
 class CTFIDFWMDInformationRetrieval: public CInformationRetrieval {
