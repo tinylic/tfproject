@@ -76,7 +76,7 @@ private:
 	float _maxW;
 	float _maxC;
 	float Delta[MAX_SIG_SIZE1][MAX_SIG_SIZE1];
-	float Weight[MAX_SIG_SIZE1];
+	float Weight[MAX_SIG_SIZE1 * 2];
 	node1_t Ur[MAX_SIG_SIZE1], Vr[MAX_SIG_SIZE1];
 	/* DECLARATION OF FUNCTIONS */
 #if DEBUG_LEVEL > 0
@@ -215,7 +215,7 @@ private:
 			}
 
 		/* Copy the Weight */
-		for (i = 0; i < _n2; i++)
+		for (i = 0; i < weight -> n; i++)
 			Weight[i] = weight -> Weights[i];
 
 		/* SUM UP THE SUPPLY AND DEMAND */

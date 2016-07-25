@@ -109,18 +109,18 @@ public:
 	}
 
 	void doExperiment() {
-		CHistogramWMDInformationRetrieval * pIR =
-				new CHistogramWMDInformationRetrieval(mDict,
-						*trainCorpus);
+		//CHistogramWMDInformationRetrieval * pIR =
+		//		new CHistogramWMDInformationRetrieval(mDict,
+		//				*trainCorpus);
 		//CEmbeddingHistogramInformationRetrieval * pIR =
 		//		new CEmbeddingHistogramInformationRetrieval(mDict,
 		//				*trainCorpus);
 		//CTFIDFInformationRetrieval * pIR =
 		//				new CTFIDFInformationRetrieval(mDict,
 		//						*trainCorpus);
-		//CTFIDFWMDInformationRetrieval * pIR =
-		//				new CTFIDFWMDInformationRetrieval(mDict,
-		//						*trainCorpus);
+		CTFIDFWMDInformationRetrieval * pIR =
+						new CTFIDFWMDInformationRetrieval(mDict,
+								*trainCorpus);
 		//string BrownInput = "BrownOutput.txt";
 		//CBrownInformationRetrieval * pIR =
 		//				new CBrownInformationRetrieval(mDict,
