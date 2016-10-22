@@ -13,9 +13,13 @@
 #include "cluster.h"
 
 class CTFIDFWMDInformationRetrieval: public CInformationRetrieval {
+
+
+
 protected:
 	Real **cost;
 public:
+
 	virtual Real distance(Document* doc1, Document* doc2);
 
 	virtual void Transform(Document *querydoc);

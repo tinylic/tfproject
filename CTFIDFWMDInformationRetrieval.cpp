@@ -12,23 +12,26 @@ CInformationRetrieval(dict, train) {
 	cost = NULL;
 	cerr << mDict.size() << endl;
 	for (int i = 0; i < mDict.size(); i++) {
-		if (mDict.IsInCorpus(i) == false) continue;
-		Real result = train.size();
+		//if (mDict.IsInCorpus(i) == false) continue;
+		Real idf = train.size();
 		int ContainCount = 0;
+		int tWordCount = 0;
 		for (int j = 0; j < train.size(); j++) {
 			Document* doc = train.getDocument(j);
-			if (doc->HasWord(i))
+			if (doc->HasWord(i)) {
 				ContainCount++;
+				tWordCount += doc ->GetWordCount(i);
+			}
 		}
-		if (ContainCount == 0)
-			result = 1e-9;
+		if (ContainCount == 0 || tWordCount < THRESHOLD_FREQUENCY)
+			idf = 1e-9;
 		else
-			result /= ContainCount;
-		if (i % 1000 == 0)
+			idf /= ContainCount;
+		if (i % 50000 == 0)
 			cerr << i << endl;
-		mDict.ChangeIDF(i, log(result));
+		mDict.ChangeIDF(i, log(idf));
 	}
-
+/*
 	for (int i = 0; i < trainCorpus.size(); i++) {
 		Document* doc = trainCorpus.getDocument(i);
 		for (auto mit = doc->mWordCount.begin(); mit != doc->mWordCount.end();
@@ -46,9 +49,9 @@ CInformationRetrieval(dict, train) {
 	}
 	sort(KeyWords.begin(), KeyWords.end(), cmp);
 
-	for (int i = 0; i < MAX_KEY_WORDS; i++)
-		fprintf(KeyWordsLog, "%s %.6f\n", KeyWords[i]->word, KeyWords[i]->TF_IDF);
-	fclose(KeyWordsLog);
+	for (int i = 0; i < KeyWords.size(); i++)
+		fprintf(KeyWordsLog, "%s %.6f %.6f\n", KeyWords[i]->word, KeyWords[i]->TF_IDF, KeyWords[i] -> IDF);
+	fclose(KeyWordsLog);*/
 }
 
 CTFIDFWMDInformationRetrieval::~CTFIDFWMDInformationRetrieval() {
@@ -70,12 +73,18 @@ Real CTFIDFWMDInformationRetrieval::WMD(Document *TrainDoc, Document *QueryDoc) 
 	for (auto P = QueryDoc->mWordCount.begin(); P != QueryDoc -> mWordCount.end(); P++)
 		DQuery[cntb ++] = QueryDoc -> GetTF(P -> first);
 
+	cntb = 0;
+	Real *TrainTFIDFWeights = new Real[LenTrain];
+	Real *QueryTFIDFWeights = new Real[LenQuery];
+	for (auto Q = QueryDoc -> mWordCount.begin(); Q != QueryDoc -> mWordCount.end(); Q++) {
+		Real QueryTFIDF = QueryDoc -> GetTF(Q -> first) * mDict.GetIDF(Q -> first);
+		//cerr << mDict.GetWord(Q -> first) << " " << QueryTFIDF << endl;
+		QueryTFIDFWeights[cntb++] = QueryTFIDF;
+	}
+
 	Real **cost = new Real *[LenTrain];
 	for (int i = 0; i < LenTrain; i++)
 		cost[i] = new Real[LenQuery];
-
-	Real *TrainTFIDFWeights = new Real[LenTrain];
-	Real *QueryTFIDFWeights = new Real[LenQuery];
 	cnta = cntb = 0;
 	for (auto P = TrainDoc-> mWordCount.begin(); P != TrainDoc -> mWordCount.end(); P++) {
 		cntb = 0;
@@ -85,16 +94,12 @@ Real CTFIDFWMDInformationRetrieval::WMD(Document *TrainDoc, Document *QueryDoc) 
 			Embeds veca, vecb;
  			veca = mDict.GetEmbedding(P -> first);
 			vecb = mDict.GetEmbedding(Q -> first);
-			cost[cnta][cntb] = SquaredEuclideanDistance(veca, vecb, layer1_size);
+			cost[cnta][cntb] = SquaredEuclideanDistance(veca, vecb, layer1_size) ;
 			cntb++;
 		}
 		cnta ++;
 	}
-	cntb = 0;
-	for (auto Q = QueryDoc -> mWordCount.begin(); Q != QueryDoc -> mWordCount.end(); Q++) {
-		Real QueryTFIDF = QueryDoc -> GetTF(Q -> first) * mDict.GetIDF(Q -> first);
-		QueryTFIDFWeights[cntb++] = QueryTFIDF;
-	}
+
 
 	signature_t DocTrain = signature_t { LenTrain, DTrain};
 	signature_t DocQuery = signature_t { LenQuery, DQuery};

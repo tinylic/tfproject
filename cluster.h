@@ -54,9 +54,12 @@ public:
 	}
 
 	~cluster() {
-		//delete centcn;
-		//delete cent;
-		//delete cl;
+		delete[] centcn;
+		delete[] cent;
+		delete[] cl;
+		for (int i = 0; i < numClusters; i++)
+			delete[] centroid[i];
+		delete[] centroid;
 	}
 
 	void Kmeans() {

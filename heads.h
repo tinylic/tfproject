@@ -27,7 +27,7 @@
 using namespace std;
 
 
-#define MAX_THREADS 1
+#define MAX_THREADS 6
 #define DIS_INF 10000
 #define MAX_STRING 1000
 #define EXP_TABLE_SIZE 1000
@@ -44,10 +44,11 @@ using namespace std;
 #define ITER 10
 #define vocab_hash_size 30000000 // Maximum 30 * 0.7 = 21M words in the vocabulary
 #define max_w 100   //dimensionality that represent document
-#define max_c 100 	// cluster number
+#define max_c 500 	// cluster number
 #define compress_ratio 0.7
 #define layer1_size 300
 #define DIST_STEP 10
+#define THRESHOLD_FREQUENCY 3
 
 #define MAX_DOCS ((MAX_TAGS) * (MAX_DOC_PER_TAG))
 #define check perror("here is ok\n")

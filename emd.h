@@ -18,7 +18,7 @@
 
 /* DEFINITIONS */
 #include "heads.h"
-#define MAX_SIG_SIZE   400
+#define MAX_SIG_SIZE   800
 #define MAX_ITERATIONS 5000
 #define INFINITY       1e20
 #define EPSILON        1e-5

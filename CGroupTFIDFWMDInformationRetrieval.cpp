@@ -1,37 +1,44 @@
 /*
- * CHistogramWMDInformationRetrieval.cpp
+ * CGroupTFIDFInformationRetrieval.cpp
  *
- *  Created on: 2016年5月28日
+ *  Created on: 2016年8月13日
  *      Author: tinylic
  */
 
-#include <CHistogramWMDInformationRetrieval.h>
+#include <CGroupTFIDFWMDInformationRetrieval.h>
 
-CHistogramWMDInformationRetrieval::CHistogramWMDInformationRetrieval(WordLibrary& dict, Corpus& train) :
+CGroupTFIDFWMDInformationRetrieval::CGroupTFIDFWMDInformationRetrieval(WordLibrary& dict, Corpus& train) :
 CInformationRetrieval(dict, train) {
-	// TODO Auto-generated constructor stub
-
+	cost = NULL;
+	cerr << mDict.size() << endl;
+	for (int i = 0; i < mDict.size(); i++) {
+		//if (mDict.IsInCorpus(i) == false) continue;
+		Real idf = train.size();
+		int ContainCount = 0;
+		int tWordCount = 0;
+		for (int j = 0; j < train.size(); j++) {
+			Document* doc = train.getDocument(j);
+			if (doc->HasWord(i)) {
+				ContainCount++;
+				tWordCount += doc ->GetWordCount(i);
+			}
+		}
+		if (ContainCount == 0 || tWordCount < THRESHOLD_FREQUENCY)
+			idf = 1e-9;
+		else
+			idf /= ContainCount;
+		if (i % 50000 == 0)
+			cerr << i << endl;
+		mDict.ChangeIDF(i, idf);
+	}
 }
 
-CHistogramWMDInformationRetrieval::~CHistogramWMDInformationRetrieval() {
+CGroupTFIDFWMDInformationRetrieval::~CGroupTFIDFWMDInformationRetrieval() {
 	// TODO Auto-generated destructor stub
-	delete aCluster;
-	delete bCluster;
-}
-void CHistogramWMDInformationRetrieval::Transform(Document *querydoc) {
-	return;
-}
-void CHistogramWMDInformationRetrieval::rank(Document* queryDoc) {
-	std::thread mThreads[MAX_THREADS];
-	for (int i = 0; i < MAX_THREADS; i++)
-		mThreads[i] = std::thread(&CInformationRetrieval::ThreadFunction, *this, queryDoc, i);
-	for (int i = 0; i < MAX_THREADS; i++)
-		mThreads[i].join();
-	sort(dis, dis + trainCorpus.size());
-	return;
 }
 
-Real CHistogramWMDInformationRetrieval::distance(Document* doc1, Document* doc2) {
+
+Real CGroupTFIDFWMDInformationRetrieval::WMD(Document *doc1, Document *doc2) {
 	vector<unsigned> avecIDs, bvecIDs;
 	vector<Real*> avecEmbeddings, bvecEmbeddings;
 	//process on document 1
@@ -86,20 +93,48 @@ Real CHistogramWMDInformationRetrieval::distance(Document* doc1, Document* doc2)
 			cost[i][j] = SquaredEuclideanDistance(aCluster->GetCentroid(i), bCluster->GetCentroid(j), layer1_size);
 	}
 
+	Real *Weight = new Real[Bnclusters];
+	for (int i = 0; i < Bnclusters; i++)
+		Weight[i] = 0;
+	for (int i = 0; i < bvecEmbeddings.size(); i++) {
+		int index = bvecIDs[i];
+		Real mIDF = mDict.GetIDF(index);
+		Weight[bcl[i]] += mIDF;
+	}
+	for (int i = 0; i < Bnclusters; i++)
+		Weight[i] = log(Weight[i]);
 	signature_t doca = signature_t{ Anclusters, DA };
 	signature_t docb = signature_t{ Bnclusters, DB };
-
-	Real result = mEmd_node.emd(&doca, &docb, cost, 0, 0);
+	signature_t QueryWeight = signature_t { Bnclusters, Weight};
+	weighted_emd_node mEmd_node;
+	Real result = mEmd_node.weighted_emd(&doca, &docb, &QueryWeight, cost, 0, 0);
 	if (!isfinite(result))
 		result = 1e9;
-	//CWMDInformationRetrieval * WCDpIR =
-	//						new CWMDInformationRetrieval(mDict,
-	//								trainCorpus);
-	//Real WCDResult = WCDpIR ->distance(doc1, doc2);
-	//cerr <<"Histo = " << result << " WCD = " << WCDResult <<  endl;
-	//assert(abs(WCDResult - result) <= 1e-6);
+
 	delete DA;
 	delete DB;
 	delete[] cost;
+	delete aCluster;
+	delete bCluster;
+
 	return result;
+}
+
+
+Real CGroupTFIDFWMDInformationRetrieval::distance(Document* TrainDoc, Document* QueryDoc) {
+	return WMD(TrainDoc, QueryDoc);
+}
+
+void CGroupTFIDFWMDInformationRetrieval::Transform(Document *querydoc) {
+	return;
+}
+void CGroupTFIDFWMDInformationRetrieval::rank(Document* queryDoc) {
+	std::thread mThreads[MAX_THREADS];
+	Transform(queryDoc);
+	for (int i = 0; i < MAX_THREADS; i++)
+		mThreads[i] = std::thread(&CInformationRetrieval::ThreadFunction, *this, queryDoc, i);
+	for (int i = 0; i < MAX_THREADS; i++)
+		mThreads[i].std::thread::join();
+	sort(dis, dis + trainCorpus.size());
+	return;
 }

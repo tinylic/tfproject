@@ -22,7 +22,7 @@ struct embed_word {
 		embedding = NULL;
 		distributions = NULL;
 		cl = word_id = -1;
-		IDF = 0;
+		IDF = -1e9;
 		TF_IDF = -1e9;
 	}
 
@@ -141,8 +141,15 @@ public:
 		mWordEmbeds[index] -> IDF = mIDF;
 	}
 	void UpdateTFIDF(int index, Real mTFIDF) {
-		if (mWordEmbeds[index] -> TF_IDF < mTFIDF)
-			mWordEmbeds[index] -> TF_IDF = mTFIDF;
+		//if (mWordEmbeds[index] -> TF_IDF < mTFIDF)
+		if (mTFIDF > 0) {
+			if (mWordEmbeds[index] -> TF_IDF < 0)
+				mWordEmbeds[index] -> TF_IDF = 0;
+			mWordEmbeds[index] -> TF_IDF += mTFIDF;
+		}
+	}
+	Real GetTFIDF(int index) {
+		return mWordEmbeds[index] -> TF_IDF;
 	}
 
 	void SetInCorpus(int index, bool flag) {

@@ -129,6 +129,7 @@ public:
 #if DEBUG_LEVEL > 1
 		printf("\nINITIAL SOLUTION:\n");
 		printSolution();
+
 #endif
 		if (_n1 > 1 && _n2 > 1) /* IF _n1 = 1 OR _n2 = 1 THEN WE ARE DONE */
 		{

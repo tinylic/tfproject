@@ -55,8 +55,8 @@ public:
 			//cerr << word << endl;
 			if (strlen(word) < MIN_WORDS)
 				continue;
-			AddTotalWord(1);
 			if (GetTotalWord() > MAX_DOC_WORDS) break;
+			AddTotalWord(1);
 			int id = mDict.AddWordToVocab(word);
 			if (mDict.hasEmbedding(id) == false) continue;
 			mDict.SetInCorpus(id, true);
@@ -67,6 +67,7 @@ public:
 				mWordCount[id] = 1;
 			}
 		}
+		fclose(fin);
 		//GetAllWord();
 	}
 
@@ -208,8 +209,8 @@ public:
 	}
 	void GetAllEmbeddings(vector<Real*>& vecEmbeddings,
 			vector<unsigned>& vecIDs) {
-		vecEmbeddings.clear();
-		vecIDs.clear();
+		//vecEmbeddings.clear();
+		//vecIDs.clear();
 
 		//map<unsigned, unsigned> IDs;
 		//IDs.clear();

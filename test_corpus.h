@@ -9,7 +9,10 @@
 #include "CBrownInformationRetrieval.h"
 #include "CWMDInformationRetrieval.h"
 #include "CHistogramWMDInformationRetrieval.h"
+#include "CGlobalHistogramWMDInformationRetrieval.h"
 #include <CTFIDFWMDInformationRetrieval.h>
+#include "CGroupTFIDFWMDInformationRetrieval.h"
+#include <CInterHistogramWMDInformationRetrieval.h>
 class test_corpus {
 private:
 	WordLibrary& mDict;
@@ -112,15 +115,24 @@ public:
 		//CHistogramWMDInformationRetrieval * pIR =
 		//		new CHistogramWMDInformationRetrieval(mDict,
 		//				*trainCorpus);
+		//CGlobalHistogramWMDInformationRetrieval * pIR =
+		//		new CGlobalHistogramWMDInformationRetrieval(mDict,
+		//				*trainCorpus);
+		CInterHistogramWMDInformationRetrieval * pIR =
+				new CInterHistogramWMDInformationRetrieval(mDict,
+						*trainCorpus);
 		//CEmbeddingHistogramInformationRetrieval * pIR =
 		//		new CEmbeddingHistogramInformationRetrieval(mDict,
 		//				*trainCorpus);
 		//CTFIDFInformationRetrieval * pIR =
 		//				new CTFIDFInformationRetrieval(mDict,
 		//						*trainCorpus);
-		CTFIDFWMDInformationRetrieval * pIR =
-						new CTFIDFWMDInformationRetrieval(mDict,
-								*trainCorpus);
+		//CTFIDFWMDInformationRetrieval * pIR =
+		//				new CTFIDFWMDInformationRetrieval(mDict,
+		//						*trainCorpus);
+		//CGroupTFIDFWMDInformationRetrieval * pIR =
+		//				new CGroupTFIDFWMDInformationRetrieval(mDict,
+		//						*trainCorpus);
 		//string BrownInput = "BrownOutput.txt";
 		//CBrownInformationRetrieval * pIR =
 		//				new CBrownInformationRetrieval(mDict,
@@ -133,10 +145,10 @@ public:
 			Document* queryDoc = queryCorpus->getDocument(i);
 			Real curMAP = (pIR->GetMAPScore(queryDoc));
 			TotalMAP += curMAP;
-			cout << i << " MAP = " <<  curMAP << endl;
-			cerr << i << " MAP = " <<  curMAP << endl;
-			cout << "Average MAP = " << TotalMAP / (i + 1) << endl;
-			cerr << "Average MAP = " << TotalMAP / (i + 1) << endl;
+			cout << i << " MAP = " <<  curMAP << "\n";
+			cerr << i << " MAP = " <<  curMAP << "\n";
+			cout << "Average MAP = " << TotalMAP / (i + 1) << "\n";
+			cerr << "Average MAP = " << TotalMAP / (i + 1) << "\n";
 		}
 	}
 	inline Corpus* getTrainCorpus() {
